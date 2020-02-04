@@ -1,0 +1,2041 @@
+# depslib dependency file v1.0
+1577461514 source:c:\users\floyd\documents\c++\deep\deep.cpp
+	<iostream>
+	<SDL2/SDL.h>
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl.h
+	"SDL_main.h"
+	"SDL_stdinc.h"
+	"SDL_assert.h"
+	"SDL_atomic.h"
+	"SDL_audio.h"
+	"SDL_clipboard.h"
+	"SDL_cpuinfo.h"
+	"SDL_endian.h"
+	"SDL_error.h"
+	"SDL_events.h"
+	"SDL_filesystem.h"
+	"SDL_gamecontroller.h"
+	"SDL_haptic.h"
+	"SDL_hints.h"
+	"SDL_joystick.h"
+	"SDL_loadso.h"
+	"SDL_log.h"
+	"SDL_messagebox.h"
+	"SDL_mutex.h"
+	"SDL_power.h"
+	"SDL_render.h"
+	"SDL_rwops.h"
+	"SDL_sensor.h"
+	"SDL_shape.h"
+	"SDL_system.h"
+	"SDL_thread.h"
+	"SDL_timer.h"
+	"SDL_version.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_main.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_stdinc.h
+	"SDL_config.h"
+	<sys/types.h>
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<stdarg.h>
+	<stdlib.h>
+	<malloc.h>
+	<stddef.h>
+	<stdarg.h>
+	<memory.h>
+	<string.h>
+	<strings.h>
+	<wchar.h>
+	<inttypes.h>
+	<stdint.h>
+	<ctype.h>
+	<math.h>
+	<float.h>
+	<alloca.h>
+	<malloc.h>
+	<malloc.h>
+	<malloc.h>
+	<stdlib.h>
+	<sal.h>
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_config.h
+	"SDL_platform.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_platform.h
+	"AvailabilityMacros.h"
+	"TargetConditionals.h"
+	<winapifamily.h>
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\begin_code.h
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\close_code.h
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_assert.h
+	"SDL_config.h"
+	"begin_code.h"
+	<signal.h>
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_atomic.h
+	"SDL_stdinc.h"
+	"SDL_platform.h"
+	"begin_code.h"
+	<sys/cpuinline.h>
+	<mbarrier.h>
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_audio.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_endian.h"
+	"SDL_mutex.h"
+	"SDL_thread.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_error.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_endian.h
+	"SDL_stdinc.h"
+	<endian.h>
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_mutex.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_thread.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_atomic.h"
+	"SDL_mutex.h"
+	"begin_code.h"
+	<process.h>
+	<process.h>
+	<stdlib.h>
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_rwops.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_clipboard.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_cpuinfo.h
+	"SDL_stdinc.h"
+	<intrin.h>
+	<intrin.h>
+	<altivec.h>
+	<arm_neon.h>
+	<armintr.h>
+	<arm_neon.h>
+	<armintr.h>
+	<arm_neon.h>
+	<mm3dnow.h>
+	<immintrin.h>
+	<mmintrin.h>
+	<xmmintrin.h>
+	<emmintrin.h>
+	<pmmintrin.h>
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_events.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_keyboard.h"
+	"SDL_mouse.h"
+	"SDL_joystick.h"
+	"SDL_gamecontroller.h"
+	"SDL_quit.h"
+	"SDL_gesture.h"
+	"SDL_touch.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_video.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_surface.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_pixels.h
+	"SDL_stdinc.h"
+	"SDL_endian.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_rect.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_pixels.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_surface.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_blendmode.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_blendmode.h
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_keyboard.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_keycode.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_keycode.h
+	"SDL_stdinc.h"
+	"SDL_scancode.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_scancode.h
+	"SDL_stdinc.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_mouse.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_joystick.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_gamecontroller.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_rwops.h"
+	"SDL_joystick.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_quit.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_gesture.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_touch.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_touch.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_filesystem.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_haptic.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_joystick.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_hints.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_loadso.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_log.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_messagebox.h
+	"SDL_stdinc.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_power.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_render.h
+	"SDL_stdinc.h"
+	"SDL_rect.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_sensor.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_shape.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_surface.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_system.h
+	"SDL_stdinc.h"
+	"SDL_keyboard.h"
+	"SDL_render.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_timer.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\c++\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_version.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1577609767 source:c:\users\floyd\documents\cpp\deep\deep.cpp
+	<iostream>
+	<string>
+	<GL/glew.h>
+	<SDL2/SDL.h>
+	<vm.h>
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl.h
+	"SDL_main.h"
+	"SDL_stdinc.h"
+	"SDL_assert.h"
+	"SDL_atomic.h"
+	"SDL_audio.h"
+	"SDL_clipboard.h"
+	"SDL_cpuinfo.h"
+	"SDL_endian.h"
+	"SDL_error.h"
+	"SDL_events.h"
+	"SDL_filesystem.h"
+	"SDL_gamecontroller.h"
+	"SDL_haptic.h"
+	"SDL_hints.h"
+	"SDL_joystick.h"
+	"SDL_loadso.h"
+	"SDL_log.h"
+	"SDL_messagebox.h"
+	"SDL_mutex.h"
+	"SDL_power.h"
+	"SDL_render.h"
+	"SDL_rwops.h"
+	"SDL_sensor.h"
+	"SDL_shape.h"
+	"SDL_system.h"
+	"SDL_thread.h"
+	"SDL_timer.h"
+	"SDL_version.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_main.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_stdinc.h
+	"SDL_config.h"
+	<sys/types.h>
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<stdarg.h>
+	<stdlib.h>
+	<malloc.h>
+	<stddef.h>
+	<stdarg.h>
+	<memory.h>
+	<string.h>
+	<strings.h>
+	<wchar.h>
+	<inttypes.h>
+	<stdint.h>
+	<ctype.h>
+	<math.h>
+	<float.h>
+	<alloca.h>
+	<malloc.h>
+	<malloc.h>
+	<malloc.h>
+	<stdlib.h>
+	<sal.h>
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_config.h
+	"SDL_platform.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_platform.h
+	"AvailabilityMacros.h"
+	"TargetConditionals.h"
+	<winapifamily.h>
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\begin_code.h
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\close_code.h
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_assert.h
+	"SDL_config.h"
+	"begin_code.h"
+	<signal.h>
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_atomic.h
+	"SDL_stdinc.h"
+	"SDL_platform.h"
+	"begin_code.h"
+	<sys/cpuinline.h>
+	<mbarrier.h>
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_audio.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_endian.h"
+	"SDL_mutex.h"
+	"SDL_thread.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_error.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_endian.h
+	"SDL_stdinc.h"
+	<endian.h>
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_mutex.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_thread.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_atomic.h"
+	"SDL_mutex.h"
+	"begin_code.h"
+	<process.h>
+	<process.h>
+	<stdlib.h>
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_rwops.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_clipboard.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_cpuinfo.h
+	"SDL_stdinc.h"
+	<intrin.h>
+	<intrin.h>
+	<altivec.h>
+	<arm_neon.h>
+	<armintr.h>
+	<arm_neon.h>
+	<armintr.h>
+	<arm_neon.h>
+	<mm3dnow.h>
+	<immintrin.h>
+	<mmintrin.h>
+	<xmmintrin.h>
+	<emmintrin.h>
+	<pmmintrin.h>
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_events.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_keyboard.h"
+	"SDL_mouse.h"
+	"SDL_joystick.h"
+	"SDL_gamecontroller.h"
+	"SDL_quit.h"
+	"SDL_gesture.h"
+	"SDL_touch.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_video.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_surface.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_pixels.h
+	"SDL_stdinc.h"
+	"SDL_endian.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_rect.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_pixels.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_surface.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_blendmode.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_blendmode.h
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_keyboard.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_keycode.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_keycode.h
+	"SDL_stdinc.h"
+	"SDL_scancode.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_scancode.h
+	"SDL_stdinc.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_mouse.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_joystick.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_gamecontroller.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_rwops.h"
+	"SDL_joystick.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_quit.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_gesture.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_touch.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_touch.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_filesystem.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_haptic.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_joystick.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_hints.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_loadso.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_log.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_messagebox.h
+	"SDL_stdinc.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_power.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_render.h
+	"SDL_stdinc.h"
+	"SDL_rect.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_sensor.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_shape.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_surface.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_system.h
+	"SDL_stdinc.h"
+	"SDL_keyboard.h"
+	"SDL_render.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_timer.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_version.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_opengl.h
+	"SDL_config.h"
+	"gl_mangle.h"
+	<windows.h>
+	"SDL_opengl_glext.h"
+
+1564029384 c:\users\floyd\documents\cpp\sdl2-2.0.10\x86_64-w64-mingw32\include\sdl2\sdl_opengl_glext.h
+	<windows.h>
+	<stddef.h>
+	<inttypes.h>
+	<inttypes.h>
+	<inttypes.h>
+	<stdint.h>
+	<stdint.h>
+	<inttypes.h>
+
+1577470408 c:\users\floyd\documents\cpp\glew-2.1.0\include\gl\glew.h
+	<stddef.h>
+	<inttypes.h>
+	<stdint.h>
+	<inttypes.h>
+	<Availability.h>
+	<OpenGL/glu.h>
+	<GL/glu.h>
+
+1577473873 c:\users\floyd\documents\cpp\glew\include\gl\glew.h
+	<stddef.h>
+	<inttypes.h>
+	<stdint.h>
+	<inttypes.h>
+	<Availability.h>
+	<OpenGL/glu.h>
+	<GL/glu.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winapifamily.h
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\sys\types.h
+	<crtdefs.h>
+	<_mingw_off_t.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\crtdefs.h
+	<_mingw.h>
+
+1435247847 c:\mingw\x86_64-w64-mingw32\include\_mingw.h
+	"_mingw_mac.h"
+	"_mingw_secapi.h"
+	"_cygwin.h"
+	<vadefs.h>
+	"sdks/_mingw_directx.h"
+	"sdks/_mingw_ddk.h"
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\_mingw_mac.h
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\_mingw_secapi.h
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\_cygwin.h
+	<stddef.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\stddef.h
+	<crtdefs.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\vadefs.h
+	<_mingw.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\sdks\_mingw_directx.h
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\sdks\_mingw_ddk.h
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\_mingw_off_t.h
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\stdio.h
+	<crtdefs.h>
+	<_mingw_print_push.h>
+	<_mingw_off_t.h>
+	<swprintf.inl>
+	<sec_api/stdio_s.h>
+	<_mingw_print_pop.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\_mingw_print_push.h
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\swprintf.inl
+	<vadefs.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\sec_api\stdio_s.h
+	<stdio.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\_mingw_print_pop.h
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\stdlib.h
+	<crtdefs.h>
+	<limits.h>
+	<sec_api/stdlib_s.h>
+	<malloc.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\limits.h
+	<crtdefs.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\sec_api\stdlib_s.h
+	<stdlib.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\malloc.h
+	<crtdefs.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\stdarg.h
+	<_mingw_stdarg.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\_mingw_stdarg.h
+	<vadefs.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\memory.h
+	<crtdefs.h>
+	<sec_api/memory_s.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\sec_api\memory_s.h
+	<memory.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\string.h
+	<crtdefs.h>
+	<sec_api/string_s.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\sec_api\string_s.h
+	<string.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\strings.h
+	<string.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\wchar.h
+	<crtdefs.h>
+	<_mingw_print_push.h>
+	<_mingw_off_t.h>
+	<_mingw_stat64.h>
+	<swprintf.inl>
+	<sec_api/wchar_s.h>
+	<_mingw_print_pop.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\_mingw_stat64.h
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\sec_api\wchar_s.h
+	<wchar.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\inttypes.h
+	<crtdefs.h>
+	<stdint.h>
+	<stddef.h>
+	<_mingw_print_push.h>
+	<_mingw_print_pop.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\stdint.h
+	<crtdefs.h>
+	<stddef.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\ctype.h
+	<crtdefs.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\math.h
+	<crtdefs.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\float.h
+	<crtdefs.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\sal.h
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\signal.h
+	<crtdefs.h>
+	<pthread_signal.h>
+
+1435249050 c:\mingw\x86_64-w64-mingw32\include\pthread_signal.h
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\process.h
+	<crtdefs.h>
+	<sys/types.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\intrin.h
+	<crtdefs.h>
+	<setjmp.h>
+	<stddef.h>
+	<psdk_inc/intrin-impl.h>
+	<stdlib.h>
+	<errno.h>
+	<malloc.h>
+	<x86intrin.h>
+	<mmintrin.h>
+	<mm3dnow.h>
+	<xmmintrin.h>
+	<emmintrin.h>
+	<pmmintrin.h>
+	<mm3dnow.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\setjmp.h
+	<crtdefs.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\psdk_inc\intrin-impl.h
+	<intrin.h>
+	<psdk_inc/intrin-impl.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\errno.h
+	<crtdefs.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\gl\glu.h
+	<GL/gl.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\gl\gl.h
+	<windows.h>
+	<stddef.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\windows.h
+	<_mingw.h>
+	<sdkddkver.h>
+	<winresrc.h>
+	<excpt.h>
+	<stdarg.h>
+	<windef.h>
+	<winbase.h>
+	<wingdi.h>
+	<winuser.h>
+	<winnls.h>
+	<wincon.h>
+	<winver.h>
+	<winreg.h>
+	<winnetwk.h>
+	<virtdisk.h>
+	<cderr.h>
+	<dde.h>
+	<ddeml.h>
+	<dlgs.h>
+	<lzexpand.h>
+	<mmsystem.h>
+	<nb30.h>
+	<rpc.h>
+	<shellapi.h>
+	<winperf.h>
+	<winsock.h>
+	<wincrypt.h>
+	<winefs.h>
+	<winscard.h>
+	<winspool.h>
+	<ole.h>
+	<ole2.h>
+	<commdlg.h>
+	<stralign.h>
+	<ole2.h>
+	<winsvc.h>
+	<mcx.h>
+	<imm.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\sdkddkver.h
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winresrc.h
+	<winuser.rh>
+	<commctrl.rh>
+	<dde.rh>
+	<winnt.rh>
+	<dlgs.h>
+	<winver.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\winuser.rh
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\commctrl.rh
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\dde.rh
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\winnt.rh
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\dlgs.h
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winver.h
+	<_mingw.h>
+	<_mingw_unicode.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\_mingw_unicode.h
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\excpt.h
+	<crtdefs.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\windef.h
+	<minwindef.h>
+	<winnt.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\minwindef.h
+	<_mingw.h>
+	<winapifamily.h>
+	<specstrings.h>
+	<winnt.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\specstrings.h
+	<sal.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winnt.h
+	<_mingw_unicode.h>
+	<_mingw.h>
+	<ctype.h>
+	<excpt.h>
+	<winapifamily.h>
+	<apiset.h>
+	<specstrings.h>
+	<psdk_inc/intrin-impl.h>
+	<sdkddkver.h>
+	<basetsd.h>
+	<guiddef.h>
+	<x86intrin.h>
+	<pshpack4.h>
+	<poppack.h>
+	"pshpack4.h"
+	"pshpack2.h"
+	"poppack.h"
+	"pshpack2.h"
+	<pshpack2.h>
+	<poppack.h>
+	"poppack.h"
+	"pshpack8.h"
+	"poppack.h"
+	"poppack.h"
+	<string.h>
+	<pshpack8.h>
+	<poppack.h>
+	<ktmtypes.h>
+	"pshpack4.h"
+	"poppack.h"
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\apiset.h
+	<_mingw.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\basetsd.h
+	<_mingw.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\guiddef.h
+	<_mingw.h>
+	<string.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\pshpack4.h
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\poppack.h
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\pshpack2.h
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\pshpack8.h
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\ktmtypes.h
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winbase.h
+	<_mingw_unicode.h>
+	<apisetcconv.h>
+	<winapifamily.h>
+	<minwinbase.h>
+	<bemapiset.h>
+	<debugapi.h>
+	<errhandlingapi.h>
+	<fibersapi.h>
+	<fileapi.h>
+	<handleapi.h>
+	<heapapi.h>
+	<ioapiset.h>
+	<interlockedapi.h>
+	<jobapi.h>
+	<libloaderapi.h>
+	<memoryapi.h>
+	<namedpipeapi.h>
+	<namespaceapi.h>
+	<processenv.h>
+	<processthreadsapi.h>
+	<processtopologyapi.h>
+	<profileapi.h>
+	<realtimeapiset.h>
+	<securityappcontainer.h>
+	<securitybaseapi.h>
+	<synchapi.h>
+	<sysinfoapi.h>
+	<systemtopologyapi.h>
+	<threadpoolapiset.h>
+	<threadpoollegacyapiset.h>
+	<utilapiset.h>
+	<wow64apiset.h>
+	<psdk_inc/intrin-impl.h>
+	<winerror.h>
+	<timezoneapi.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\apisetcconv.h
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\minwinbase.h
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\bemapiset.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\debugapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\errhandlingapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\fibersapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\fileapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\handleapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\heapapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\ioapiset.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\interlockedapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\jobapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\libloaderapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\memoryapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\namedpipeapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\namespaceapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\processenv.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\processthreadsapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\processtopologyapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\profileapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\realtimeapiset.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\securityappcontainer.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\securitybaseapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\synchapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\sysinfoapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\systemtopologyapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\threadpoolapiset.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\threadpoollegacyapiset.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\utilapiset.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\wow64apiset.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winerror.h
+	<fltwinerror.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\fltwinerror.h
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\timezoneapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\wingdi.h
+	<winapifamily.h>
+	<_mingw_unicode.h>
+	<pshpack1.h>
+	<poppack.h>
+	<pshpack2.h>
+	<poppack.h>
+	<pshpack2.h>
+	<poppack.h>
+	<pshpack4.h>
+	<poppack.h>
+	<pshpack4.h>
+	<poppack.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\pshpack1.h
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winuser.h
+	<winapifamily.h>
+	<_mingw_unicode.h>
+	<apisetcconv.h>
+	<_mingw.h>
+	<stdarg.h>
+	<guiddef.h>
+	<libloaderapi.h>
+	<pshpack2.h>
+	<poppack.h>
+	<tvout.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\tvout.h
+	<guiddef.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winnls.h
+	<winapifamily.h>
+	<datetimeapi.h>
+	<libloaderapi.h>
+	<stringapiset.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\datetimeapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<minwinbase.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\stringapiset.h
+	<apiset.h>
+	<apisetcconv.h>
+	<minwindef.h>
+	<winnls.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\wincon.h
+	<_mingw_unicode.h>
+	<winapifamily.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winreg.h
+	<_mingw_unicode.h>
+	<reason.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\reason.h
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winnetwk.h
+	<winapifamily.h>
+	<_mingw_unicode.h>
+	<wnnc.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\wnnc.h
+	<winapifamily.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\virtdisk.h
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\cderr.h
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\dde.h
+	<windef.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\ddeml.h
+	<_mingw_unicode.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\lzexpand.h
+	<_mingw_unicode.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\mmsystem.h
+	<_mingw_unicode.h>
+	<pshpack1.h>
+	<poppack.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\nb30.h
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\rpc.h
+	<_mingw.h>
+	<windows.h>
+	<basetsd.h>
+	<pshpack8.h>
+	<rpcdce.h>
+	<rpcnsi.h>
+	<rpcnterr.h>
+	<excpt.h>
+	<winerror.h>
+	<rpcasync.h>
+	<poppack.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\rpcdce.h
+	<_mingw_unicode.h>
+	<specstrings.h>
+	<guiddef.h>
+	<rpcdcep.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\rpcdcep.h
+	<_mingw_unicode.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\rpcnsi.h
+	<_mingw_unicode.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\rpcnterr.h
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\rpcasync.h
+	<_mingw_unicode.h>
+	<pshpack8.h>
+	<poppack.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\shellapi.h
+	<winapifamily.h>
+	<_mingw_unicode.h>
+	<specstrings.h>
+	<pshpack1.h>
+	<poppack.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winperf.h
+	<pshpack8.h>
+	<poppack.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winsock.h
+	<windows.h>
+	<_timeval.h>
+	<_bsd_types.h>
+	<inaddr.h>
+	<psdk_inc/_socket_types.h>
+	<psdk_inc/_fd_types.h>
+	<psdk_inc/_ip_types.h>
+	<psdk_inc/_ip_mreq1.h>
+	<psdk_inc/_wsadata.h>
+	<psdk_inc/_xmitfile.h>
+	<psdk_inc/_wsa_errnos.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\_timeval.h
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\_bsd_types.h
+	<_mingw.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\inaddr.h
+	<_bsd_types.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\psdk_inc\_socket_types.h
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\psdk_inc\_fd_types.h
+	<psdk_inc/_socket_types.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\psdk_inc\_ip_types.h
+	<_bsd_types.h>
+	<inaddr.h>
+	<_timeval.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\psdk_inc\_ip_mreq1.h
+	<inaddr.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\psdk_inc\_wsadata.h
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\psdk_inc\_xmitfile.h
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\psdk_inc\_wsa_errnos.h
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\wincrypt.h
+	<_mingw.h>
+	<_mingw_unicode.h>
+	<guiddef.h>
+	<winapifamily.h>
+	<apisetcconv.h>
+	<bcrypt.h>
+	<ncrypt.h>
+	<dpapi.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\bcrypt.h
+	<winapifamily.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\ncrypt.h
+	<winapifamily.h>
+	<bcrypt.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\dpapi.h
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winefs.h
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winscard.h
+	<_mingw_unicode.h>
+	<wtypes.h>
+	<winioctl.h>
+	"winsmcrd.h"
+	"SCardErr.h"
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\wtypes.h
+	<rpc.h>
+	<rpcndr.h>
+	<windows.h>
+	<ole2.h>
+	<wtypesbase.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\rpcndr.h
+	<pshpack8.h>
+	<basetsd.h>
+	<rpcnsip.h>
+	<rpcsal.h>
+	<poppack.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\rpcnsip.h
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\rpcsal.h
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\ole2.h
+	<winapifamily.h>
+	<pshpack8.h>
+	<winerror.h>
+	<objbase.h>
+	<oleauto.h>
+	<oleidl.h>
+	<poppack.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\objbase.h
+	<winapifamily.h>
+	<rpc.h>
+	<rpcndr.h>
+	<pshpack8.h>
+	<combaseapi.h>
+	<objidl.h>
+	<urlmon.h>
+	<propidl.h>
+	<poppack.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\combaseapi.h
+	<apiset.h>
+	<apisetcconv.h>
+	<rpc.h>
+	<rpcndr.h>
+	<pshpack8.h>
+	<stdlib.h>
+	<wtypesbase.h>
+	<unknwnbase.h>
+	<objidlbase.h>
+	<guiddef.h>
+	<cguid.h>
+	<poppack.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\wtypesbase.h
+	<rpc.h>
+	<rpcndr.h>
+	<windows.h>
+	<ole2.h>
+	<basetsd.h>
+	<guiddef.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\unknwnbase.h
+	<rpc.h>
+	<rpcndr.h>
+	<windows.h>
+	<ole2.h>
+	<wtypesbase.h>
+	<winapifamily.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\objidlbase.h
+	<rpc.h>
+	<rpcndr.h>
+	<windows.h>
+	<ole2.h>
+	<unknwnbase.h>
+	<wtypesbase.h>
+	<winapifamily.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\cguid.h
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\objidl.h
+	<rpc.h>
+	<rpcndr.h>
+	<windows.h>
+	<ole2.h>
+	<unknwn.h>
+	<wtypes.h>
+	<winapifamily.h>
+	<winapifamily.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\unknwn.h
+	<rpc.h>
+	<rpcndr.h>
+	<windows.h>
+	<ole2.h>
+	<wtypes.h>
+	<winapifamily.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\urlmon.h
+	<rpc.h>
+	<rpcndr.h>
+	<windows.h>
+	<ole2.h>
+	<objidl.h>
+	<oleidl.h>
+	<servprov.h>
+	<msxml.h>
+	<winapifamily.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\oleidl.h
+	<rpc.h>
+	<rpcndr.h>
+	<windows.h>
+	<ole2.h>
+	<objidl.h>
+	<winapifamily.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\servprov.h
+	<rpc.h>
+	<rpcndr.h>
+	<windows.h>
+	<ole2.h>
+	<objidl.h>
+	<winapifamily.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\msxml.h
+	<rpc.h>
+	<rpcndr.h>
+	<windows.h>
+	<ole2.h>
+	<unknwn.h>
+	<objidl.h>
+	<oaidl.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\oaidl.h
+	<rpc.h>
+	<rpcndr.h>
+	<windows.h>
+	<ole2.h>
+	<objidl.h>
+	<winapifamily.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\propidl.h
+	<rpc.h>
+	<rpcndr.h>
+	<windows.h>
+	<ole2.h>
+	<wtypes.h>
+	<objidl.h>
+	<oaidl.h>
+	<winapifamily.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\oleauto.h
+	<pshpack8.h>
+	<oaidl.h>
+	<poppack.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winioctl.h
+	<pshpack1.h>
+	<poppack.h>
+	<pshpack1.h>
+	<poppack.h>
+	<pshpack1.h>
+	<poppack.h>
+	<pshpack1.h>
+	<poppack.h>
+	<pshpack1.h>
+	<poppack.h>
+	<pshpack1.h>
+	<poppack.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winsmcrd.h
+	<_mingw_unicode.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\scarderr.h
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winspool.h
+	<_mingw_unicode.h>
+	<prsht.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\prsht.h
+	<_mingw_unicode.h>
+	<pshpack8.h>
+	<pshpack4.h>
+	<poppack.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\ole.h
+	<winapifamily.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\commdlg.h
+	<winapifamily.h>
+	<_mingw_unicode.h>
+	<prsht.h>
+	<pshpack1.h>
+	<poppack.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\stralign.h
+	<sec_api/stralign_s.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\sec_api\stralign_s.h
+	<stralign.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winsvc.h
+	<_mingw.h>
+	<_mingw_unicode.h>
+	<apisetcconv.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\mcx.h
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\imm.h
+	<_mingw_unicode.h>
+
+1580042717 c:\users\floyd\documents\c\func\vm.h
+	"object.h"
+	"table.h"
+	"value.h"
+
+1580738713 c:\users\floyd\documents\c\func\object.h
+	"chunk.h"
+	"common.h"
+	"table.h"
+	"value.h"
+
+1580752045 c:\users\floyd\documents\c\func\common.h
+	<stdbool.h>
+	<stddef.h>
+	<stdint.h>
+
+1580646566 c:\users\floyd\documents\c\func\value.h
+	"common.h"
+
+1579791489 c:\users\floyd\documents\c\func\chunk.h
+	"common.h"
+	"value.h"
+
+1579186396 c:\users\floyd\documents\c\func\table.h
+	"common.h"
+	"value.h"
+
+1158780860 source:c:\users\floyd\documents\cpp\deep\src\face.cpp
+	"Face.h"
+
+1158764984 c:\users\floyd\documents\cpp\deep\src\face.h
+	"Vector.h"
+
+1577690251 c:\users\floyd\documents\cpp\deep\src\vector.h
+
+1577619609 c:\users\floyd\documents\cpp\deep\src\quaternion.h
+
+1158780860 source:c:\users\floyd\documents\cpp\deep\src\geomobject.cpp
+	"GeomObject.h"
+	"Vertex.h"
+	"Face.h"
+	<string.h>
+
+1158762126 c:\users\floyd\documents\cpp\deep\src\geomobject.h
+	"Vector.h"
+	"Face.h"
+
+1158692810 c:\users\floyd\documents\cpp\deep\src\vertex.h
+
+1580477187 source:c:\users\floyd\documents\cpp\deep\src\main.cpp
+	<iostream>
+	<fstream>
+	<iomanip>
+	<codecvt>
+	<unordered_map>
+	<string>
+	<chrono>
+	<math.h>
+	<string.h>
+	<thread>
+	<queue>
+	<mutex>
+	<atomic>
+	<GL/glew.h>
+	<SDL.h>
+	<SDL_image.h>
+	<SDL_ttf.h>
+	"IOFile.h"
+	"Matrices.h"
+	"Machine.h"
+	"Message.h"
+	"Obj3DLoader.h"
+	"utf8.h"
+
+1561870398 c:\users\floyd\documents\cpp\sdl2_image-2.0.5\x86_64-w64-mingw32\include\sdl2\sdl_image.h
+	"SDL.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1577709999 source:c:\users\floyd\documents\cpp\deep\src\matrix.cpp
+	<iostream>
+	<iomanip>
+	<math.h>
+	"Matrix.h"
+	"Vector.h"
+
+1577709566 c:\users\floyd\documents\cpp\deep\src\matrix.h
+	"Vector.h"
+
+1577619777 source:c:\users\floyd\documents\cpp\deep\src\quaternion.cpp
+	"Quaternion.h"
+	"Vector.h"
+	"Matrix.h"
+	<math.h>
+
+1158859902 source:c:\users\floyd\documents\cpp\deep\src\texture.cpp
+	"Texture.h"
+
+1158860284 c:\users\floyd\documents\cpp\deep\src\texture.h
+	<SDL_opengl.h>
+
+1577619927 source:c:\users\floyd\documents\cpp\deep\src\ase.cpp
+	"ASE.h"
+	<stdio.h>
+	<fstream>
+	<string.h>
+	<stdlib.h>
+	<math.h>
+	<SDL_opengl.h>
+
+1577619864 c:\users\floyd\documents\cpp\deep\src\ase.h
+	<SDL_opengl.h>
+	"Vector.h"
+	"GeomObject.h"
+	<fstream>
+
+1577619978 source:c:\users\floyd\documents\cpp\deep\src\texturestore.cpp
+	"TextureStore.h"
+	<stdio.h>
+	<SDL.h>
+	<SDL_image.h>
+
+1158924920 c:\users\floyd\documents\cpp\deep\src\texturestore.h
+	"Texture.h"
+
+1158692752 source:c:\users\floyd\documents\cpp\deep\src\vertex.cpp
+	"Vertex.h"
+
+1577693089 source:c:\users\floyd\documents\cpp\deep\src\vector.cpp
+	<iostream>
+	<math.h>
+	"Vector.h"
+	"Quaternion.h"
+
+1577799347 source:c:\users\floyd\documents\cpp\deep\src\matrices.cpp
+	<cmath>
+	<algorithm>
+	"Matrices.h"
+
+1577715110 c:\users\floyd\documents\cpp\deep\src\matrices.h
+	<iostream>
+	<iomanip>
+	"Vectors.h"
+
+1577714505 c:\users\floyd\documents\cpp\deep\src\vectors.h
+	<cmath>
+	<iostream>
+
+1580569502 source:c:\users\floyd\documents\cpp\deep\src\machine.cpp
+	<iostream>
+	<fstream>
+	<functional>
+	<regex>
+	<random>
+	<dirent.h>
+	<sys/stat.h>
+	"IODir.h"
+	"IOFile.h"
+	"IOHandle.h"
+	"Machine.h"
+	"Fontcache.h"
+	"utf8.h"
+
+1580211403 c:\users\floyd\documents\cpp\deep\src\machine.h
+	<vm.h>
+	<SDL_ttf.h>
+	"Display.h"
+	"Message.h"
+	<queue>
+
+1547322290 c:\users\floyd\documents\cpp\sdl2_ttf-2.0.15\x86_64-w64-mingw32\include\sdl2\sdl_ttf.h
+	"SDL.h"
+	"begin_code.h"
+	"close_code.h"
+
+1580470674 source:c:\users\floyd\documents\cpp\deep\src\display.cpp
+	<chrono>
+	"Display.h"
+	"Fontcache.h"
+	"utf8.h"
+
+1579643158 c:\users\floyd\documents\cpp\deep\src\display.h
+	<GL/glew.h>
+	<SDL_opengl.h>
+	"Matrices.h"
+	"Fontcache.h"
+
+1577869874 source:c:\users\floyd\documents\cpp\deep\src\font.cpp
+	<iostream>
+	"Font.h"
+
+1577867896 c:\users\floyd\documents\cpp\deep\src\font.h
+	<unordered_map>
+	<SDL.h>
+	<SDL_ttf.h>
+
+1578131010 c:\users\floyd\documents\cpp\deep\src\fontcache.h
+	<unordered_map>
+	<SDL.h>
+	<SDL_opengl.h>
+	<SDL_ttf.h>
+
+1578215885 source:c:\users\floyd\documents\cpp\deep\src\fontcache.cpp
+	<iostream>
+	"Fontcache.h"
+	"utf8.h"
+
+1578562857 source:c:\users\floyd\documents\cpp\deep\src\message.cpp
+	<iostream>
+	"Message.h"
+
+1580283383 c:\users\floyd\documents\cpp\deep\src\message.h
+	<SDL.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\dirent.h
+	<crtdefs.h>
+	<io.h>
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\io.h
+	<crtdefs.h>
+	<string.h>
+	<_mingw_off_t.h>
+	<string.h>
+	<sec_api/io_s.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\sec_api\io_s.h
+	<io.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\sys\stat.h
+	<crtdefs.h>
+	<io.h>
+	<sys/types.h>
+	<_mingw_stat64.h>
+
+1578211913 c:\users\floyd\documents\cpp\utf8_v2_3_4\source\utf8.h
+	<stdexcept>
+	<string>
+	<iterator>
+
+1578211282 c:\users\floyd\documents\cpp\utf8_v2_3_4\source\utf8\checked.h
+	"core.h"
+	<stdexcept>
+
+1578206802 c:\users\floyd\documents\cpp\utf8_v2_3_4\source\utf8\core.h
+	<iterator>
+
+1578206803 c:\users\floyd\documents\cpp\utf8_v2_3_4\source\utf8\unchecked.h
+	"core.h"
+
+1578218865 c:\users\floyd\documents\cpp\deep\src\utf8.h
+	<vector>
+
+1578228208 source:c:\users\floyd\documents\cpp\deep\src\utf8.cpp
+	<iostream>
+	<string.h>
+	"utf8.h"
+
+1580473157 c:\users\floyd\documents\cpp\deep\include\display.h
+	<GL/glew.h>
+	<SDL_opengl.h>
+	"Matrices.h"
+	"Fontcache.h"
+
+1577715110 c:\users\floyd\documents\cpp\deep\include\matrices.h
+	<iostream>
+	<iomanip>
+	"Vectors.h"
+
+1577714505 c:\users\floyd\documents\cpp\deep\include\vectors.h
+	<cmath>
+	<iostream>
+
+1578131010 c:\users\floyd\documents\cpp\deep\include\fontcache.h
+	<unordered_map>
+	<SDL.h>
+	<SDL_opengl.h>
+	<SDL_ttf.h>
+
+1578218865 c:\users\floyd\documents\cpp\deep\include\utf8.h
+	<vector>
+
+1580566506 c:\users\floyd\documents\cpp\deep\include\machine.h
+	<vm.h>
+	<SDL_ttf.h>
+	"Display.h"
+	"Message.h"
+	<queue>
+
+1580283383 c:\users\floyd\documents\cpp\deep\include\message.h
+	<SDL.h>
+
+1580412322 source:c:\users\floyd\documents\cpp\deep\src\obj3d.cpp
+	"Obj3D.h"
+	<iostream>
+
+1580401792 c:\users\floyd\documents\cpp\deep\include\obj3d.h
+	<vector>
+	<string>
+	<GL/glew.h>
+	<SDL.h>
+
+1578842684 c:\users\floyd\documents\c\func\file.h
+
+1580319364 source:c:\users\floyd\documents\cpp\deep\src\file.cpp
+	"File.h"
+	<fstream>
+	<iostream>
+	<string>
+
+1580319573 c:\users\floyd\documents\cpp\deep\include\file.h
+	<string>
+
+1580563883 source:c:\users\floyd\documents\cpp\deep\src\iofile.cpp
+	"IOFile.h"
+	<fstream>
+	<iostream>
+	<sstream>
+	<string>
+	<cstdio>
+	<errno.h>
+	<sys/stat.h>
+
+1580563730 c:\users\floyd\documents\cpp\deep\include\iofile.h
+	<vector>
+	<string>
+	"IOHandle.h"
+
+1580391171 c:\users\floyd\documents\cpp\deep\include\obj3dscanner.h
+	<string>
+
+1580477226 source:c:\users\floyd\documents\cpp\deep\src\obj3dscanner.cpp
+	"Obj3DScanner.h"
+	<iostream>
+	"IOFile.h"
+
+1580415938 source:c:\users\floyd\documents\cpp\deep\src\obj3dloader.cpp
+	"Obj3DLoader.h"
+	<iostream>
+	<sstream>
+	<string>
+
+1580402393 c:\users\floyd\documents\cpp\deep\include\obj3dloader.h
+	<string>
+	"IOFile.h"
+	"Matrices.h"
+	"Obj3D.h"
+	"Obj3DScanner.h"
+
+1580563686 c:\users\floyd\documents\cpp\deep\include\iohandle.h
+	<string>
+
+1580477332 source:c:\users\floyd\documents\cpp\deep\src\iohandle.cpp
+	"IOHandle.h"
+
+1580477314 source:c:\users\floyd\documents\cpp\deep\src\iosocket.cpp
+	"IOSocket.h"
+
+1580478507 c:\users\floyd\documents\cpp\deep\include\iosocket.h
+	"IOHandle.h"
+
+1435247851 c:\mingw\x86_64-w64-mingw32\include\fcntl.h
+	<crtdefs.h>
+	<io.h>
+
+1580558300 source:c:\users\floyd\documents\cpp\deep\src\iodir.cpp
+	"IODir.h"
+	<dirent.h>
+	<iostream>
+
+1580549649 c:\users\floyd\documents\cpp\deep\include\iodir.h
+	<dirent.h>
+	<string>
+	"IOHandle.h"
+

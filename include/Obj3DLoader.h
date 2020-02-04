@@ -1,0 +1,62 @@
+#ifndef OBJ3DLOADER_H
+#define OBJ3DLOADER_H
+
+#include <string>
+
+#include "IOFile.h"
+#include "Matrices.h"
+#include "Obj3D.h"
+#include "Obj3DScanner.h"
+
+typedef struct {
+  Vector3 v;
+  Vector2 vt;
+  Vector3 vn;
+} Point;
+
+
+class Obj3DLoader
+{
+  public:
+    Obj3DLoader();
+    ~Obj3DLoader();
+
+    Obj3D* load(std::string filename);
+
+  protected:
+
+  private:
+    Obj3DScanner* scanner;
+    std::string filename;
+
+    std::vector<Vector3> indexed_v;
+    std::vector<Vector2> indexed_vt;
+    std::vector<Vector3> indexed_vn;
+    std::vector<Point> linear_points;
+
+    std::vector<int> subobject_start;
+    std::vector<int> subobject_length;
+
+    float* make_v_array();
+    float* make_vt_array();
+    float* make_vn_array();
+
+    std::vector<Point> compute_vn(std::vector<Point> face);
+    void add_triangle(std::vector<Point> face);
+    void add_quad(std::vector<Point> face);
+
+    std::vector<std::string> split_tokens(std::string str);
+    std::vector<float> tokens_to_floats(std::vector<std::string>);
+    void get_keyword();
+    void get_mtllib();
+    void get_usemtl();
+    void get_f();
+    void get_s();
+    void get_o();
+    void get_v();
+    void get_vt();
+    void get_vn();
+
+};
+
+#endif // OBJ3DLOADER_H
