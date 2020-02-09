@@ -16,14 +16,14 @@ IOFile::IOFile()
   filename = "";
   handle = nullptr;
   bytes_read = -1;
-  std::cout << "IOFile " << this << " created" << std::endl;
+  //std::cout << "IOFile " << this << " created" << std::endl;
 }
 
 IOFile::~IOFile()
 {
   //dtor
   if (handle != nullptr) close();
-  std::cout << "IOFile " << this << " destroyed" << std::endl;
+  //std::cout << "IOFile " << this << " destroyed" << std::endl;
 }
 
 
@@ -49,7 +49,7 @@ IOFile* IOFile::stat(std::string filename) {
 
 // Static method
 IOFile* IOFile::open(std::string filename, std::string mode) {
-  std::cout << "IOFile::open() opening " << filename << std::endl;
+  //std::cout << "IOFile::open() opening " << filename << std::endl;
   IOFile* file = new IOFile();
 
   file->filename = filename;
@@ -132,7 +132,7 @@ void IOFile::close() {
   handle = nullptr;
   buffer = "";
   closed = true;
-  std::cout << "IOFile::close() " << this << " closed " << filename << std::endl;
+  //std::cout << "IOFile::close() " << this << " closed " << filename << std::endl;
 }
 
 

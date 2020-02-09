@@ -8,14 +8,14 @@ IODir::IODir()
   //ctor
   handle = nullptr;
   dirname = "";
-  std::cout << "IODir() " << this << " created" << std::endl;
+  //std::cout << "IODir() " << this << " created" << std::endl;
 }
 
 IODir::~IODir()
 {
   //dtor
   if (handle != nullptr) close();
-  std::cout << "IODir() " << this << " destroyed" << std::endl;
+  //std::cout << "IODir() " << this << " destroyed" << std::endl;
 }
 
 
@@ -23,7 +23,7 @@ IODir::~IODir()
 // Static method
 IODir* IODir::open(std::string dirname)
 {
-  std::cout << "IODir::open() opening " << dirname << std::endl;
+  //std::cout << "IODir::open() opening " << dirname << std::endl;
   IODir* dir = new IODir;
   dir->dirname = dirname;
   dir->handle = ::opendir(dirname.c_str());
@@ -54,6 +54,6 @@ void IODir::close()
   ::closedir(handle);
   handle = nullptr;
   closed = true;
-  std::cout << "IODir::close() closed " << dirname << std::endl;
+  //std::cout << "IODir::close() closed " << dirname << std::endl;
 }
 
