@@ -330,11 +330,6 @@ int GameThread(void* ptr)
   std::cout << "Initialize VM D" << std::endl;
   Machine vm_D = Machine(ortho_shader, font);
 
-//  Matrix4 m_ortho = Matrix4();
-//  std::cout << m_ortho << std::endl;
-//  m_ortho = Matrix4().Ortho(0.0f, 320.0f, 200.0f, 0.0f, -1.0f, 1.0f);
-//  std::cout << m_ortho << std::endl;
-//  m_ortho *= Matrix4().Ortho(-10.0f, 20.0f, 20.0f, -10.0f, -1.0f, 1.0f);
 
   Matrix4 m_scene = Matrix4();
   Matrix4 m_model = Matrix4();
@@ -515,7 +510,6 @@ int GameThread(void* ptr)
       m_model *= Matrix4().rotate(-15, Vector3(0.0f, 1.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().rotate(-15, Vector3(1.0f, 0.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().translate(-0.5f, 0.0f, 0.0f); // Rotation center
-//      render_scene(m_scene, m_model, vertexBufferID, scene_shader, vm_A.display.textureID, pan_x, pan_y);
       render_scene(m_scene, m_model, vertexBufferID, scene_shader, vm_A.display.textureID, test_object);
 
       m_model = Matrix4();
@@ -523,7 +517,6 @@ int GameThread(void* ptr)
       m_model *= Matrix4().rotate(+15, Vector3(0.0f, 1.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().rotate(-15, Vector3(1.0f, 0.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().translate(-0.5f, 0.0f, 0.0f); // Rotation center
-//      render_scene(m_scene, m_model, vertexBufferID, scene_shader, vm_B.display.textureID, pan_x, pan_y);
       render_scene(m_scene, m_model, vertexBufferID, scene_shader, vm_B.display.textureID, test_object);
 
       m_model = Matrix4();
@@ -531,7 +524,6 @@ int GameThread(void* ptr)
       m_model *= Matrix4().rotate(-15, Vector3(0.0f, 1.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().rotate(-30, Vector3(1.0f, 0.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().translate(-0.5f, 0.0f, 0.0f); // Rotation center
-//      render_scene(m_scene, m_model, vertexBufferID, scene_shader, vm_A.display.textureID, pan_x, pan_y);
       render_scene(m_scene, m_model, vertexBufferID, scene_shader, vm_C.display.textureID, test_object);
 
       m_model = Matrix4();
@@ -539,7 +531,6 @@ int GameThread(void* ptr)
       m_model *= Matrix4().rotate(+15, Vector3(0.0f, 1.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().rotate(-30, Vector3(1.0f, 0.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().translate(-0.5f, 0.0f, 0.0f); // Rotation center
-//      render_scene(m_scene, m_model, vertexBufferID, scene_shader, vm_B.display.textureID, pan_x, pan_y);
       render_scene(m_scene, m_model, vertexBufferID, scene_shader, vm_D.display.textureID, test_object);
 
       SDL_GL_SwapWindow(window);

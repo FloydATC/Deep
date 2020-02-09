@@ -19,6 +19,7 @@ class IODir : public IOHandle
   protected:
 
   private:
+    std::string dirname;
     DIR* handle;
 
 };

@@ -403,20 +403,20 @@ int chars(const char* str) {
 uint16_t Machine::add_iohandle(IOHandle* ptr)
 {
   // Find an available handle
-  //std::cout << "Machine::add_iohandle() ptr=" << ptr << std::endl;
+  std::cout << "Machine::add_iohandle() ptr=" << ptr << std::endl;
   for (uint16_t i=0; i<iohandles.size(); i++) {
-    //std::cout << "Machine::add_iohandle() check handle=" << i+1 << std::endl;
+    std::cout << "Machine::add_iohandle() check handle=" << i+1 << std::endl;
     if (iohandles[i]->is_closed()) {
-      //std::cout << "Machine::add_iohandle() delete handle=" << i+1 << std::endl;
+      std::cout << "Machine::add_iohandle() delete handle=" << i+1 << std::endl;
       delete iohandles[i];
       iohandles[i] = ptr;
-      //std::cout << "Machine::add_iohandle() reused handle=" << i+1 << std::endl;
+      std::cout << "Machine::add_iohandle() reused handle=" << i+1 << std::endl;
       return i+1; // Handles are 1 indexed
     }
   }
   // No available handles so append it
   iohandles.push_back(ptr);
-  //std::cout << "Machine::add_iohandle() appended handle=" << iohandles.size() << std::endl;
+  std::cout << "Machine::add_iohandle() appended handle=" << iohandles.size() << std::endl;
   return iohandles.size(); // Handles are 1 indexed
 }
 
@@ -1180,11 +1180,11 @@ bool Machine::func_file_owner(FunC::VM* vm, int argc, FunC::Value argv[], FunC::
   IOFile* file = IOFile::stat(filename);
   if (file->last_error() == 0) {
     *result = FunC::to_numberValue(file->uid());
-    return true;
   } else {
     *result = FunC::to_numberValue(-1);
-    return true; // The call succeeded but returned an error
   }
+  delete file;
+  return true;
 }
 
 
@@ -1195,11 +1195,11 @@ bool Machine::func_file_group(FunC::VM* vm, int argc, FunC::Value argv[], FunC::
   IOFile* file = IOFile::stat(filename);
   if (file->last_error() == 0) {
     *result = FunC::to_numberValue(file->gid());
-    return true;
   } else {
     *result = FunC::to_numberValue(-1);
-    return true; // The call succeeded but returned an error
   }
+  delete file;
+  return true;
 }
 
 
@@ -1207,7 +1207,7 @@ bool Machine::func_file_type(FunC::VM* vm, int argc, FunC::Value argv[], FunC::V
 {
   if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
   char* filename = FunC::to_cstring(argv[0]);
-  std::cout << "Machine::func_file_type() name=" << filename << std::endl;
+  //std::cout << "Machine::func_file_type() name=" << filename << std::endl;
   IOFile* file = IOFile::stat(filename);
   std::string res = "unknown";
   if (file->last_error() == 0) {
@@ -1215,13 +1215,13 @@ bool Machine::func_file_type(FunC::VM* vm, int argc, FunC::Value argv[], FunC::V
     if (S_ISREG(filemode)) res = "file";
     if (S_ISDIR(filemode)) res = "directory";
     *result = FunC::to_stringValue(vm, res.c_str());
-    std::cout << "Machine::func_file_type() type=" << res << std::endl;
-    return true;
+    //std::cout << "Machine::func_file_type() type=" << res << std::endl;
   } else {
     *result = FunC::to_numberValue(-1);
-    std::cout << "Machine::func_file_type() stat failed" << std::endl;
-    return true; // The call succeeded but returned an error
+    //std::cout << "Machine::func_file_type() stat failed" << std::endl;
   }
+  delete file;
+  return true;
 }
 
 
@@ -1232,11 +1232,11 @@ bool Machine::func_file_size(FunC::VM* vm, int argc, FunC::Value argv[], FunC::V
   IOFile* file = IOFile::stat(filename);
   if (file->last_error() == 0) {
     *result = FunC::to_numberValue(file->size());
-    return true;
   } else {
     *result = FunC::to_numberValue(-1);
-    return true; // The call succeeded but returned an error
   }
+  delete file;
+  return true;
 }
 
 
@@ -1247,11 +1247,11 @@ bool Machine::func_file_atime(FunC::VM* vm, int argc, FunC::Value argv[], FunC::
   IOFile* file = IOFile::stat(filename);
   if (file->last_error() == 0) {
     *result = FunC::to_numberValue(file->atime());
-    return true;
   } else {
     *result = FunC::to_numberValue(-1);
-    return true; // The call succeeded but returned an error
   }
+  delete file;
+  return true;
 }
 
 
@@ -1262,11 +1262,11 @@ bool Machine::func_file_mtime(FunC::VM* vm, int argc, FunC::Value argv[], FunC::
   IOFile* file = IOFile::stat(filename);
   if (file->last_error() == 0) {
     *result = FunC::to_numberValue(file->mtime());
-    return true;
   } else {
     *result = FunC::to_numberValue(-1);
-    return true; // The call succeeded but returned an error
   }
+  delete file;
+  return true;
 }
 
 
@@ -1277,11 +1277,11 @@ bool Machine::func_file_ctime(FunC::VM* vm, int argc, FunC::Value argv[], FunC::
   IOFile* file = IOFile::stat(filename);
   if (file->last_error() == 0) {
     *result = FunC::to_numberValue(file->ctime());
-    return true;
   } else {
     *result = FunC::to_numberValue(-1);
-    return true; // The call succeeded but returned an error
   }
+  delete file;
+  return true;
 }
 
 
