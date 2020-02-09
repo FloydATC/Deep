@@ -403,20 +403,20 @@ int chars(const char* str) {
 uint16_t Machine::add_iohandle(IOHandle* ptr)
 {
   // Find an available handle
-  std::cout << "Machine::add_iohandle() ptr=" << ptr << std::endl;
+  //std::cout << "Machine::add_iohandle() ptr=" << ptr << std::endl;
   for (uint16_t i=0; i<iohandles.size(); i++) {
-    std::cout << "Machine::add_iohandle() check handle=" << i+1 << std::endl;
+    //std::cout << "Machine::add_iohandle() check handle=" << i+1 << std::endl;
     if (iohandles[i]->is_closed()) {
-      std::cout << "Machine::add_iohandle() delete handle=" << i+1 << std::endl;
+      //std::cout << "Machine::add_iohandle() delete handle=" << i+1 << std::endl;
       delete iohandles[i];
       iohandles[i] = ptr;
-      std::cout << "Machine::add_iohandle() reused handle=" << i+1 << std::endl;
+      //std::cout << "Machine::add_iohandle() reused handle=" << i+1 << std::endl;
       return i+1; // Handles are 1 indexed
     }
   }
   // No available handles so append it
   iohandles.push_back(ptr);
-  std::cout << "Machine::add_iohandle() appended handle=" << iohandles.size() << std::endl;
+  //std::cout << "Machine::add_iohandle() appended handle=" << iohandles.size() << std::endl;
   return iohandles.size(); // Handles are 1 indexed
 }
 
