@@ -5,9 +5,10 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-//#include <fcntl.h>
 #include <cstdio>
 #include <errno.h>
+//#include <fcntl.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 
 IOFile::IOFile()
