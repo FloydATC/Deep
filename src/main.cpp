@@ -23,6 +23,7 @@
 #include "Machine.h"
 #include "Message.h"
 #include "Obj3DLoader.h"
+#include "ShaderProgram.h"
 #include "utf8.h"
 
 #define WIDTH 640
@@ -98,77 +99,6 @@ GLuint load_texture()
   // ...
 
   return TextureID;
-}
-
-
-GLuint compile_shader(const char* vert_shader, const char* frag_shader)
-{
-  // Load GLSL vertex+fragment shaders
-//  IOFile vert_glsl = IOFile(vert_shader);
-//  IOFile frag_glsl = IOFile(frag_shader);
-  IOFile file;
-  std::string vert_glsl = file.slurp(vert_shader);
-  std::string frag_glsl = file.slurp(frag_shader);
-
-
-  // Compile shaders
-  GLint success;
-  int maxLength;
-  GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-  const char *c_vert_glsl = vert_glsl.c_str();
-  glShaderSource(vertexShaderID, 1, &c_vert_glsl, nullptr);
-  glCompileShader(vertexShaderID);
-  glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    GLchar InfoLog[1024];
-    glGetShaderInfoLog(vertexShaderID, sizeof(InfoLog), NULL, InfoLog);
-    std::cerr << vert_glsl << std::endl;
-    std::cerr << "Error compiling vertex shader: " << InfoLog << std::endl;
-  }
-  GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-  const char *c_frag_glsl = frag_glsl.c_str();
-  glShaderSource(fragmentShaderID, 1, &c_frag_glsl, nullptr);
-  glCompileShader(fragmentShaderID);
-  glGetShaderiv(fragmentShaderID, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    GLchar InfoLog[1024];
-    glGetShaderInfoLog(fragmentShaderID, sizeof(InfoLog), NULL, InfoLog);
-    std::cerr << frag_glsl << std::endl;
-    std::cerr << "Error compiling fragment shader: " << InfoLog << std::endl;
-  }
-  check_gl("compiling shaders");
-
-  // Link compiled shaders into a shaderprogram
-  GLuint shaderProgramID = glCreateProgram();
-  glAttachShader(shaderProgramID, vertexShaderID);
-  glAttachShader(shaderProgramID, fragmentShaderID);
-  glLinkProgram(shaderProgramID);
-  glGetProgramiv(shaderProgramID, GL_LINK_STATUS, (int *)&success);
-  if(!success)
-  {
-    /* Noticed that glGetProgramiv is used to get the length for a shader program, not glGetShaderiv. */
-    glGetProgramiv(shaderProgramID, GL_INFO_LOG_LENGTH, &maxLength);
-
-    /* The maxLength includes the NULL character */
-    GLchar* InfoLog = (char *)malloc(maxLength);
-
-    /* Notice that glGetProgramInfoLog, not glGetShaderInfoLog. */
-    glGetProgramInfoLog(shaderProgramID, maxLength, &maxLength, InfoLog);
-
-    std::cerr << "Error linking shader program: " << InfoLog << std::endl;
-    free(InfoLog);
-  }
-
-  check_gl("linking shaders");
-
-  // Dispose of the shader objects (they have been compiled into shaderProgram now)
-  glDetachShader(shaderProgramID, vertexShaderID);
-  glDetachShader(shaderProgramID, fragmentShaderID);
-  glDeleteShader(vertexShaderID);
-  glDeleteShader(fragmentShaderID);
-  check_gl("deleting shaders");
-
-  return shaderProgramID;
 }
 
 
@@ -304,8 +234,13 @@ int GameThread(void* ptr)
   glBindVertexArray(VertexArrayObjectID);
 
   //std::cout << "Load shaders" << std::endl;
-  GLuint scene_shader = compile_shader("glsl/scene_vert.glsl", "glsl/scene_frag.glsl");
-  GLuint ortho_shader = compile_shader("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
+  //GLuint scene_shader = compile_shader("glsl/scene_vert.glsl", "glsl/scene_frag.glsl");
+  //GLuint ortho_shader = compile_shader("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
+  ShaderProgram scene_shader = ShaderProgram("glsl/scene_vert.glsl", "glsl/scene_frag.glsl");
+  if (!scene_shader.success) { std::cerr << scene_shader.error; running = false; }
+  ShaderProgram ortho_shader = ShaderProgram("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
+  if (!ortho_shader.success) { std::cerr << ortho_shader.error; running = false; }
+
   GLuint vertexBufferID = opengl_prepare_vbo();
 
   Obj3DLoader* obj_loader = new Obj3DLoader();
@@ -313,22 +248,22 @@ int GameThread(void* ptr)
 //  Obj3D* test_object = obj_loader->load("C:\\Users\\floyd\\Documents\\Cpp\\Deep\\obj\\cube.obj");
   delete obj_loader;
 
-  test_object->set_shader_v(glGetAttribLocation(scene_shader, "vertex"));
-  test_object->set_shader_vt(glGetAttribLocation(scene_shader, "uv"));
-  test_object->set_shader_vn(glGetAttribLocation(scene_shader, "normal"));
+  test_object->set_shader_v(glGetAttribLocation(scene_shader.id(), "vertex"));
+  test_object->set_shader_vt(glGetAttribLocation(scene_shader.id(), "uv"));
+  test_object->set_shader_vn(glGetAttribLocation(scene_shader.id(), "normal"));
 
   std::cout << "Initialize VM A" << std::endl;
-  Machine vm_A = Machine(ortho_shader, font);
+  Machine vm_A = Machine(ortho_shader.id(), font);
   Machine* focused = &vm_A;
 
   std::cout << "Initialize VM B" << std::endl;
-  Machine vm_B = Machine(ortho_shader, font);
+  Machine vm_B = Machine(ortho_shader.id(), font);
 
   std::cout << "Initialize VM C" << std::endl;
-  Machine vm_C = Machine(ortho_shader, font);
+  Machine vm_C = Machine(ortho_shader.id(), font);
 
   std::cout << "Initialize VM D" << std::endl;
-  Machine vm_D = Machine(ortho_shader, font);
+  Machine vm_D = Machine(ortho_shader.id(), font);
 
 
   Matrix4 m_scene = Matrix4();
@@ -510,28 +445,28 @@ int GameThread(void* ptr)
       m_model *= Matrix4().rotate(-15, Vector3(0.0f, 1.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().rotate(-15, Vector3(1.0f, 0.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().translate(-0.5f, 0.0f, 0.0f); // Rotation center
-      render_scene(m_scene, m_model, vertexBufferID, scene_shader, vm_A.display.textureID, test_object);
+      render_scene(m_scene, m_model, vertexBufferID, scene_shader.id(), vm_A.display.textureID, test_object);
 
       m_model = Matrix4();
       m_model *= Matrix4().translate(+0.5f, 0.0f, 0.0f); // Relative position
       m_model *= Matrix4().rotate(+15, Vector3(0.0f, 1.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().rotate(-15, Vector3(1.0f, 0.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().translate(-0.5f, 0.0f, 0.0f); // Rotation center
-      render_scene(m_scene, m_model, vertexBufferID, scene_shader, vm_B.display.textureID, test_object);
+      render_scene(m_scene, m_model, vertexBufferID, scene_shader.id(), vm_B.display.textureID, test_object);
 
       m_model = Matrix4();
       m_model *= Matrix4().translate(-0.5f, 0.8f, 0.0f); // Relative position
       m_model *= Matrix4().rotate(-15, Vector3(0.0f, 1.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().rotate(-30, Vector3(1.0f, 0.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().translate(-0.5f, 0.0f, 0.0f); // Rotation center
-      render_scene(m_scene, m_model, vertexBufferID, scene_shader, vm_C.display.textureID, test_object);
+      render_scene(m_scene, m_model, vertexBufferID, scene_shader.id(), vm_C.display.textureID, test_object);
 
       m_model = Matrix4();
       m_model *= Matrix4().translate(+0.5f, 0.8f, 0.0f); // Relative position
       m_model *= Matrix4().rotate(+15, Vector3(0.0f, 1.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().rotate(-30, Vector3(1.0f, 0.0f, 0.0f)); // Rotation angle and axis
       m_model *= Matrix4().translate(-0.5f, 0.0f, 0.0f); // Rotation center
-      render_scene(m_scene, m_model, vertexBufferID, scene_shader, vm_D.display.textureID, test_object);
+      render_scene(m_scene, m_model, vertexBufferID, scene_shader.id(), vm_D.display.textureID, test_object);
 
       SDL_GL_SwapWindow(window);
       //SDL_Delay(0);
