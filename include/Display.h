@@ -1,8 +1,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include <GL/glew.h>
-#include <SDL_opengl.h>
+
+#include "GFX.h"
 
 #include "Matrices.h"
 #include "Fontcache.h"

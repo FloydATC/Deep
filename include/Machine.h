@@ -7,7 +7,7 @@ namespace FunC {
   }
 }
 
-//#include <SDL_opengl.h>
+#include "GFX.h"
 #include <SDL_ttf.h>
 
 #include "Display.h"

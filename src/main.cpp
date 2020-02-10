@@ -13,7 +13,7 @@
 #include <mutex>
 #include <atomic>
 
-#include <GL/glew.h>
+#include "GFX.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>

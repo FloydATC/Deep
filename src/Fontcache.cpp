@@ -81,7 +81,7 @@ GLuint Fontcache::glyph(int codepoint)
     //SDL_Surface* surface = TTF_RenderUTF8_Solid(font, str.c_str(), fcolor);
     SDL_Surface* surface = TTF_RenderUTF8_Solid(font, res, fcolor);
     //std::cout << "glyph() Initial surface=" << surface << std::endl;
-    rgba_surface = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32, 0);
+    rgba_surface = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA8888, 0);
     //std::cout << "glyph() Converted surface=" << rgba_surface << std::endl;
     // This trick works for monospace fonts only
     width = rgba_surface->w;

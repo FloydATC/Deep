@@ -3,7 +3,7 @@
 #include "Display.h"
 #include "Fontcache.h"
 #include "utf8.h"
-//#include <GL/glew.h>
+//#include <glew.h>
 //#include "SDL_opengl.h"
 //#include "SDL.h"
 
@@ -610,14 +610,14 @@ float Display::clampf(float value, float minimum, float maximum) {
   return (value < minimum ? minimum : ( value > maximum ? maximum : value ));
 }
 
-inline void Display::cls()
+void Display::cls()
 {
   row = 0;
   col = 0;
   cls(0, 0, rows-1, cols-1, 32);
 }
 
-inline void Display::cls(int r1, int c1, int r2, int c2)
+void Display::cls(int r1, int c1, int r2, int c2)
 {
   cls(r1, c1, r2, c2, 32);
 }

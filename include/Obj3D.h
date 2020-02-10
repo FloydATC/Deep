@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include <GL/glew.h>
+#include "GFX.h"
 #include <SDL.h>
 
 class Obj3D

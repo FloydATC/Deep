@@ -2,10 +2,10 @@
 #define FONTCACHE_H
 
 #include <unordered_map>
+#include "GFX.h"
 #include <SDL.h>
-#include <SDL_opengl.h>
 #include <SDL_ttf.h>
-
+#include <SDL_image.h>
 
 
 class Fontcache
