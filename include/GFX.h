@@ -7,6 +7,7 @@
 //#include <stdlib.h> 
 
 typedef __PTRDIFF_TYPE__ ptrdiff_t;
+//typedef signed long long ptrdiff_t;
 
 //#include <stddef.h>
 //#include <cstdlib>
