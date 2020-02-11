@@ -7,6 +7,22 @@
 #include "GFX.h"
 #include <SDL.h>
 
+/*
+
+  An Obj3D encapsulates the contents of a Wavefront .OBJ file
+  represented by one or more vertex array buffers:
+
+  - vertex positions
+  - uv texture coordinates (optional)
+  - vertex normals (optional)
+
+  An Obj3D object may consist of one or more subobjects
+  Quad faces are automatically converted to triangle polygons
+  Missing vertex normals are NOT YET calculated automatically (TODO)
+
+*/
+
+
 class Obj3D
 {
   public:

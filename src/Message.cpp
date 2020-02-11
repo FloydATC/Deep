@@ -1,13 +1,7 @@
 #include <iostream>
 #include "Message.h"
 
-/*
-Message::Message()
-{
-  //ctor
-  //std::cout << "Message created: " << this << std::endl;
-}
-*/
+
 
 Message::Message(Type type)
 {
@@ -22,12 +16,6 @@ Message::~Message()
   //std::cout << "Message destroyed: " << this << std::endl;
 }
 
-/* Y U no work?!
-std::ostream& Message::operator <<(std::ostream& stream) { //, const Message& msg) {
-  stream << "<Message type=" << this->type << ">";
-  return stream;
-}
-*/
 
 std::ostream& operator <<(std::ostream& stream, const Message* msg) {
   switch (msg->type) {

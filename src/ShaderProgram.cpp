@@ -16,6 +16,7 @@ ShaderProgram::~ShaderProgram()
 {
   //dtor
   glDeleteProgram(this->programId);
+  //std::cout << "shaderProgram() destroyed" << std::endl;
 }
 
 
@@ -44,6 +45,7 @@ void ShaderProgram::compile()
   glAttachShader(programId, fs->id());
   glLinkProgram(programId);
   glGetProgramiv(programId, GL_LINK_STATUS, (int *)&this->success);
+  //if(success) std::cout << "ShaderProgram " << programId << " successfully linked" << std::endl;
   if(!success) fetchError();
 //  {
 //    int maxLength = 1024;
