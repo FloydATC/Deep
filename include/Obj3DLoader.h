@@ -51,11 +51,13 @@ class Obj3DLoader
     void get_mtllib();
     void get_usemtl();
     void get_f();
+    void get_l();
     void get_s();
     void get_o();
     void get_v();
     void get_vt();
     void get_vn();
+    void get_vp();
 
 };
 

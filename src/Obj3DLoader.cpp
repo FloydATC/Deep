@@ -116,28 +116,30 @@ void Obj3DLoader::get_keyword()
 {
   std::string keyword = scanner->get_keyword();
   //std::cout << "Obj3DLoader::get_keyword() got keyword=" << keyword << std::endl;
-  if (keyword == "mtllib") { get_mtllib(); return; }
-  if (keyword == "usemtl") { get_usemtl(); return; }
-  if (keyword == "f") { get_f(); return; }
-  if (keyword == "o") { get_o(); return; }
-  if (keyword == "s") { get_s(); return; }
-  if (keyword == "v") { get_v(); return; }
-  if (keyword == "vt") { get_vt(); return; }
-  if (keyword == "vn") { get_vn(); return; }
+  if (keyword == "mtllib") { get_mtllib(); return; } // material definition *IGNORED*
+  if (keyword == "usemtl") { get_usemtl(); return; } // material reference *IGNORED*
+  if (keyword == "f") { get_f(); return; } // face (triangle or quad)
+  if (keyword == "l") { get_l(); return; } // line element *IGNORED*
+  if (keyword == "o") { get_o(); return; } // object (or subobject)
+  if (keyword == "s") { get_s(); return; } // smooth shading group (for vertex normal calculation) *IGNORED*
+  if (keyword == "v") { get_v(); return; } // vertex coordinate xyz
+  if (keyword == "vt") { get_vt(); return; } // vertex texture coordinate uv
+  if (keyword == "vn") { get_vn(); return; } // vertex normal coordinate xyz
+  if (keyword == "vp") { get_vp(); return; } // vertex parameter coordinate xyz *IGNORED*
 
   std::cout << "Obj3DLoader::get_keyword() unhandled keyword=" << keyword << std::endl;
 }
 
 void Obj3DLoader::get_mtllib()
 {
-  // Ignore for now
+  // Define material - Ignore for now
   while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
   scanner->consume('\n');
 }
 
 void Obj3DLoader::get_usemtl()
 {
-  // Ignore for now
+  // Use material - Ignore for now
   while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
   scanner->consume('\n');
 }
@@ -180,6 +182,13 @@ void Obj3DLoader::get_f()
     default:
       std::cout << "Obj3DLoader::get_f() invalid face with " << face.size() << " points" << std::endl;
   }
+  scanner->consume('\n');
+}
+
+void Obj3DLoader::get_l()
+{
+  // Line element - Ignore for now
+  while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
   scanner->consume('\n');
 }
 
@@ -226,6 +235,14 @@ void Obj3DLoader::get_vn()
   indexed_vn.push_back(Vector3(x, y, z));
   scanner->consume('\n');
 }
+
+void Obj3DLoader::get_vp()
+{
+  // Vertex parameter - Ignore for now
+  while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
+  scanner->consume('\n');
+}
+
 
 std::vector<Point> Obj3DLoader::compute_vn(std::vector<Point> face)
 {
