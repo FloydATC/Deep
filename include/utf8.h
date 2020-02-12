@@ -14,6 +14,7 @@ class utf8
   protected:
 
   private:
+    static int get_codepoint(const char* str, int offset, int* bytes);
 };
 
 #endif // UTF8_H

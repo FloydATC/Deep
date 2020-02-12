@@ -207,45 +207,19 @@ void Display::draw_point(int x, int y)
 }
 
 
+
 void Display::print(const char* str)
 {
   check_gl("print() enter");
   int len = strlen(str);
   //std::cout << "Display::print() str=" << str << " len=" << len << std::endl;
   if (len==0) return;
-  int codepoint;
+  //int codepoint;
   //SDL_Surface* block = font.glyph(0x2588); // Use for drawing the background
   GLuint block = font.glyph(0x2588); // Use for drawing the background
-
-  int i = 0;
   hide_cursor();
-  while (i<len) {
-
-    // Decode UTF8 into integer codepoint
-    unsigned char u0 = str[i+0];
-    if (u0>=0 && u0<=127) {
-      i+=1; codepoint = u0; // Plain ASCII
-    } else {
-      if (len<2) return; // Invalid
-      unsigned char u1 = str[i+1];
-      if (u0>=192 && u0<=223) {
-        i+=2; codepoint = (u0-192)*64 + (u1-128);
-      } else {
-        if (str[i+0]==0xed && (str[i+1] & 0xa0) == 0xa0) return; //code points, 0xd800 to 0xdfff
-        if (len<3) return; // Invalid
-        unsigned char u2 = str[i+2];
-        if (u0>=224 && u0<=239) {
-          i+=3; codepoint = (u0-224)*4096 + (u1-128)*64 + (u2-128);
-        } else {
-          if (len<4) return; // Invalid
-          unsigned char u3 = str[i+3];
-          if (u0>=240 && u0<=247) {
-            i+=4; codepoint = (u0-240)*262144 + (u1-128)*4096 + (u2-128)*64 + (u3-128);
-          }
-        }
-      }
-    }
-
+  for (const auto& codepoint : utf8::codepoints(str)) {
+    //std::cout << "cp=" << codepoint << std::endl;
     // If printable, draw background then codepoint glyph
     if (codepoint == 10) {
       col=0; // \n

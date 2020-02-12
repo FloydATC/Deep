@@ -1,6 +1,8 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
+#include <string>
+
 #include <SDL.h> // For SDL_Key enumerations
 
 class Message
