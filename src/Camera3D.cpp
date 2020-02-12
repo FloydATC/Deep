@@ -9,13 +9,13 @@ Camera3D::Camera3D()
   this->yaw = 0.0;
   this->pos = Vector3(0.0, 0.0, -1.0);
   this->need_recalc = true;
-  std::cout << "Camera3D() created" << std::endl;
+  //std::cout << "Camera3D() created" << std::endl;
 }
 
 Camera3D::~Camera3D()
 {
   //dtor
-  std::cout << "Camera3D() destroyed" << std::endl;
+  //std::cout << "Camera3D() destroyed" << std::endl;
 }
 
 
@@ -40,13 +40,13 @@ Matrix4 Camera3D::matrix()
 
 void Camera3D::recalculate()
 {
-  std::cout << "Camera3D::recalculate() begin" << std::endl;
+  //std::cout << "Camera3D::recalculate() begin" << std::endl;
   this->mat = Matrix4().Perspective(this->fov, this->aspect, 0.1f, 100.0f);
   this->mat *= Matrix4().rotate(this->pitch, Vector3(1.0f, 0.0f, 0.0f));
   this->mat *= Matrix4().rotate(this->yaw, Vector3(0.0f, 1.0f, 0.0f));
-  this->mat *= Matrix4().rotate(180, Vector3(0.0f, 0.0f, 1.0f)); // Why is the scene up-side-down??
-  this->mat *= Matrix4().translate(Vector3( this->pos.x * -1, this->pos.y * -1, this->pos.z * -1 ));
-  std::cout << "Camera3D::recalculate() done" << std::endl;
+  //this->mat *= Matrix4().rotate(180, Vector3(0.0f, 0.0f, 1.0f)); // Why is the scene up-side-down??
+  this->mat *= Matrix4().translate(Vector3( this->pos.x, this->pos.y, this->pos.z));
+  //std::cout << "Camera3D::recalculate() done" << std::endl;
   this->need_recalc = false;
 }
 
@@ -61,7 +61,7 @@ void Camera3D::setDimensions(int width, int height)
   this->width = width;
   this->height = height;
   this->aspect = (float) width / (float) height;
-  std::cout << "Camera3D::setDimensions() width=" << width << " height=" << height << " ratio=" << this->aspect << std::endl;
+  //std::cout << "Camera3D::setDimensions() width=" << width << " height=" << height << " ratio=" << this->aspect << std::endl;
   this->need_recalc = true;
 }
 
@@ -71,7 +71,7 @@ void Camera3D::setAspect(float aspect_ratio)
   // Clamp to sane values
   if (this->aspect > 10.0) this->aspect = 10.0;
   if (this->aspect < 0.01) this->aspect = 0.01;
-  std::cout << "Camera3D::setAspect() ratio=" << aspect_ratio << std::endl;
+  //std::cout << "Camera3D::setAspect() ratio=" << aspect_ratio << std::endl;
   this->need_recalc = true;
 }
 
@@ -97,7 +97,7 @@ void Camera3D::setFOV(float degrees)
   // Clamp to sane values
   if (this->fov > 140) this->fov = 140;
   if (this->fov < 20) this->fov = 20;
-  std::cout << "Camera3D::setFOV() degrees=" << degrees << " fov=" << fov << std::endl;
+  //std::cout << "Camera3D::setFOV() degrees=" << degrees << " fov=" << fov << std::endl;
   this->need_recalc = true;
 }
 
@@ -107,7 +107,7 @@ void Camera3D::addFOV(float degrees)
   // Clamp to sane values
   if (this->fov > 140) this->fov = 140;
   if (this->fov < 20) this->fov = 20;
-  std::cout << "Camera3D::addFOV() degrees=" << degrees << " fov=" << fov << std::endl;
+  //std::cout << "Camera3D::addFOV() degrees=" << degrees << " fov=" << fov << std::endl;
   this->need_recalc = true;
 }
 
@@ -122,7 +122,7 @@ void Camera3D::setPitch(float degrees)
   // Clamp to sane values
   if (this->pitch > 90.0) this->pitch = 90;
   if (this->pitch < -90.0) this->pitch = -90;
-  std::cout << "Camera3D::setPitch() degrees=" << degrees << " pitch=" << pitch << std::endl;
+  //std::cout << "Camera3D::setPitch() degrees=" << degrees << " pitch=" << pitch << std::endl;
   this->need_recalc = true;
 }
 
@@ -132,7 +132,7 @@ void Camera3D::addPitch(float degrees)
   // Clamp to sane values
   if (this->pitch > 90.0) this->pitch = 90;
   if (this->pitch < -90.0) this->pitch = -90;
-  std::cout << "Camera3D::addPitch() degrees=" << degrees << " pitch=" << pitch << std::endl;
+  //std::cout << "Camera3D::addPitch() degrees=" << degrees << " pitch=" << pitch << std::endl;
   this->need_recalc = true;
 }
 
@@ -146,7 +146,7 @@ void Camera3D::setYaw(float degrees)
   this->yaw = degrees;
   // Clamp to sane values
   this->yaw = wrap(this->yaw, -360.0, 360.0);
-  std::cout << "Camera3D::setYaw() degrees=" << degrees << " yaw=" << yaw << std::endl;
+  //std::cout << "Camera3D::setYaw() degrees=" << degrees << " yaw=" << yaw << std::endl;
   this->need_recalc = true;
 }
 
@@ -155,7 +155,7 @@ void Camera3D::addYaw(float degrees)
   this->yaw += degrees;
   // Clamp to sane values
   this->yaw = wrap(this->yaw, -360.0, 360.0);
-  std::cout << "Camera3D::addYaw() degrees=" << degrees << " yaw=" << yaw << std::endl;
+  //std::cout << "Camera3D::addYaw() degrees=" << degrees << " yaw=" << yaw << std::endl;
   this->need_recalc = true;
 }
 

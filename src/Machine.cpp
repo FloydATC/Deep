@@ -1168,7 +1168,9 @@ bool Machine::func_readdir(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Val
   int handle = (int) FunC::to_double(argv[0]);
   //std::cout << "Machine::func_readdir() handle=" << handle << std::endl;
   if (running->iohandles[handle-1]->last_error() == 0 && running->iohandles[handle-1]->is_closed() == false) {
+    //std::cout << "Machine::func_readdir(" << handle << ")...";
     std::string res = running->iohandles[handle-1]->read();
+    //std::cout << "done" << std::endl;
     *result = FunC::to_stringValue(running->vm, res.c_str());
   } else {
     *result = FunC::to_stringValue(running->vm, "");
@@ -1211,8 +1213,9 @@ bool Machine::func_file_type(FunC::VM* vm, int argc, FunC::Value argv[], FunC::V
 {
   if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
   char* filename = FunC::to_cstring(argv[0]);
-  //std::cout << "Machine::func_file_type() name=" << filename << std::endl;
+  //std::cout << "Machine::func_file_type(" << filename << ")...";
   IOFile* file = IOFile::stat(filename);
+  //std::cout << "ok" << std::endl;
   std::string res = "unknown";
   if (file->last_error() == 0) {
     int filemode = file->mode();
@@ -1225,6 +1228,7 @@ bool Machine::func_file_type(FunC::VM* vm, int argc, FunC::Value argv[], FunC::V
     //std::cout << "Machine::func_file_type() stat failed" << std::endl;
   }
   delete file;
+  //std::cout << "Machine::func_file_type() returning" << std::endl;
   return true;
 }
 

@@ -127,6 +127,7 @@ void prepare_scene()
   RENDER 3D MODEL
   ===================================================
 */
+/*
 //void render_scene(Matrix4 m_scene, Matrix4 m_model, GLuint vertexBufferID, GLuint shaderProgramID, GLuint TextureID, float pan_x, float pan_y)
 void render_model(Matrix4 m_scene, Matrix4 m_model, GLuint shaderProgramID, GLuint TextureID, Obj3D* obj)
 {
@@ -159,7 +160,7 @@ void render_model(Matrix4 m_scene, Matrix4 m_model, GLuint shaderProgramID, GLui
   glBindTexture(GL_TEXTURE_2D, 0);
   glDisableVertexAttribArray(0);
 }
-
+*/
 
 void process_keydown(Message* msg, Machine* focused)
 {
@@ -219,13 +220,14 @@ void process_keydown(Message* msg, Machine* focused)
 
 void process_mousemotion(Message* msg, Scene3D* scene)
 {
-  std::cout << "processMsg() MouseMotion message x=" << msg->motion.x << " y=" << msg->motion.y << std::endl;
+  //std::cout << "processMsg() MouseMotion message x=" << msg->motion.x << " y=" << msg->motion.y << std::endl;
   int x = msg->motion.x;
   int y = msg->motion.y;
   int w = scene->camera()->getWidth();
   int h = scene->camera()->getHeight();
-  scene->camera()->setPitch((float) y - (h/2));
-  scene->camera()->setYaw((float) x - (w/2));
+  float sensitivity = 0.2;
+  scene->camera()->setPitch((float) (y - (h/2)) * sensitivity);
+  scene->camera()->setYaw((float) (x - (w/2)) * sensitivity);
 
   //perspective_changed = true;
   //std::cout << m_scene << std::endl;
@@ -249,7 +251,7 @@ void process_mousemotion(Message* msg, Scene3D* scene)
 
 void process_mousewheel(Message* msg, Scene3D* scene)
 {
-  std::cout << "processMsg() MouseWheel message" << std::endl;
+  //std::cout << "processMsg() MouseWheel message" << std::endl;
   float fov = scene->camera()->getFOV();
   fov *= (msg->wheel.y > 0 ? 0.95f : 1.05f );
   scene->camera()->setFOV(fov);
@@ -259,8 +261,8 @@ void process_mousewheel(Message* msg, Scene3D* scene)
 void process_message(Message* msg, std::vector<Machine*> vms, int focused, Scene3D* scene)
 {
 
-  std::cout << "processMsg()" << std::endl;
-  std::cout << "processMsg() msg received: " << msg << std::endl;
+  //std::cout << "processMsg()" << std::endl;
+  //std::cout << "processMsg() msg received: " << msg << std::endl;
   switch (msg->type)
   {
     case Message::Type::Quit:
@@ -311,55 +313,11 @@ void process_message(Message* msg, std::vector<Machine*> vms, int focused, Scene
       std::cout << "GameThread() UNHANDLED " << msg << std::endl;
       delete msg;
   }
-  std::cout << "processMsg() done" << std::endl;
+  //std::cout << "processMsg() done" << std::endl;
 }
 
 
 
-/*
-  ===================================================
-  RENDER 3D SCENE
-  ===================================================
-*/
-void render_frame(int width, int height, Matrix4 m_scene, GLuint shader, std::vector<Machine*> vms, Obj3D* test_object)
-{
-
-  // Render frame
-  //std::cout << "render_frame()" << std::endl;
-
-  glViewport(0, 0, width, height);
-  prepare_scene();
-
-  Matrix4 m_model = Matrix4();
-  m_model *= Matrix4().translate(-0.5f, 0.0f, 0.0f); // Relative position
-  m_model *= Matrix4().rotate(-15, Vector3(0.0f, 1.0f, 0.0f)); // Rotation angle and axis
-  m_model *= Matrix4().rotate(-15, Vector3(1.0f, 0.0f, 0.0f)); // Rotation angle and axis
-  m_model *= Matrix4().translate(-0.5f, 0.0f, 0.0f); // Rotation center
-  render_model(m_scene, m_model, shader, vms[0]->display.textureID, test_object);
-
-  m_model = Matrix4();
-  m_model *= Matrix4().translate(+0.5f, 0.0f, 0.0f); // Relative position
-  m_model *= Matrix4().rotate(+15, Vector3(0.0f, 1.0f, 0.0f)); // Rotation angle and axis
-  m_model *= Matrix4().rotate(-15, Vector3(1.0f, 0.0f, 0.0f)); // Rotation angle and axis
-  m_model *= Matrix4().translate(-0.5f, 0.0f, 0.0f); // Rotation center
-  render_model(m_scene, m_model, shader, vms[1]->display.textureID, test_object);
-
-  m_model = Matrix4();
-  m_model *= Matrix4().translate(-0.5f, 0.8f, 0.0f); // Relative position
-  m_model *= Matrix4().rotate(-15, Vector3(0.0f, 1.0f, 0.0f)); // Rotation angle and axis
-  m_model *= Matrix4().rotate(-30, Vector3(1.0f, 0.0f, 0.0f)); // Rotation angle and axis
-  m_model *= Matrix4().translate(-0.5f, 0.0f, 0.0f); // Rotation center
-  render_model(m_scene, m_model, shader, vms[2]->display.textureID, test_object);
-
-  m_model = Matrix4();
-  m_model *= Matrix4().translate(+0.5f, 0.8f, 0.0f); // Relative position
-  m_model *= Matrix4().rotate(+15, Vector3(0.0f, 1.0f, 0.0f)); // Rotation angle and axis
-  m_model *= Matrix4().rotate(-30, Vector3(1.0f, 0.0f, 0.0f)); // Rotation angle and axis
-  m_model *= Matrix4().translate(-0.5f, 0.0f, 0.0f); // Rotation center
-  render_model(m_scene, m_model, shader, vms[3]->display.textureID, test_object);
-
-
-}
 
 void shutdown_sdl(SDL_Window* window)
 {
@@ -369,6 +327,7 @@ void shutdown_sdl(SDL_Window* window)
   IMG_Quit();
   SDL_Quit();
 }
+
 
 
 
@@ -450,32 +409,54 @@ int main(int argc, char* argv[])
       Fontcache fontcache = Fontcache(font);
 
 
+
+      Scene3D* scene = new Scene3D();
+      scene->camera()->setDimensions(width, height);
+
       std::cout << "Load shaders" << std::endl;
-      ShaderProgram scene_shader = ShaderProgram("glsl/scene_vert.glsl", "glsl/scene_frag.glsl");
-      if (!scene_shader.success) { std::cerr << scene_shader.error; return 0; }
-      ShaderProgram ortho_shader = ShaderProgram("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
-      if (!ortho_shader.success) { std::cerr << ortho_shader.error; return 0; }
+      ShaderProgram* scene_shader = scene->getShader("glsl/scene_vert.glsl", "glsl/scene_frag.glsl");
+      ShaderProgram* ortho_shader = scene->getShader("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
 
-      Scene3D scene = Scene3D();
-      scene.camera()->setDimensions(width, height);
-      Obj3D* test_object = scene.getObj3D("obj/screen.obj");
-
-      Prop3D* p1 = scene.addProp("obj/screen.obj", Vector3(-1.0, -0.5, 0.0));
-      Prop3D* p2 = scene.addProp("obj/screen.obj", Vector3( 1.0, -0.5, 0.0));
-      Prop3D* p3 = scene.addProp("obj/screen.obj", Vector3(-1.0,  0.5, 0.0));
-      Prop3D* p4 = scene.addProp("obj/screen.obj", Vector3( 1.0,  0.5, 0.0));
-
-      test_object->set_shader_v(glGetAttribLocation(scene_shader.id(), "vertex"));
-      test_object->set_shader_vt(glGetAttribLocation(scene_shader.id(), "uv"));
-      test_object->set_shader_vn(glGetAttribLocation(scene_shader.id(), "normal"));
 
       std::cout << "main() Creating virtual machines" << std::endl;
       std::vector<Machine*> vms;
-      vms.push_back(new Machine(ortho_shader.id(), font));
-      vms.push_back(new Machine(ortho_shader.id(), font));
-      vms.push_back(new Machine(ortho_shader.id(), font));
-      vms.push_back(new Machine(ortho_shader.id(), font));
+      vms.push_back(new Machine(ortho_shader->id(), font));
+      vms.push_back(new Machine(ortho_shader->id(), font));
+      vms.push_back(new Machine(ortho_shader->id(), font));
+      vms.push_back(new Machine(ortho_shader->id(), font));
       std::cout << "main() Virtual machines ready" << std::endl;
+
+      Obj3D* test_object = scene->getObj3D("obj/screen.obj");
+
+      Prop3D* p1 = scene->addProp(test_object);
+      Prop3D* p2 = scene->addProp(test_object);
+      Prop3D* p3 = scene->addProp(test_object);
+      Prop3D* p4 = scene->addProp(test_object);
+
+      p1->setScale(2.5);
+      p2->setScale(2.5);
+      p3->setScale(2.5);
+      p4->setScale(2.5);
+
+      p1->setPosition(Vector3(-0.60,  0.50,  0.0));
+      p2->setPosition(Vector3( 0.60,  0.50,  0.0));
+      p3->setPosition(Vector3(-0.60, -0.50,  0.0));
+      p4->setPosition(Vector3( 0.60, -0.50,  0.0));
+
+      p1->setDirection(Vector3(100, 20,  0));
+      p2->setDirection(Vector3(100,-20,  0));
+      p3->setDirection(Vector3( 80, 20,  0));
+      p4->setDirection(Vector3( 80,-20,  0));
+
+      p1->setShader(scene_shader, "vertex", "uv", "normal");
+      p2->setShader(scene_shader, "vertex", "uv", "normal");
+      p3->setShader(scene_shader, "vertex", "uv", "normal");
+      p4->setShader(scene_shader, "vertex", "uv", "normal");
+
+      p1->setTexture(vms[0]->display.textureID);
+      p2->setTexture(vms[1]->display.textureID);
+      p3->setTexture(vms[2]->display.textureID);
+      p4->setTexture(vms[3]->display.textureID);
 
 
       std::cout << "main() ----------- Entering main loop" << std::endl;
@@ -489,14 +470,15 @@ int main(int argc, char* argv[])
 
         while (event_handler.has_message()) {
           // Note: processMsg is a placeholder
-          process_message(event_handler.get_message(), vms, 0, &scene);
+          process_message(event_handler.get_message(), vms, 0, scene);
         }
 
         for (auto& vm: vms) {
           vm->run();
         }
 
-        render_frame(width, height, scene.camera()->matrix(), scene_shader.id(), vms, test_object);
+        //render_frame(width, height, scene.camera()->matrix(), scene_shader->id(), vms, test_object);
+        scene->render();
 
         SDL_GL_SwapWindow(window);
       }
@@ -505,6 +487,8 @@ int main(int argc, char* argv[])
       for (auto& vm: vms) {
         delete vm;
       }
+
+      delete scene;
 
       TTF_CloseFont(font);
       SDL_GL_DeleteContext(context);
