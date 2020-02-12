@@ -38,10 +38,13 @@ bool IOFile::is_eof()
 // Static method
 IOFile* IOFile::stat(std::string filename) {
   IOFile* file = new IOFile();
+  //std::cout << "IOFile::stat(" << filename << ")...";
   if (::stat(filename.c_str(), &file->statbuf) == -1) {
+    //std::cout << "failed" << std::endl;
     file->error = errno;
     std::cerr << "IOFile error stating '" << filename << "':" << file->error << std::endl;
   } else {
+    //std::cout << "ok" << std::endl;
     file->error = 0;
   }
   return file;

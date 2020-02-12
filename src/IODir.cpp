@@ -42,9 +42,12 @@ std::string IODir::read()
 {
   if (handle == nullptr) return "";
   struct dirent* dp;
+  //std::cout << "IODir::read(" << handle <<  ")...";
   if ((dp = ::readdir(handle)) != NULL) {
+    //std::cout << "ok" << std::endl;
     return dp->d_name;
   } else {
+    //std::cout << "returned null" << std::endl;
     return "";
   }
 }
