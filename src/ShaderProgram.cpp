@@ -83,3 +83,28 @@ void ShaderProgram::fetchError()
   this->error.append(InfoLog);
   this->error.append("\n");
 }
+
+void ShaderProgram::setAttributeV(std::string name)
+{
+  this->vertex_v = glGetAttribLocation(this->programId, name.c_str());
+}
+
+void ShaderProgram::setAttributeVT(std::string name)
+{
+  this->vertex_vt = glGetAttribLocation(this->programId, name.c_str());
+}
+
+void ShaderProgram::setAttributeVN(std::string name)
+{
+  this->vertex_vn = glGetAttribLocation(this->programId, name.c_str());
+}
+
+void ShaderProgram::setUniformCameraMatrix(std::string name)
+{
+  this->uniform_camera_mat = glGetUniformLocation(this->programId, name.c_str());
+}
+
+void ShaderProgram::setUniformModelMatrix(std::string name)
+{
+  this->uniform_model_mat = glGetUniformLocation(this->programId, name.c_str());
+}

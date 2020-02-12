@@ -27,7 +27,7 @@ void Obj3D::set_subobjects(std::vector<int> start, std::vector<int> length)
   subobject_start = start;
   subobject_length = length;
   subobjects = subobject_start.size();
-  std::cout << "Obj3D::set_subobjects() " << subobjects << " sub objects" << std::endl;
+  //std::cout << "Obj3D::set_subobjects() " << subobjects << " sub objects" << std::endl;
 }
 
 void Obj3D::set_v(float* v, int length)
@@ -97,14 +97,6 @@ void Obj3D::render(int subobject)
 {
   glEnableVertexAttribArray(0);
   glBindVertexArray(this->vao);
-  //std::cout << "Obj3D::render() start=" << subobject_start[subobject]
-  //          << " length=" << subobject_length[subobject]
-  //          << " total=" << vertices
-  //          << " vao=" << vao
-  //          << std::endl;
-  //if (shader_v != -1) glEnableVertexAttribArray(shader_v);
-  //if (shader_vt != -1) glEnableVertexAttribArray(shader_vt);
-  //if (shader_vn != -1) glEnableVertexAttribArray(shader_vn);
   glDrawArrays(GL_TRIANGLES, subobject_start[subobject], subobject_length[subobject]);
   glBindVertexArray(0);
   check_gl("render");

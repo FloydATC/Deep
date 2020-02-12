@@ -21,10 +21,8 @@
 #include "EventHandler.h"
 #include "GameState.h"
 #include "IOFile.h"
-#include "Matrices.h"
 #include "Machine.h"
 #include "Message.h"
-#include "Obj3DLoader.h"
 #include "Scene3D.h"
 #include "ShaderProgram.h"
 #include "utf8.h"
@@ -53,7 +51,7 @@ double now() {
 
 
 // check OpenGL errors
-
+/*
 void check_gl(std::string when)
 {
   GLenum err;
@@ -63,6 +61,7 @@ void check_gl(std::string when)
   }
 }
 
+*/
 
 /*
 GLuint load_texture()
@@ -108,6 +107,7 @@ GLuint load_texture()
 
 
 
+/*
 
 void prepare_scene()
 {
@@ -119,51 +119,12 @@ void prepare_scene()
   check_gl("prepare scene");
 }
 
-
-
-/*
-  ===================================================
-  RENDER 3D MODEL
-  ===================================================
 */
-/*
-//void render_scene(Matrix4 m_scene, Matrix4 m_model, GLuint vertexBufferID, GLuint shaderProgramID, GLuint TextureID, float pan_x, float pan_y)
-void render_model(Matrix4 m_scene, Matrix4 m_model, GLuint shaderProgramID, GLuint TextureID, Obj3D* obj)
-{
-  //std::cout << "render_model() set shader ID = " << shaderProgramID << std::endl;
-  glUseProgram(shaderProgramID);
-  check_gl("set shader");
 
-  // Set active texture
-  glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
-  glBindTexture(GL_TEXTURE_2D, TextureID);
-  check_gl("binding texture");
-
-  GLuint uniform_scene = glGetUniformLocation(shaderProgramID, "scene");
-  GLuint uniform_model = glGetUniformLocation(shaderProgramID, "model");
-  glUniformMatrix4fv(uniform_scene, 1, GL_FALSE, m_scene.get());
-  glUniformMatrix4fv(uniform_model, 1, GL_FALSE, m_model.get());
-  check_gl("updating uniforms");
-
-  // Draw experimental Obj3D
-  m_model *= Matrix4().rotate(300, Vector3(0.98, 0.01, 0.0));
-  m_model *= Matrix4().translate(0.5, 0.0, 0.0);
-  m_model *= Matrix4().scale(2.5);
-  glUniformMatrix4fv(uniform_model, 1, GL_FALSE, m_model.get());
-  //for (int i=0; i<obj->subobjects; i++) {
-  //  obj->render(i);
-  //}
-  obj->render(0);
-  check_gl("obj3d render");
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
-}
-*/
 
 void process_keydown(Message* msg, Machine* focused)
 {
-  std::cout << "process_keydown()" << std::endl;
+  //std::cout << "process_keydown()" << std::endl;
   if (msg->key.scancode == 71 && (msg->key.mod & KMOD_CTRL)) {
     std::cout << "GameThread() detected Ctrl+Break" << std::endl;
     if (focused!=nullptr) { focused->push(new Message(Message::Type::Break)); }
@@ -219,6 +180,7 @@ void process_keydown(Message* msg, Machine* focused)
 
 void process_mousemotion(Message* msg, Scene3D* scene, GameState* gamestate)
 {
+  // Mouse controls camera direction
   //std::cout << "processMsg() MouseMotion message x=" << msg->motion.x << " y=" << msg->motion.y << std::endl;
   int x = msg->motion.x;
   int y = msg->motion.y;
@@ -228,6 +190,7 @@ void process_mousemotion(Message* msg, Scene3D* scene, GameState* gamestate)
   scene->camera()->setPitch((float) (y - (h/2)) * sensitivity);
   scene->camera()->setYaw((float) (x - (w/2)) * sensitivity);
 
+  // Focus on VM based on where the user is looking
   if (msg->motion.x < w/2) {
     if (msg->motion.y < h/2) {
       gamestate->current_vm = 0;
@@ -247,6 +210,7 @@ void process_mousemotion(Message* msg, Scene3D* scene, GameState* gamestate)
 
 void process_mousewheel(Message* msg, Scene3D* scene)
 {
+  // Mouse wheel controls camera zoom
   //std::cout << "processMsg() MouseWheel message" << std::endl;
   float fov = scene->camera()->getFOV();
   fov *= (msg->wheel.y > 0 ? 0.95f : 1.05f );
@@ -268,18 +232,14 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
       gamestate->shutdown = true;
       break;
     case Message::Type::Resize:
-      //width = msg->screen.width;
-      //height = msg->screen.height;
-      //perspective_changed = true;
+      //std::cout << "processMsg() Resize message" << std::endl;
       scene->camera()->setDimensions(msg->screen.width, msg->screen.height);
       gamestate->width = msg->screen.width;
       gamestate->height = msg->screen.height;
-      std::cout << "processMsg() Resize message" << std::endl;
       delete msg;
       break;
     case Message::Type::TextInput:
-      std::cout << "processMsg() TextInput message" << std::endl;
-      //std::cout << "GameThread() Msg type is TextInput: " << msg->text << std::endl;
+      //std::cout << "processMsg() TextInput message" << std::endl;
       // Route event to the active Virtual Machine
       vms[gamestate->current_vm]->push(msg);
       break;
@@ -309,7 +269,7 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
       break;
     default:
       //std::cout << "GameThread() Msg type is UNHANDLED: " << msg->type << std::endl;
-      std::cout << "GameThread() UNHANDLED " << msg << std::endl;
+      std::cout << "processMsg() UNHANDLED message " << msg << std::endl;
       delete msg;
   }
   //std::cout << "processMsg() done" << std::endl;
@@ -347,7 +307,6 @@ int main(int argc, char* argv[])
   EventHandler event_handler = EventHandler();
 
 
-  //SDL_Window* window = (SDL_Window*) ptr;
   SDL_GLContext context;
   //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
@@ -395,9 +354,7 @@ int main(int argc, char* argv[])
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Init Failed", msg.c_str(), nullptr);
         return 0;
       } else {
-        check_gl("creating context");
         glewInit();
-        check_gl("initializing glew");
       }
 
       TTF_Font* font = TTF_OpenFont("fonts/unscii-8-thin.ttf", 16);
@@ -411,12 +368,18 @@ int main(int argc, char* argv[])
 
 
 
-      Scene3D* scene = new Scene3D();
-      scene->camera()->setDimensions(gamestate.width, gamestate.height);
+      Scene3D scene = Scene3D();
+      scene.camera()->setDimensions(gamestate.width, gamestate.height);
 
       std::cout << "Load shaders" << std::endl;
-      ShaderProgram* scene_shader = scene->getShader("glsl/scene_vert.glsl", "glsl/scene_frag.glsl");
-      ShaderProgram* ortho_shader = scene->getShader("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
+      ShaderProgram* scene_shader = scene.getShader("glsl/scene_vert.glsl", "glsl/scene_frag.glsl");
+      scene_shader->setAttributeV("vertex");
+      scene_shader->setAttributeVT("uv");
+      scene_shader->setAttributeVN("normal");
+      scene_shader->setUniformCameraMatrix("scene");
+      scene_shader->setUniformModelMatrix("model");
+
+      ShaderProgram* ortho_shader = scene.getShader("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
 
 
       std::cout << "main() Creating virtual machines" << std::endl;
@@ -427,12 +390,12 @@ int main(int argc, char* argv[])
       vms.push_back(new Machine(ortho_shader->id(), font));
       std::cout << "main() Virtual machines ready" << std::endl;
 
-      Obj3D* test_object = scene->getObj3D("obj/screen.obj");
+      Obj3D* test_object = scene.getObj3D("obj/screen.obj");
 
-      Prop3D* p1 = scene->addProp(test_object);
-      Prop3D* p2 = scene->addProp(test_object);
-      Prop3D* p3 = scene->addProp(test_object);
-      Prop3D* p4 = scene->addProp(test_object);
+      Prop3D* p1 = scene.addProp(test_object);
+      Prop3D* p2 = scene.addProp(test_object);
+      Prop3D* p3 = scene.addProp(test_object);
+      Prop3D* p4 = scene.addProp(test_object);
 
       p1->setScale(2.5);
       p2->setScale(2.5);
@@ -449,10 +412,10 @@ int main(int argc, char* argv[])
       p3->setDirection(Vector3( 80, 20,  0));
       p4->setDirection(Vector3( 80,-20,  0));
 
-      p1->setShader(scene_shader, "vertex", "uv", "normal");
-      p2->setShader(scene_shader, "vertex", "uv", "normal");
-      p3->setShader(scene_shader, "vertex", "uv", "normal");
-      p4->setShader(scene_shader, "vertex", "uv", "normal");
+      p1->setShader(scene_shader);
+      p2->setShader(scene_shader);
+      p3->setShader(scene_shader);
+      p4->setShader(scene_shader);
 
       p1->setTexture(vms[0]->display.textureID);
       p2->setTexture(vms[1]->display.textureID);
@@ -464,22 +427,20 @@ int main(int argc, char* argv[])
       while (gamestate.shutdown == false)
       {
         //SDL_WaitEvent(&event); // Blocking call
-        if (SDL_PollEvent(&event)) {
+        while (SDL_PollEvent(&event)) {
           event_handler.handle_event(event);
         }
 
 
         while (event_handler.has_message()) {
-          // Note: processMsg is a placeholder
-          process_message(event_handler.get_message(), vms, scene, &gamestate);
+          process_message(event_handler.get_message(), vms, &scene, &gamestate);
         }
 
         for (auto& vm: vms) {
           vm->run();
         }
 
-        //render_frame(width, height, scene.camera()->matrix(), scene_shader->id(), vms, test_object);
-        scene->render();
+        scene.render();
 
         SDL_GL_SwapWindow(window);
       }
@@ -489,7 +450,7 @@ int main(int argc, char* argv[])
         delete vm;
       }
 
-      delete scene;
+
 
       TTF_CloseFont(font);
       SDL_GL_DeleteContext(context);
@@ -502,3 +463,4 @@ int main(int argc, char* argv[])
   std::cout<<"Clean exit"<<std::endl;
   return 0;
 }
+

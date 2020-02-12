@@ -24,7 +24,7 @@ Obj3D* Obj3DLoader::load(std::string filename)
   int errors = 0;
 
 
-  std::cout << "Obj3DLoader::load() begin parse loop" << std::endl;
+  //std::cout << "Obj3DLoader::load() begin parse loop" << std::endl;
   while (!scanner->is_eof()) {
     if (scanner->is_alpha()) { get_keyword(); continue; }
 
@@ -38,7 +38,7 @@ Obj3D* Obj3DLoader::load(std::string filename)
 
   delete scanner;
   this->filename = filename;
-  std::cout << "Obj3DLoader::load() produce object" << std::endl;
+  //std::cout << "Obj3DLoader::load() produce object" << std::endl;
 
   Obj3D* object = new Obj3D();
   int sz = linear_points.size();
@@ -229,6 +229,7 @@ void Obj3DLoader::get_vn()
 
 std::vector<Point> Obj3DLoader::compute_vn(std::vector<Point> face)
 {
+  std::cerr << "Obj3DLoader::compute_vn() not implemented yet" << std::endl;
   return face; // TODO: Compute vertex normals for this triangle
 }
 

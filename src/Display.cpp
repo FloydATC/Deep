@@ -420,7 +420,7 @@ GLuint Display::prepare_texture(GLsizei width, GLsizei height)
   GLuint textureID;
   glGenTextures(1, &textureID);
   glBindTexture(GL_TEXTURE_2D, textureID);
-  GLfloat bordercolor[4] = { 0.0, 0.0, 0.25, 1.0 };
+  GLfloat bordercolor[4] = { 0.30, 0.25, 0.35, 1.0 };
   check_gl("binding framebuffer texture");
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0); // 0 = clear
   //glGenerateMipmap(GL_TEXTURE_2D);
@@ -471,29 +471,12 @@ bool Display::pre_render()
   glDisable(GL_DEPTH_TEST);
 
   glUseProgram(shaderID);
-  //GLint attr_vertex = glGetAttribLocation(shaderID, "vertex");
-  //GLuint uniform_ortho = glGetUniformLocation(shaderID, "ortho");
-  //GLuint uniform_color = glGetUniformLocation(shaderID, "color");
 
   glUniformMatrix4fv(uniform_ortho, 1, GL_FALSE, m_ortho.get());
   glEnableVertexAttribArray(attr_vertex);
 
-  //set_fg_rgb(rand()%256, rand()%256, rand()%256);
-  //GLfloat color[] = { rand()%256/255.0f, rand()%256/255.0f, rand()%256/255.0f, 1.0 };
-  //glUniform4fv(uniform_color, 1, color);
-
-  //draw_rect(10,10,300,180);
-
-/*
-  glDrawArrays(GL_LINE_LOOP, 0, 4);
-  glDeleteBuffers(1, &vertexBufferID);
-*/
   if (initialized == false) {
     reset();
-    //print((const char*) glGetString(GL_RENDERER));
-    //print("\n");
-    //print((const char*) glGetString(GL_VERSION));
-    //print("\n");
   }
 
   return true;

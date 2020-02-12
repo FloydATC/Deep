@@ -19,14 +19,14 @@ class Prop3D
     Prop3D();
     ~Prop3D();
 
-    void render(Matrix4 scene_matrix);
+    void render(Matrix4 camera_matrix);
     Obj3D* Object();
     void setObject(Obj3D* object);
     void setScale(float scale);
     void setScale(Vector3 scale);
     void setPosition(Vector3 position);
     void setDirection(Vector3 direction);
-    void setShader(ShaderProgram* shader, const std::string v, const std::string vt, const std::string vn);
+    void setShader(ShaderProgram* shader);
     void setTexture(GLuint texture);
 
   protected:
@@ -34,9 +34,6 @@ class Prop3D
   private:
     Obj3D* object;
     ShaderProgram* shader;
-    GLint shader_v;
-    GLint shader_vt;
-    GLint shader_vn;
     GLuint texture;
     Matrix4 mat;
     Vector3 pos;

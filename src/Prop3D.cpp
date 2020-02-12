@@ -18,22 +18,19 @@ Prop3D::~Prop3D()
 }
 
 
-void Prop3D::render(Matrix4 scene_matrix) {
+void Prop3D::render(Matrix4 camera_matrix) {
   if (this->need_recalc) this->recalculate();
 
   glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
   glBindTexture(GL_TEXTURE_2D, this->texture);
 
   glUseProgram(this->shader->id());
-  this->object->set_shader_v(this->shader_v);
-  this->object->set_shader_vt(this->shader_vt);
-  this->object->set_shader_vn(this->shader_vn);
+  this->object->set_shader_v(this->shader->vertex_v);
+  this->object->set_shader_vt(this->shader->vertex_vt);
+  this->object->set_shader_vn(this->shader->vertex_vn);
+  glUniformMatrix4fv(this->shader->uniform_camera_mat, 1, GL_FALSE, camera_matrix.get());
+  glUniformMatrix4fv(this->shader->uniform_model_mat, 1, GL_FALSE, this->mat.get());
 
-  // FIXME: get rid of hardcoded shader uniform names
-  GLuint uniform_scene = glGetUniformLocation(this->shader->id(), "scene");
-  GLuint uniform_model = glGetUniformLocation(this->shader->id(), "model");
-  glUniformMatrix4fv(uniform_scene, 1, GL_FALSE, scene_matrix.get());
-  glUniformMatrix4fv(uniform_model, 1, GL_FALSE, this->mat.get());
 
   for (int i=0; i<this->object->subobjects; i++) {
     this->object->render(i);
@@ -44,13 +41,13 @@ void Prop3D::render(Matrix4 scene_matrix) {
 }
 
 void Prop3D::recalculate() {
-  std::cout << "Prop3D::recalculate() begin" << std::endl;
+  //std::cout << "Prop3D::recalculate() begin" << std::endl;
   this->mat = Matrix4().translate(this->pos); // Relative position
   this->mat *= Matrix4().rotate(this->dir.z, Vector3(0.0f, 0.0f, 1.0f)); // Rotation angle and axis
   this->mat *= Matrix4().rotate(this->dir.y, Vector3(0.0f, 1.0f, 0.0f)); // Rotation angle and axis
   this->mat *= Matrix4().rotate(this->dir.x, Vector3(1.0f, 0.0f, 0.0f)); // Rotation angle and axis
   this->mat *= Matrix4().scale(this->scale.x, this->scale.y, this->scale.z);
-  std::cout << "Prop3D::recalculate() done" << std::endl;
+  //std::cout << "Prop3D::recalculate() done" << std::endl;
   this->need_recalc = false;
 }
 
@@ -95,16 +92,8 @@ void Prop3D::setTexture(GLuint texture)
   this->texture = texture;
 }
 
-void Prop3D::setShader(ShaderProgram* shader, const std::string v, const std::string vt, const std::string vn)
+void Prop3D::setShader(ShaderProgram* shader)
 {
   this->shader = shader;
-  this->shader_v = glGetAttribLocation(shader->id(), v.c_str());
-  this->shader_vt = glGetAttribLocation(shader->id(), vt.c_str());
-  this->shader_vn = glGetAttribLocation(shader->id(), vn.c_str());
-
-  // TODO: Remove when we render via ::render() function
-  this->object->set_shader_v(this->shader_v);
-  this->object->set_shader_vt(this->shader_vt);
-  this->object->set_shader_vn(this->shader_vn);
 }
 
