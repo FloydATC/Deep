@@ -516,7 +516,7 @@ bool Display::post_render()
 void Display::reset()
 {
   fgcolor = 7;
-  bgcolor = 11;
+  bgcolor = 0;
   cursor_hidden = 0;
   autoscroll_enabled = true;
 
