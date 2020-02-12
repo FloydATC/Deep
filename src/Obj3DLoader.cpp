@@ -229,8 +229,19 @@ void Obj3DLoader::get_vn()
 
 std::vector<Point> Obj3DLoader::compute_vn(std::vector<Point> face)
 {
-  std::cerr << "Obj3DLoader::compute_vn() not implemented yet" << std::endl;
-  return face; // TODO: Compute vertex normals for this triangle
+  // Compute vertex normals for a flat surface
+  //For each triangle ABC
+  //  n := normalize(cross(B-A, C-A))
+  //  A.n := n
+  //  B.n := n
+  //  C.n := n
+  Vector3 ba = face[1].v - face[0].v;
+  Vector3 ca = face[2].v - face[0].v;
+  Vector3 n = ba.cross(ca).normalize();
+  face[0].vn = n;
+  face[1].vn = n;
+  face[2].vn = n;
+  return face;
 }
 
 void Obj3DLoader::add_triangle(std::vector<Point> face)
