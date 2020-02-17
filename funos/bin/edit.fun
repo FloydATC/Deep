@@ -8,8 +8,18 @@ var scrR = 1;
 var scrC = 0;
 var mode = "INSERT";
 
-var lines = [""]; // Empty document
-var line = "";
+
+var lines = []; // Empty document
+var line;
+
+var fh = open("funos/lorem.txt", "r");
+debug("fh="+str(fh));
+while (line = readln(fh)) lines.push(line);
+close(fh);
+
+line = lines[0];
+
+
 
 fun foreach_list(list, fn) {
   var i = 0;
@@ -45,7 +55,7 @@ fun statusbar(mode) {
   bg(15); // light gray
   fg(6); // blue
   pos(24,0);
-  print("line:",docL," col:",docC," ",mode);
+  print("line:",docL+1," col:",docC+1," ",mode); // Editor is 0-indexed, humans are not
   cls(24,col(),24,39); // space
   bg(bgc);
   fg(fgc);
@@ -146,8 +156,7 @@ fun editor_scroll_right() {
     if (i >= first and i <= first+21) {
       pos(i+1-first, 0);
       var fc = docC-scrC;
-      var c = line.substr(fc, 1);
-      print(c ? c : " ");
+      print(line.chars>=fc ? line.substr(fc, 1) : " ");
     }
   }
   ////debug("editor_scroll_right()");
@@ -499,12 +508,9 @@ fun handle_string(string) {
 
 
 var running = true;
-titlebar("");
-hscrollbar();
-vscrollbar();
-statusbar(mode);
-bg(bgc);
-fg(fgc);
+titlebar("untitled");
+redraw_screen();
+statusbar("INSERT");
 cursor(1);
 
 // Main loop
