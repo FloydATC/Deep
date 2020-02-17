@@ -139,8 +139,8 @@ void process_keydown(Message* msg, std::vector<Machine*> vms, GameState* gamesta
       char* str = SDL_GetClipboardText();
       if (str != nullptr) {
       // Generate TextInput events for clipboard contents
-      std::vector<int> codepoints = UTF8hack::codepoints(str);
-      for (auto & codepoint : codepoints) {
+      //std::vector<int> codepoints = UTF8hack::codepoints(str, strlen(str));
+      for (auto & codepoint : UTF8hack::codepoints(str, strlen(str))) {
         //std::cout << "codepoint=" << codepoint << std::endl;
         switch (codepoint) {
           case 10: {

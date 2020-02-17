@@ -49,8 +49,8 @@ class Machine
     static bool func_reset     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_str       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_getkey    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_chr       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_ord       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    //static bool func_chr       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    //static bool func_ord       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_rand      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     //static bool func_sub       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     //static bool func_substr    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);

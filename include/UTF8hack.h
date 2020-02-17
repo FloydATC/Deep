@@ -10,7 +10,8 @@ class UTF8hack
     //~UTF8();
 
     static char* append(int cp, char* result, char* error);
-    static std::vector<int> codepoints(const char* str);
+    static std::vector<int> DEPRECATED_codepoints(const char* str);
+    static std::vector<uint32_t> codepoints(const char* str, int strlen);
   protected:
 
   private:

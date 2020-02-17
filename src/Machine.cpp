@@ -144,8 +144,8 @@ void Machine::set_callbacks()
   FunC::defineNative(vm, "reset",     (FunC::NativeFn) func_reset);
   FunC::defineNative(vm, "str",       (FunC::NativeFn) func_str); // Return argument(s) as string
   FunC::defineNative(vm, "getkey",    (FunC::NativeFn) func_getkey); // Read keyboard input
-  FunC::defineNative(vm, "chr",       (FunC::NativeFn) func_chr); // Get UTF8 character for codepoint
-  FunC::defineNative(vm, "ord",       (FunC::NativeFn) func_ord); // Get codepoint for UTF8 character
+  //FunC::defineNative(vm, "chr",       (FunC::NativeFn) func_chr); // Get UTF8 character for codepoint
+  //FunC::defineNative(vm, "ord",       (FunC::NativeFn) func_ord); // Get codepoint for UTF8 character
 
   // Display functions
   FunC::defineNative(vm, "print",     (FunC::NativeFn) func_print); // Print arguments
@@ -628,6 +628,7 @@ bool Machine::func_getkey(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Valu
 // Given a codepoint, return a string containing the UTF-8 character
 // For codepoints 0 through 127, this is identical to the ASCII character
 // Synopsis: string = chr(65); // = "A"
+/*
 bool Machine::func_chr(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   // string = chr(codepoint)
@@ -641,12 +642,13 @@ bool Machine::func_chr(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* 
   return true;
 //  return FunC::to_stringValue(Fontcache::UnicodeToUTF8(FunC::to_double(argv[0])).c_str());
 }
-
+*/
 
 // Given a character, return the UTF-8 codepoint
 // If the argument is a string with multiple characters,
 // this function works on the first character in the string
 // Synopsis: codepoint = ord("Alphabet"); // = 65
+/*
 bool Machine::func_ord(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   // int = ord(string)
@@ -658,6 +660,7 @@ bool Machine::func_ord(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* 
   *result = FunC::to_numberValue(results[0]);
   return true;
 }
+*/
 
 
 

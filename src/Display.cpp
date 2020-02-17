@@ -234,7 +234,7 @@ void Display::print(const char* string)
   //SDL_Surface* block = font.glyph(0x2588); // Use for drawing the background
   GLuint block = font.glyph(0x2588); // Use for drawing the background
   hide_cursor();
-  for (const auto& codepoint : UTF8hack::codepoints(str)) {
+  for (const auto& codepoint : UTF8hack::codepoints(str, len)) {
     //std::cout << "cp=" << codepoint << std::endl;
     // If printable, draw background then codepoint glyph
     if (codepoint == 10) {
