@@ -26,29 +26,36 @@ cls();
 
 // Draw title bar
 fun titlebar(title) {
+  cursor(0);
+  //debug("titlebar()");
   if (title="") { title="(no name)"; }
   bg(15); // light gray
   fg(6); // blue
   cls(0,0,9552); // double horizontal line
   pos(0,2);
   print("[ ", title, " ]");
+  cursor(1);
 }
 
 // Draw status bar
 fun statusbar(mode) {
+  cursor(0);
+  //debug("statusbar()");
   if (mode="") { mode="INSERT"; }
   bg(15); // light gray
   fg(6); // blue
   pos(24,0);
-  fg(6); // blue
   print("line:",docL," col:",docC," ",mode);
   cls(24,col(),24,39); // space
   bg(bgc);
-  fg(bgc);
+  fg(fgc);
+  pos(scrR,scrC);
+  cursor(1);
 }
 
 // Horizontal scroll bar
 fun hscrollbar() {
+  //debug("hscrollbar()");
   cursor(0);
   bg(11); // Dark gray
   fg(0);  // Black
@@ -60,6 +67,7 @@ fun hscrollbar() {
 
 // Vertical scroll bar 9650=up, 9660=down
 fun vscrollbar() {
+  //debug("vscrollbar()");
   cursor(0);
   bg(11); // Dark gray
   fg(0);  // Black
@@ -71,6 +79,7 @@ fun vscrollbar() {
 
 
 fun editor_scroll_up() {
+  cursor(0);
   //debug("editor_scroll_up()");
   vscrollbar();
   bg(bgc);
@@ -84,9 +93,11 @@ fun editor_scroll_up() {
     var fc = docC-scrC;
     print(line.substr(fc, fc+39));
   }
+  cursor(1);
 }
 
 fun editor_scroll_down() {
+  cursor(0);
   //debug("editor_scroll_down()");
   vscrollbar();
   bg(bgc);
@@ -100,10 +111,12 @@ fun editor_scroll_down() {
     var fc = docC-scrC;
     print(line.substr(fc, fc+39));
   }
+  cursor(1);
 }
 
 
 fun editor_scroll_left() {
+  //debug("editor_scroll_left()");
   cursor(0);
   lines[docL] = line;
   fun patch_right_edge(line, i) {
@@ -125,6 +138,7 @@ fun editor_scroll_left() {
 }
 
 fun editor_scroll_right() {
+  //debug("editor_scroll_right()");
   cursor(0);
   lines[docL] = line;
   fun patch_right_edge(line, i) {
@@ -136,7 +150,7 @@ fun editor_scroll_right() {
       print(c ? c : " ");
     }
   }
-  //debug("editor_scroll_right()");
+  ////debug("editor_scroll_right()");
   hscrollbar();
   bg(bgc);
   fg(fgc);
@@ -148,22 +162,21 @@ fun editor_scroll_right() {
 }
 
 fun redraw_screen() {
+  //debug("redraw_screen()");
   cursor(0);
   if (scrR>docL+1) { scrR = docL+1; }
-  //debug(str("redraw_screen() docL=",docL," docC=",docC," scrR=",scrR," scrC=",scrC));
+  ////debug(str("redraw_screen() docL=",docL," docC=",docC," scrR=",scrR," scrC=",scrC));
   lines[docL] = line;
   bg(bgc);
   fg(fgc);
   cls(1,0,22,38);
   fun print_line(line, i) {
-    //debug(str("redraw_screen() loop i=", i, " begin"));
     var first = docL-scrR+1;
     if (i >= first and i <= first+21) {
       var fc = docC-scrC;
       pos(i+1-first, 0);
       if (fc<line.chars) print(line.substr(fc, 39));
     }
-    //debug(str("redraw_screen() loop i=", i, " end"));
   }
   hscrollbar();
   vscrollbar();
@@ -173,26 +186,24 @@ fun redraw_screen() {
   fg(fgc);
   foreach_list(lines, print_line);
   pos(scrR, scrC);
-  //debug(str("redraw_screen() done"));
   cursor(1);
 }
 
 fun check_cursor_pos() {
+  //debug("check_cursor_pos()");
   // Check cursor column against line length
   var linelen = line.chars;
-  //debug(str("check_cursor_pos() docC=",docC," linelen=",linelen));
   var redraw = false;
 
   if (docC > linelen) {
     var delta = docC - linelen;
-    //debug(str("cursor is ",delta," too far right"));
+    ////debug(str("cursor is ",delta," too far right"));
     if (delta > scrC) {
       scrC = 0;
       redraw = true;
     } else {
       scrC -= delta;
     }
-    //debug(str("cursor is now at column ",scrC));
     docC = linelen;
   }
   if (scrC > 38) {
@@ -205,18 +216,14 @@ fun check_cursor_pos() {
     redraw_screen();
     pos(scrR, scrC);
   }
-  //debug("check_cursor_pos() done");
 }
 
 fun handle_return() {
   // Break current line, insert a new one
-  //var tail = substr(line, docC);
   var tail = line.substr(docC, 39);
-  //line = substr(line, 0, docC);
   line = line.substr(0, docC);
   lines[docL] = line;
   line = tail;
-  //debug("lines="+lines.length.base(10)+" docL="+docL.base(10));
   lines[docL+1:0] = [line]; // Insert below
   if (docC-scrC == 0) {
     // We are scrolled all the way left
@@ -267,8 +274,6 @@ fun handle_up() {
 
 fun handle_down() {
   lines[docL] = line;
-
-
   if (docL+1 == lines.length) { return; } // End of file
 
   scrR++;
@@ -445,6 +450,8 @@ fun handle_pgdn() {
 }
 
 fun handle_character(key) {
+  //debug("handle_character()");
+
   // Single, regular character key
 
   // Insert character into current line
@@ -477,13 +484,17 @@ fun handle_string(string) {
   var temp = line;
   line = temp.substr(0, docC)
        + string
-       + temp.substr(docC); // HMMM
-
+       + temp.substr(docC);
+  bg(bgc);
+  fg(fgc);
+  var fc = docC-scrC;
+  var len = 38-scrC;
+  var tail = string+temp.substr(docC);
+  print(tail.substr(0, 38-scrC));
   // Push current line
   scrC+=string.chars;
   docC+=string.chars;
-  if (scrC > 38) scrC = 38;
-  redraw_screen();
+  check_cursor_pos();
 }
 
 
@@ -492,7 +503,6 @@ titlebar("");
 hscrollbar();
 vscrollbar();
 statusbar(mode);
-pos(scrR,scrC);
 bg(bgc);
 fg(fgc);
 cursor(1);
@@ -539,10 +549,12 @@ while (running==true) {
       // -- Unknown / ignored
       default: {
         pos(0,0);
+        bg(bgc);
+        fg(fgc);
         print(key);
+        pos(scrR, scrC);
       }
     }
-
     statusbar(mode);
   }
 }
