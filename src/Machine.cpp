@@ -184,27 +184,11 @@ void Machine::set_callbacks()
 }
 
 bool Machine::execute_code(std::string code) {
-
   display.hide_cursor();
-  char* err = NULL;
-  fc_status = FunC::interpret(vm, code.c_str(), &err);
-
-  if (err != NULL) {
-    std::cout << "FunC::interpret() error message:" << std::endl;
-    display.print(err);
-    //std::cout << "FunC::interpret() free(" << &err << ") // err" << std::endl;
-    //free(err);
-    err = NULL;
-  }
-
+  running = this;
+  fc_status = FunC::interpret(vm, code.c_str());
+  running = nullptr;
   check_fc_status();
-  /*
-  if (fc_status != FunC::INTERPRET_COMPILED) {
-    reset_vm();
-    display.print("READY.\n");
-    display.show_cursor(true);
-  }
-  */
   return (fc_status == FunC::INTERPRET_COMPILED);
 }
 
@@ -441,7 +425,10 @@ uint16_t Machine::add_iohandle(IOHandle* ptr)
 
 // FunC calls this to print runtime errors
 void Machine::func_errorCallback(const char* errormsg) {
-  if (running==nullptr) { return; }
+  if (running==nullptr) {
+    std::cerr << "Machine::func_errorCallback() called while running==nullptr" << std::endl;
+    return;
+  }
   running->display.print(errormsg);
 }
 
