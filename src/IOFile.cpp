@@ -66,6 +66,7 @@ IOFile* IOFile::open(std::string filename, std::string mode) {
     std::cerr << "IOFile error opening '" << filename << "':" << file->error << std::endl;
     file->closed = true;
   } else {
+    //std::cout << "IOFile::open() ok" << std::endl;
     file->closed = false;
   }
   return file;

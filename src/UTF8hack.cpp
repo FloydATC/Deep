@@ -181,7 +181,8 @@ int u8_wc_toutf8(char *dest, uint32_t ch)
     return 0;
 }
 
-/* charnum => byte offset */
+
+// Given a character number, return the byte offset to that character
 int u8_offset(char *str, int charnum)
 {
     int offs=0;
@@ -194,7 +195,7 @@ int u8_offset(char *str, int charnum)
     return offs;
 }
 
-/* byte offset => charnum */
+// Given a byte offset, return the character number found at that offset
 int u8_charnum(char *s, int offset)
 {
     int charnum = 0, offs=0;
@@ -208,7 +209,7 @@ int u8_charnum(char *s, int offset)
 }
 
 /* number of characters */
-int u8_strlen(char *s)
+int UTF8hack::u8_strlen(char *s)
 {
     int count = 0;
     int i = 0;

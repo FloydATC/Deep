@@ -40,20 +40,19 @@ class Machine
 
     Display display;
 
+    void fullscreen_edit(Message* msg);
+    void fullscreen_shell();
+    void show_prompt();
+    void check_fc_status();
     FunC::InterpretResult run();
 
     static void func_errorCallback(const char* errormsg);
 
     // Utility functions (temporary workarounds for language shortcomings)
-    //static bool cpp_test       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_reset     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_str       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_getkey    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    //static bool func_chr       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    //static bool func_ord       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_rand      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    //static bool func_sub       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    //static bool func_substr    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
 
     // Display functions
     static bool func_print     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
@@ -103,10 +102,6 @@ class Machine
 
   private:
     bool fc_break = false; // Ctrl+C detected
-    /*
-    char* source_buffer;
-    int source_size;
-    */
 
     FunC::VM* vm = nullptr;
 

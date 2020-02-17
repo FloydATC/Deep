@@ -9,6 +9,7 @@ class UTF8hack
     //UTF8();
     //~UTF8();
 
+    static int u8_strlen(char *s);
     static char* append(int cp, char* result, char* error);
     static std::vector<uint32_t> codepoints(const char* str, int strlen);
   protected:

@@ -89,31 +89,23 @@ void split_cmd( const std::string& cmd, std::string* executable, std::string* pa
 void Machine::initialize_vm()
 {
   if (running != nullptr) { return; }
-  //std::cout << "Machine::init_vm() initializing new vm" << std::endl;
   vm = FunC::initVM();
-  //std::cout << "Machine::initialize_vm() setting callbacks" << std::endl;
   set_callbacks();
-  //std::cout << "Machine::initialize_vm() create stdin" << std::endl;
   add_iohandle(new IOStream()); // "stdin"
-  //std::cout << "Machine::initialize_vm() create stdout" << std::endl;
   add_iohandle(new IOStream()); // "stdout"
-  //std::cout << "Machine::initialize_vm() create stderr" << std::endl;
   add_iohandle(new IOStream()); // "stderr"
-  //std::cout << "Machine::initialize_vm() " << (void*)vm << " ready" << std::endl;
 }
 
 void Machine::shutdown_vm()
 {
   if (running != nullptr) { return; }
-  //std::cout << "Machine::shutdown_vm() shutting down vm=" << (void*)vm << std::endl;
   FunC::freeVM(vm);
   for (auto& handle: iohandles) {
-    //std::cout << "Machine::shutdown_vm() close IOHandle " << handle << std::endl;
     if (!handle->is_closed()) handle->close();
-    //std::cout << "Machine::shutdown_vm() delete IOHandle " << handle << std::endl;
     delete handle;
   }
   iohandles.clear();
+  flush_msg_queue();
 }
 
 void Machine::reset_vm()
@@ -137,15 +129,12 @@ void Machine::write_to_stdin(const std::string data)
 void Machine::set_callbacks()
 {
   // Callbacks to be usable by FunC script
-  //std::cout << "Machine::execute_code() setting callbacks" << std::endl;
   FunC::set_error_callback(vm, (FunC::ErrorCb) func_errorCallback);
 
   // Utility functions (temporary workarounds for language shortcomings)
   FunC::defineNative(vm, "reset",     (FunC::NativeFn) func_reset);
   FunC::defineNative(vm, "str",       (FunC::NativeFn) func_str); // Return argument(s) as string
   FunC::defineNative(vm, "getkey",    (FunC::NativeFn) func_getkey); // Read keyboard input
-  //FunC::defineNative(vm, "chr",       (FunC::NativeFn) func_chr); // Get UTF8 character for codepoint
-  //FunC::defineNative(vm, "ord",       (FunC::NativeFn) func_ord); // Get codepoint for UTF8 character
 
   // Display functions
   FunC::defineNative(vm, "print",     (FunC::NativeFn) func_print); // Print arguments
@@ -197,13 +186,8 @@ void Machine::set_callbacks()
 bool Machine::execute_code(std::string code) {
 
   display.hide_cursor();
-  //running = this;
-  //fc_status = FunC::interpret(source_buffer + offset); // Point to the start of the most recent code appended
   char* err = NULL;
-  std::cout << "Machine::execute_code() calling FunC::interpret()" << std::endl;
   fc_status = FunC::interpret(vm, code.c_str(), &err);
-  std::cout << "FunC::interpret() returned " << fc_status << std::endl;
-  //running = nullptr;
 
   if (err != NULL) {
     std::cout << "FunC::interpret() error message:" << std::endl;
@@ -213,17 +197,18 @@ bool Machine::execute_code(std::string code) {
     err = NULL;
   }
 
+  check_fc_status();
+  /*
   if (fc_status != FunC::INTERPRET_COMPILED) {
     reset_vm();
     display.print("READY.\n");
     display.show_cursor(true);
   }
+  */
   return (fc_status == FunC::INTERPRET_COMPILED);
 }
 
 bool Machine::execute_file(std::string fname, std::string arguments) {
-//  IOFile file = IOFile(fname);
-//  std::string buf = file.contents;
   IOFile* file = new IOFile();
   std::string buf = file->slurp(fname);
   delete file;
@@ -236,17 +221,14 @@ bool Machine::execute_file(std::string fname, std::string arguments) {
 
 bool Machine::execute_line(std::string line)
 {
-  //std::cout << "VM() execute=[" << line << "]" << std::endl;
   // Strip leading and trailing spaces
   std::regex re("^\\s*(.*?)\\s*$");
   line = regex_replace(line, re, "$1");
-  //std::cout << "VM() trimmed=[" << line << "]" << std::endl;
   if (line=="") { return false; }
 
   std::string cmd;
   std::string arguments;
   split_cmd(line, &cmd, &arguments);
-  //std::cout << "VM() cmd=[" << cmd << "] arguments=[" << arguments << "]" << std::endl;
 
   // Try to execute as script
   std::string path = "funos/bin";
@@ -277,125 +259,143 @@ bool Machine::execute_line(std::string line)
 }
 
 
+void Machine::fullscreen_edit(Message* msg)
+{
+  switch (msg->type)
+  {
+    case Message::Type::TextInput:
+      // Handle printable keys
+      display.scroll_right(display.row, display.col, display.row, display.cols-1); // insert
+      display.print(msg->text.c_str());
+      break;
+    case Message::Type::KeyDown: {
+      // Printable keys are handled as TextInput so ignore them here
+      if (msg->key.sym >= SDLK_a && msg->key.sym <= SDLK_z) { break; }
+      if (msg->key.sym >= SDLK_0 && msg->key.sym <= SDLK_9) { break; }
+
+      // Non-printable keys
+      switch (msg->key.sym)
+      {
+        // Cursor control
+        case SDLK_LEFT:   display.cursor_left();   break;
+        case SDLK_RIGHT:  display.cursor_right();  break;
+        case SDLK_UP:     display.cursor_up();     break;
+        case SDLK_DOWN:   display.cursor_down();   break;
+
+        // Editing
+        case SDLK_DELETE:
+          display.scroll_left(display.row, display.col, display.row, display.cols-1);
+          break;
+        case SDLK_BACKSPACE:
+          display.pos(display.row, display.col-1);
+          display.scroll_left(display.row, display.col, display.row, display.cols-1);
+          break;
+
+        // Execute command
+        case SDLK_RETURN:
+        case SDLK_KP_ENTER: {
+          std::string line = "";
+          for (int c=0; c<display.cols; c++) {
+            line += display.char_at(display.row, c); // Note: utf8 encoded character
+          }
+          display.print("\n");
+          execute_line(line);
+          break;
+        }
+
+        // Other, unhandled
+        default:
+          std::cout << "Machine() builtin shell ignored " << msg << std::endl;
+          break;
+      }
+      break;
+    }
+    case Message::Type::KeyUp:
+      // Do nothing
+      break;
+    default:
+      std::cerr << "Machine() UNHANDLED: " << msg << std::endl;
+  }
+}
+
+
+void Machine::fullscreen_shell()
+{
+  // This is a very primitive test/rescue shell using a fullscreen editor
+  // When no script is running we have to service the message queue
+  while (m_queue.empty()==false) {
+    Message* msg = m_queue.front();
+    m_queue.pop();
+    fullscreen_edit(msg);
+    delete msg;
+  }
+}
+
+
+void Machine::show_prompt()
+{
+  display.print("READY.\n");
+  display.show_cursor(true);
+}
+
+void Machine::check_fc_status()
+{
+  switch (fc_status) {
+    case FunC::INTERPRET_OK: // VM has finished executing code
+      if (display.col>0) { display.print("\n"); }
+      flush_msg_queue();
+      show_prompt();
+      break;
+    case FunC::INTERPRET_COMPILED:
+      // No action required
+      break;
+    case FunC::INTERPRET_RUNNING:
+      // No action required
+      break;
+    case FunC::INTERPRET_COMPILE_ERROR:
+      std::cerr << "VM returned INTERPRET_COMPILE_ERROR" << std::endl;
+      reset_vm();
+      show_prompt();
+      break;
+    case FunC::INTERPRET_RUNTIME_ERROR:
+      std::cerr << "VM returned INTERPRET_RUNTIME_ERROR" << std::endl;
+      reset_vm();
+      show_prompt();
+      break;
+    default: {
+      // Note sure if we still need this
+      std::cerr << "VM returned UNHANDLED fc_status=" << fc_status << std::endl;
+      reset_vm();
+      show_prompt();
+    }
+  }
+}
+
 FunC::InterpretResult Machine::run()
 {
-  display.pre_render();
+  display.pre_render(); // bind OpenGL texture/framebuffer
 
   if (fc_status == FunC::INTERPRET_COMPILED || fc_status == FunC::INTERPRET_RUNNING) {
     if (fc_break==true) {
-      std::cout << "Machine::run() fc_break == true" << std::endl;
+      // User pressed ctrl+c
+      // Abort the script by "rebooting" the vm to guarantee a consistent state
       reset_vm();
       fc_status = FunC::INTERPRET_OK;
-      display.print("^C\nREADY.\n");
-      display.show_cursor(true);
-      flush_msg_queue();
+      display.print("^C\n");
+      show_prompt();
     } else {
       running = this;
-      fc_status = FunC::run(vm);
+      fc_status = FunC::run(vm); // Run the VM for a few milliseconds (parameterize this?)
       running = nullptr;
-      switch (fc_status) {
-        case FunC::INTERPRET_OK: // VM is ready to receive (more) code
-          std::cout << "FunC::run() returned INTERPRET_OK" << std::endl;
-          if (display.col>0) { display.print("\n"); }
-          display.print("READY.\n");
-          display.show_cursor(true);
-          flush_msg_queue();
-          break;
-        case FunC::INTERPRET_COMPILED:
-          // run() has already been called so this is should be impossible
-          // See FunC::vm.c
-          std::cerr << "Machine.run() returned INTERPRET_COMPILED unexpectedly" << std::endl;
-          display.print("?INTERNAL ERROR\n");
-        case FunC::INTERPRET_RUNNING:
-          break;
-        case FunC::INTERPRET_COMPILE_ERROR:
-          // run() should never get called if there was a compile error
-          // See Machine::execute_code()
-          std::cerr << "Machine.run() returned INTERPRET_COMPILE_ERROR unexpectedly" << std::endl;
-          display.print("?INTERNAL ERROR\n");
-        case FunC::INTERPRET_RUNTIME_ERROR:
-          // Error messages have already been printed via func_errorCallback()
-        default:
-          //reset_vm();
-          display.print("\rREADY.\n");
-          display.show_cursor(true);
-          flush_msg_queue();
-      }
+      check_fc_status();
     }
   } else {
     // No script running so we need to handle events
-    // This is a very primitive test/rescue shell
-    //std::cout << "Machine::run() calling getc() on STDIN" << std::endl;
-    Message* msg = nullptr;
-    std::string line = "";
-    while (m_queue.empty()==false) {
-      msg = m_queue.front();
-      m_queue.pop();
-      //std::cout << "Machine() Msg received: " << msg << std::endl;
-      switch (msg->type)
-      {
-        case Message::Type::TextInput:
-          display.scroll_right(display.row, display.col, display.row, display.cols-1); // insert
-          display.print(msg->text.c_str());
-          break;
-        case Message::Type::KeyDown: {
-          //std::cout << "Machine() received KeyDown code=" << msg->key.sym << std::endl;
-          if (msg->key.sym >= SDLK_a && msg->key.sym <= SDLK_z) { break; }
-          if (msg->key.sym >= SDLK_0 && msg->key.sym <= SDLK_9) { break; }
-          switch (msg->key.sym)
-          {
-            case SDLK_RETURN:
-            case SDLK_KP_ENTER:
-              for (int c=0; c<display.cols; c++) {
-                line += display.char_at(display.row, c);
-              }
-              display.print("\n");
-              execute_line(line);
-              break;
-            case SDLK_LEFT:
-              display.cursor_left();
-              break;
-            case SDLK_RIGHT:
-              display.cursor_right();
-              break;
-            case SDLK_UP:
-              display.cursor_up();
-              break;
-            case SDLK_DOWN:
-              display.cursor_down();
-              break;
-            case SDLK_DELETE: // test
-              display.scroll_left(display.row, display.col, display.row, display.cols-1);
-              break;
-            case SDLK_BACKSPACE: // test
-              display.pos(display.row, display.col-1);
-              display.scroll_left(display.row, display.col, display.row, display.cols-1);
-              break;
-            case SDLK_PAGEUP: // test
-              display.scroll_left();
-              break;
-            case SDLK_PAGEDOWN: // test
-              display.scroll_right();
-              break;
-            default:
-              std::cout << "Machine() builtin shell ignored " << msg << std::endl;
-              break;
-          }
-          break;
-        }
-        case Message::Type::KeyUp:
-          //std::cout << "Machine() received KeyUp" << std::endl;
-          break;
-        default:
-          std::cerr << "Machine() UNHANDLED: " << msg << std::endl;
-          //std::cerr << "Machine() Msg type is UNHANDLED: " << msg->type << std::endl;
-      }
-      delete msg;
-    }
+    fullscreen_shell();
   }
   fc_break = false;
 
-  display.post_render();
+  display.post_render(); // unbind OpenGL texture/framebuffer
   return fc_status;
 }
 
@@ -405,53 +405,33 @@ void Machine::flush_msg_queue()
   while (m_queue.empty()==false) {
     msg = m_queue.front();
     m_queue.pop();
-    //std::cout << "Machine::flush() discarding " << msg << std::endl;
     delete msg;
   }
-  //std::cout << "Machine() flushed message queue" << std::endl;
 }
 
 void Machine::push(Message* msg)
 {
-  //std::cout << "Message " << msg << " queued on VM " << this << std::endl;
   if (msg->type == Message::Type::Break) { fc_break = true; }
   m_queue.push(msg);
-}
-
-int chars(const char* str) {
-  int c=0;
-  int bytes = strlen(str);
-  for (int i=0; i<bytes; i++) {
-    if (((unsigned char) str[i] & 192) != 128) {
-      c++;
-      //std::cout << "Machine::chars() [count] byte=" << (unsigned char) str[i] << std::endl;
-    } else {
-      //std::cout << "Machine::chars() [     ] byte=" << (unsigned char) str[i] << std::endl;
-    }
-  }
-  return c;
 }
 
 
 uint16_t Machine::add_iohandle(IOHandle* ptr)
 {
-  // Find an available handle
+  // Find an available handle (one that has been closed, or a new one)
   //std::cout << "Machine::add_iohandle() ptr=" << ptr << std::endl;
   for (uint16_t i=0; i<iohandles.size(); i++) {
-    //std::cout << "Machine::add_iohandle() check handle=" << i+1 << std::endl;
     if (iohandles[i]->is_closed()) {
-      //std::cout << "Machine::add_iohandle() delete handle=" << i+1 << std::endl;
       delete iohandles[i];
       iohandles[i] = ptr;
-      //std::cout << "Machine::add_iohandle() reused handle=" << i+1 << std::endl;
       return i;
     }
   }
-  // No available handles so append it
+  // No re-usable handles so append one
   iohandles.push_back(ptr);
-  //std::cout << "Machine::add_iohandle() appended handle=" << iohandles.size() << std::endl;
   return iohandles.size()-1;
 }
+
 
 
 // STATIC callbacks depend on the static variable "current" instead of "this"
@@ -471,6 +451,10 @@ void Machine::func_errorCallback(const char* errormsg) {
 // cognitive consumption of information via visual means.
 // Print stuff. On the screen.
 // Synopsis: print("Hello world\n", 3.14, foo); // Any number of arguments
+// Note: Only the LAST 4000 characters in a string get printed, based on the
+// assumption that any characters before that would have scrolled off the screen anyway
+// Also note: Strings are assumed to contain valid UTF8 sequences
+// (extended ASCII -> bad stuff may happen)
 bool Machine::func_print(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   for (int i=0; i<argc; i++) {
@@ -600,7 +584,7 @@ bool Machine::func_getkey(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Valu
             if (name != "Left Ctrl" && name != "Right Ctrl") {
               if (msg->key.mod & KMOD_CTRL) { name = "Ctrl " + name; }
             }
-            if (chars(name.c_str())>1) {
+            if (UTF8hack::u8_strlen((char*)name.c_str())>1) {
               if (name != "Left Shift" && name != "Right Shift") {
                 if (msg->key.mod & KMOD_SHIFT) { name = "Shift " + name; }
               }
@@ -625,120 +609,7 @@ bool Machine::func_getkey(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Valu
 }
 
 
-// Given a codepoint, return a string containing the UTF-8 character
-// For codepoints 0 through 127, this is identical to the ASCII character
-// Synopsis: string = chr(65); // = "A"
-/*
-bool Machine::func_chr(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
-{
-  // string = chr(codepoint)
-  if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
-  int codepoint = (int) FunC::to_double(argv[0]);
-  char buf[5] = {0,0,0,0,0};
-  char* err = nullptr;
-  char* res = UTF8hack::append(codepoint, buf, err); // utf8.h
-  //std::cout << "utf8::append returned \"" << res << "\" for cp " << codepoint << std::endl;
-  *result = FunC::to_stringValue(running->vm, (const char*) res);
-  return true;
-//  return FunC::to_stringValue(Fontcache::UnicodeToUTF8(FunC::to_double(argv[0])).c_str());
-}
-*/
 
-// Given a character, return the UTF-8 codepoint
-// If the argument is a string with multiple characters,
-// this function works on the first character in the string
-// Synopsis: codepoint = ord("Alphabet"); // = 65
-/*
-bool Machine::func_ord(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
-{
-  // int = ord(string)
-  if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
-  // We expect only a single char but utf8::codepoints accepts a longer string
-  std::vector<int> results = UTF8hack::codepoints(FunC::to_cstring(argv[0]));
-  // Return the first integer, if any
-  if (results.empty()) { *result = FunC::to_numberValue(-1); return false; }
-  *result = FunC::to_numberValue(results[0]);
-  return true;
-}
-*/
-
-
-
-// Return a substring of BYTES from a string
-// Synopsis: str = substr(string, offset, length)
-// negative offset = count from right hand side
-// negative length = remaining length minus this
-/*
-bool Machine::func_sub(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result) {
-  if (argc < 2 || argc > 3) { *result = FunC::to_numberValue(-1); return false; }
-  char* str = FunC::to_cstring(argv[0]);
-  int strlength = strlen(str); // Number of bytes in the original string
-  // Index of first byte to return
-  int offset = (int) FunC::to_double(argv[1]);
-  if (offset < 0) { offset = strlength + offset; } // negative = count from the tail end
-  if (offset < 0) { *result = FunC::to_stringValue(running->vm, ""); return true; } // Negative offset past entire string
-  if (offset >= strlength) { *result = FunC::to_stringValue(running->vm, ""); return true; } // Offset past entire string
-  // Desired (max) number of UTF8 chars to return
-  int maxlen = strlength;
-  if (argc == 3) { maxlen = (int) FunC::to_double(argv[2]); }
-  if (maxlen < 0) { maxlen = strlength + maxlen - offset; } // negative = remaining length minus this
-  if (maxlen > (strlength - offset)) { maxlen = strlength - offset; } // Limit offset to maximum possible
-  if (maxlen <= 0) { *result = FunC::to_stringValue(running->vm, ""); return true; } // Zero length
-
-  std::string src = str;
-  std::string res = src.substr(offset, maxlen);
-  *result = FunC::to_stringValue(running->vm, res.c_str());
-  return true;
-}
-*/
-
-
-
-// Return a substring of UTF-8 CHARACTERS from a string
-// Synopsis: str = substr(string, offset, length)
-// negative offset = count from right hand side
-// negative length = remaining length minus this
-/*
-bool Machine::func_substr(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result) {
-  if (argc < 2 || argc > 3) { *result = FunC::to_numberValue(-1); return false; }
-  char* str = FunC::to_cstring(argv[0]);
-  int strlength = chars(str); // Number of UTF8 chars in the original string
-  // Index of first UTF8 char to return
-  int offset = (int) FunC::to_double(argv[1]);
-  if (offset < 0) { offset = strlength + offset; } // negative = count from the tail end
-  if (offset < 0) { *result = FunC::to_stringValue(running->vm, ""); return true; } // Negative offset past entire string
-  if (offset >= strlength) { *result = FunC::to_stringValue(running->vm, ""); return true; } // Offset past entire string
-  // Desired (max) number of UTF8 chars to return
-  int maxlen = strlength;
-  if (argc == 3) { maxlen = (int) FunC::to_double(argv[2]); }
-  if (maxlen < 0) { maxlen = strlength + maxlen - offset; } // negative = remaining length minus this
-  if (maxlen > (strlength - offset)) { maxlen = strlength - offset; } // Limit offset to maximum possible
-  if (maxlen <= 0) { *result = FunC::to_stringValue(running->vm, ""); return true; } // Zero length
-
-  //std::cout << "Machine::func_substr() str=\"" << str << "\" strlen=" << strlen << " offset=" << offset << " maxlen=" << maxlen << std::endl;
-  // Split the char* into array of codepoints
-  std::vector<int> codepoints = utf8::codepoints(str);
-  //std::cout << "Machine::func_substr() begin copying" << std::endl;
-  // Copy the codepoints we want
-  std::vector<int> keep = std::vector<int>(codepoints.begin() + offset, codepoints.begin() + offset + maxlen);
-  //std::cout << "Machine::func_substr() finished copying" << std::endl;
-
-  // Reconstruct a string of UTF8 characters
-  std::string res;
-  //std::cout << "Machine::func_substr() begin reassembly" << std::endl;
-  for (const auto &codepoint : keep) {
-    //std::cout << "  codepoint " << codepoint << std::endl;
-    char buf[5] = {0,0,0,0,0};
-    char* err = nullptr;
-    char* c_res = utf8::append(codepoint, buf, err);
-    res += c_res;
-  }
-
-  //std::cout << "Machine::func_substr() done, result=\"" << result << "\"" << std::endl;
-  *result = FunC::to_stringValue(running->vm, res.c_str());
-  return true;
-}
-*/
 
 // Hide or show blinking cursor
 // Synopsis: cursor(0) // Hide

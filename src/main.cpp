@@ -127,17 +127,17 @@ void process_keydown(Message* msg, std::vector<Machine*> vms, GameState* gamesta
 {
   //std::cout << "process_keydown()" << std::endl;
   if (msg->key.scancode == 71 && (msg->key.mod & KMOD_CTRL)) {
-    std::cout << "GameThread() detected Ctrl+Break" << std::endl;
+    std::cout << "process_keydown() detected Ctrl+Break" << std::endl;
     vms[gamestate->current_vm]->push(new Message(Message::Type::Break));
   }
   if (msg->key.sym == SDLK_INSERT && (msg->key.mod & KMOD_CTRL)) {
-    std::cout << "GameThread() detected Ctrl+Insert" << std::endl;
+    std::cout << "process_keydown() detected Ctrl+Insert" << std::endl;
     //if (focused!=nullptr) { focused->push(new Message(Message::Type::Paste)); }
   }
   if (msg->key.sym == SDLK_INSERT && (msg->key.mod & KMOD_SHIFT)) {
-    std::cout << "GameThread() detected Shift+Insert" << std::endl;
-      char* str = SDL_GetClipboardText();
-      if (str != nullptr) {
+    //std::cout << "process_keydown() detected Shift+Insert" << std::endl;
+    char* str = SDL_GetClipboardText();
+    if (str != nullptr) {
       // Generate TextInput events for clipboard contents
       //std::vector<int> codepoints = UTF8hack::codepoints(str, strlen(str));
       for (auto & codepoint : UTF8hack::codepoints(str, strlen(str))) {
@@ -226,7 +226,7 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
   {
     case Message::Type::Quit:
       //running = false;
-      std::cout << "processMsg() Quit message" << std::endl;
+      //std::cout << "processMsg() Quit message" << std::endl;
       delete msg;
       gamestate->shutdown = true;
       break;
@@ -238,7 +238,7 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
       delete msg;
       break;
     case Message::Type::TextInput:
-      std::cout << "processMsg() TextInput message" << std::endl;
+      //std::cout << "processMsg() TextInput message" << std::endl;
       // Route event to the active Virtual Machine
       vms[gamestate->current_vm]->push(msg);
       break;
@@ -258,11 +258,11 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
       process_mousewheel(msg, scene);
       break;
     case Message::Type::KeyDown:
-      std::cout << "processMsg() KeyDown message" << std::endl;
+      //std::cout << "processMsg() KeyDown message" << std::endl;
       process_keydown(msg, vms, gamestate);
       break;
     case Message::Type::KeyUp:
-      std::cout << "processMsg() KeyUp message" << std::endl;
+      //std::cout << "processMsg() KeyUp message" << std::endl;
       // Route event to the active Virtual Machine
       vms[gamestate->current_vm]->push(msg);
       break;
