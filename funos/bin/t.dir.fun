@@ -6,7 +6,7 @@ fun dir(p, depth) {
   var dh = opendir(p);
   while (f = readdir(dh)) {
     var fname = p+"/"+f;
-    if (fname.chars_at(0,2) == "//") { fname = fname.chars_at(1,null); }
+    if (fname.substr(0,2) == "//") { fname = fname.substr(1); }
     if (f == "." or f == "..") continue;
     if (file_type(fname) == "directory") {
       print("["+f+"]\n");

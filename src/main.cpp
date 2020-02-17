@@ -25,7 +25,8 @@
 #include "Message.h"
 #include "Scene3D.h"
 #include "ShaderProgram.h"
-#include "utf8.h"
+#include "UTF8hack.h"
+#include "hexdump.h" // For debugging only
 
 
 //std::thread gamethread;
@@ -122,12 +123,12 @@ void prepare_scene()
 */
 
 
-void process_keydown(Message* msg, Machine* focused)
+void process_keydown(Message* msg, std::vector<Machine*> vms, GameState* gamestate)
 {
   //std::cout << "process_keydown()" << std::endl;
   if (msg->key.scancode == 71 && (msg->key.mod & KMOD_CTRL)) {
     std::cout << "GameThread() detected Ctrl+Break" << std::endl;
-    if (focused!=nullptr) { focused->push(new Message(Message::Type::Break)); }
+    vms[gamestate->current_vm]->push(new Message(Message::Type::Break));
   }
   if (msg->key.sym == SDLK_INSERT && (msg->key.mod & KMOD_CTRL)) {
     std::cout << "GameThread() detected Ctrl+Insert" << std::endl;
@@ -135,46 +136,44 @@ void process_keydown(Message* msg, Machine* focused)
   }
   if (msg->key.sym == SDLK_INSERT && (msg->key.mod & KMOD_SHIFT)) {
     std::cout << "GameThread() detected Shift+Insert" << std::endl;
-    if (focused!=nullptr) {
       char* str = SDL_GetClipboardText();
       if (str != nullptr) {
-        // Generate TextInput events for clipboard contents
-        std::vector<int> codepoints = utf8::codepoints(str);
-        for (auto & codepoint : codepoints) {
-          //std::cout << "codepoint=" << codepoint << std::endl;
-          switch (codepoint) {
-            case 10: {
-              // Simulate the user hitting Enter (Does not normally produce TextInput events)
-              Message* keydn = new Message(Message::Type::KeyDown);
-              keydn->key.mod = KMOD_NONE;
-              keydn->key.scancode = SDL_SCANCODE_RETURN;
-              keydn->key.sym = SDLK_RETURN;
-              focused->push(keydn);
-              Message* keyup = new Message(Message::Type::KeyUp);
-              keyup->key.mod = KMOD_NONE;
-              keyup->key.scancode = SDL_SCANCODE_RETURN;
-              keyup->key.sym = SDLK_RETURN;
-              focused->push(keyup);
-              break;
-            }
-            default: {
-              Message* clip = new Message(Message::Type::TextInput);
-              char buf[5] = {0,0,0,0,0};
-              char* err = nullptr;
-              char* res = utf8::append(codepoint, buf, err); // utf8.h
-              clip->text = res;
-              focused->push(clip);
-            }
+      // Generate TextInput events for clipboard contents
+      std::vector<int> codepoints = UTF8hack::codepoints(str);
+      for (auto & codepoint : codepoints) {
+        //std::cout << "codepoint=" << codepoint << std::endl;
+        switch (codepoint) {
+          case 10: {
+            // Simulate the user hitting Enter (Does not normally produce TextInput events)
+            Message* keydn = new Message(Message::Type::KeyDown);
+            keydn->key.mod = KMOD_NONE;
+            keydn->key.scancode = SDL_SCANCODE_RETURN;
+            keydn->key.sym = SDLK_RETURN;
+            vms[gamestate->current_vm]->push(keydn);
+            Message* keyup = new Message(Message::Type::KeyUp);
+            keyup->key.mod = KMOD_NONE;
+            keyup->key.scancode = SDL_SCANCODE_RETURN;
+            keyup->key.sym = SDLK_RETURN;
+            vms[gamestate->current_vm]->push(keyup);
+            break;
+          }
+          default: {
+            Message* clip = new Message(Message::Type::TextInput);
+            char buf[5] = {0,0,0,0,0};
+            char* err = nullptr;
+            char* res = UTF8hack::append(codepoint, buf, err); // utf8.h
+            clip->text = res;
+            vms[gamestate->current_vm]->push(clip);
           }
         }
-      } else {
-        std::cout << "Clipboard is empty" << std::endl;
       }
+    } else {
+      std::cout << "Clipboard is empty" << std::endl;
     }
     //if (focused!=nullptr) { focused->push(new Message(Message::Type::Paste)); }
   }
   // Route event to the active Virtual Machine
-  if (focused!=nullptr) { focused->push(msg); } else { delete msg; }
+  vms[gamestate->current_vm]->push(msg);
 }
 
 
@@ -239,7 +238,7 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
       delete msg;
       break;
     case Message::Type::TextInput:
-      //std::cout << "processMsg() TextInput message" << std::endl;
+      std::cout << "processMsg() TextInput message" << std::endl;
       // Route event to the active Virtual Machine
       vms[gamestate->current_vm]->push(msg);
       break;
@@ -260,7 +259,7 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
       break;
     case Message::Type::KeyDown:
       std::cout << "processMsg() KeyDown message" << std::endl;
-      process_keydown(msg, vms[gamestate->current_vm]);
+      process_keydown(msg, vms, gamestate);
       break;
     case Message::Type::KeyUp:
       std::cout << "processMsg() KeyUp message" << std::endl;

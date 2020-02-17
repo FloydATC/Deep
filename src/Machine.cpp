@@ -10,9 +10,12 @@
 #include "IODir.h"
 #include "IOFile.h"
 #include "IOHandle.h"
+#include "IOStream.h"
+#include "IOSocket.h"
 #include "Machine.h"
 #include "Fontcache.h"
-#include "utf8.h"
+#include "UTF8hack.h"
+#include "hexdump.h" // For debugging only
 
 
 
@@ -30,19 +33,11 @@ std::uniform_real_distribution<double> rand_double(0.0, 1.0);
 
 
 
-Machine::Machine()
-{
-}
 
 Machine::Machine(GLuint shaderID, Fontcache fontcache)
 {
   //ctor
-  vm = FunC::initVM();
-  set_callbacks();
-  /*
-  source_buffer = nullptr;
-  source_size = 0;
-  */
+  initialize_vm();
 
   this->display = Display(shaderID, fontcache);
   std::cout << "Virtual Machine " << this << " initialized" << std::endl;
@@ -54,7 +49,7 @@ Machine::Machine(GLuint shaderID, Fontcache fontcache)
 Machine::~Machine()
 {
   //dtor
-  FunC::freeVM(vm);
+  shutdown_vm();
 
   std::cout << "Virtual Machine " << this << " destroyed" << std::endl;
 }
@@ -91,38 +86,70 @@ void split_cmd( const std::string& cmd, std::string* executable, std::string* pa
   }
 }
 
-// Never call this from within the VM. Ever.
-void Machine::reset_vm()
+void Machine::initialize_vm()
 {
-  if (running != nullptr) { return; } // Ever!
-  //std::cout << "Machine::reset_vm() shutting down vm=" << (void*)vm << std::endl;
-  FunC::freeVM(vm);
-
-  //std::cout << "Machine::reset_vm() initializing new vm" << std::endl;
+  if (running != nullptr) { return; }
+  //std::cout << "Machine::init_vm() initializing new vm" << std::endl;
   vm = FunC::initVM();
-  std::cout << "Machine::reset_vm() " << (void*)vm << " ready" << std::endl;
-
+  //std::cout << "Machine::initialize_vm() setting callbacks" << std::endl;
   set_callbacks();
+  //std::cout << "Machine::initialize_vm() create stdin" << std::endl;
+  add_iohandle(new IOStream()); // "stdin"
+  //std::cout << "Machine::initialize_vm() create stdout" << std::endl;
+  add_iohandle(new IOStream()); // "stdout"
+  //std::cout << "Machine::initialize_vm() create stderr" << std::endl;
+  add_iohandle(new IOStream()); // "stderr"
+  //std::cout << "Machine::initialize_vm() " << (void*)vm << " ready" << std::endl;
 }
 
+void Machine::shutdown_vm()
+{
+  if (running != nullptr) { return; }
+  //std::cout << "Machine::shutdown_vm() shutting down vm=" << (void*)vm << std::endl;
+  FunC::freeVM(vm);
+  for (auto& handle: iohandles) {
+    //std::cout << "Machine::shutdown_vm() close IOHandle " << handle << std::endl;
+    if (!handle->is_closed()) handle->close();
+    //std::cout << "Machine::shutdown_vm() delete IOHandle " << handle << std::endl;
+    delete handle;
+  }
+  iohandles.clear();
+}
+
+void Machine::reset_vm()
+{
+  if (running != nullptr) { return; }
+  shutdown_vm();
+  initialize_vm();
+}
+
+
+void Machine::write_to_stdin(const std::string data)
+{
+  if (iohandles.size() >= 1 && !iohandles[0]->is_closed()) {
+    iohandles[0]->write(data);
+    std::cout << "Machine::write_to_stdin() wrote '" << data << "' (" << data.length() << " bytes)" << std::endl;
+  }
+}
 
 // After the FunC VM has been initialized, add callbacks to native functions
 // so they become available for the script engine
 void Machine::set_callbacks()
 {
   // Callbacks to be usable by FunC script
-  std::cout << "Machine::execute_code() setting callbacks" << std::endl;
+  //std::cout << "Machine::execute_code() setting callbacks" << std::endl;
   FunC::set_error_callback(vm, (FunC::ErrorCb) func_errorCallback);
-  FunC::defineNative(vm, "cpp_test",  (FunC::NativeFn) cpp_test);
+
+  // Utility functions (temporary workarounds for language shortcomings)
   FunC::defineNative(vm, "reset",     (FunC::NativeFn) func_reset);
-  FunC::defineNative(vm, "cls",       (FunC::NativeFn) func_cls); // Clear screen or parts of it
-  FunC::defineNative(vm, "print",     (FunC::NativeFn) func_print); // Print arguments
   FunC::defineNative(vm, "str",       (FunC::NativeFn) func_str); // Return argument(s) as string
-  FunC::defineNative(vm, "getc",      (FunC::NativeFn) func_getc); // Get character
+  FunC::defineNative(vm, "getkey",    (FunC::NativeFn) func_getkey); // Read keyboard input
   FunC::defineNative(vm, "chr",       (FunC::NativeFn) func_chr); // Get UTF8 character for codepoint
   FunC::defineNative(vm, "ord",       (FunC::NativeFn) func_ord); // Get codepoint for UTF8 character
-  FunC::defineNative(vm, "sub",       (FunC::NativeFn) func_sub); // Get substring of byte string
-  FunC::defineNative(vm, "substr",    (FunC::NativeFn) func_substr); // Get substring of UTF8 character string
+
+  // Display functions
+  FunC::defineNative(vm, "print",     (FunC::NativeFn) func_print); // Print arguments
+  FunC::defineNative(vm, "cls",       (FunC::NativeFn) func_cls); // Clear screen or parts of it
   FunC::defineNative(vm, "cursor",    (FunC::NativeFn) func_cursor); // 0=Disable or 1=Enable cursor
   FunC::defineNative(vm, "autoscroll",(FunC::NativeFn) func_autoscroll); // 0=Disable or 1=Enable scrolling
   FunC::defineNative(vm, "scr_up",    (FunC::NativeFn) func_scr_up); // Scroll screen or parts of it
@@ -151,8 +178,6 @@ void Machine::set_callbacks()
   FunC::defineNative(vm, "read",      (FunC::NativeFn) func_read); // Read N bytes from an open file
   FunC::defineNative(vm, "readln",    (FunC::NativeFn) func_readln); // Read one line from an open file
   FunC::defineNative(vm, "eof",       (FunC::NativeFn) func_eof); // Get end-of-file detection status for file
-  FunC::defineNative(vm, "error",     (FunC::NativeFn) func_error); // Get last error code for file (0=success)
-  FunC::defineNative(vm, "close",     (FunC::NativeFn) func_close); // Close a file
   FunC::defineNative(vm, "opendir",   (FunC::NativeFn) func_opendir); // Open a directory
   FunC::defineNative(vm, "readdir",   (FunC::NativeFn) func_readdir); // Read from an open directory
   FunC::defineNative(vm, "file_owner",(FunC::NativeFn) func_file_owner); // Return UID for named file
@@ -162,6 +187,11 @@ void Machine::set_callbacks()
   FunC::defineNative(vm, "file_atime",(FunC::NativeFn) func_file_atime); // Return last access time for named file
   FunC::defineNative(vm, "file_mtime",(FunC::NativeFn) func_file_mtime); // Return last modify time for named file
   FunC::defineNative(vm, "file_ctime",(FunC::NativeFn) func_file_ctime); // Return last create time for named file
+
+  // Common I/O functions
+  FunC::defineNative(vm, "close",     (FunC::NativeFn) func_close); // Close a file
+  FunC::defineNative(vm, "error",     (FunC::NativeFn) func_error); // Get last error code for file (0=success)
+
 }
 
 bool Machine::execute_code(std::string code) {
@@ -194,8 +224,9 @@ bool Machine::execute_code(std::string code) {
 bool Machine::execute_file(std::string fname, std::string arguments) {
 //  IOFile file = IOFile(fname);
 //  std::string buf = file.contents;
-  IOFile file;
-  std::string buf = file.slurp(fname);
+  IOFile* file = new IOFile();
+  std::string buf = file->slurp(fname);
+  delete file;
 
   // TODO: Need error handling
 
@@ -245,6 +276,7 @@ bool Machine::execute_line(std::string line)
   }
 }
 
+
 FunC::InterpretResult Machine::run()
 {
   display.pre_render();
@@ -256,7 +288,7 @@ FunC::InterpretResult Machine::run()
       fc_status = FunC::INTERPRET_OK;
       display.print("^C\nREADY.\n");
       display.show_cursor(true);
-      flush();
+      flush_msg_queue();
     } else {
       running = this;
       fc_status = FunC::run(vm);
@@ -267,7 +299,7 @@ FunC::InterpretResult Machine::run()
           if (display.col>0) { display.print("\n"); }
           display.print("READY.\n");
           display.show_cursor(true);
-          flush();
+          flush_msg_queue();
           break;
         case FunC::INTERPRET_COMPILED:
           // run() has already been called so this is should be impossible
@@ -287,12 +319,13 @@ FunC::InterpretResult Machine::run()
           //reset_vm();
           display.print("\rREADY.\n");
           display.show_cursor(true);
-          flush();
+          flush_msg_queue();
       }
     }
   } else {
     // No script running so we need to handle events
     // This is a very primitive test/rescue shell
+    //std::cout << "Machine::run() calling getc() on STDIN" << std::endl;
     Message* msg = nullptr;
     std::string line = "";
     while (m_queue.empty()==false) {
@@ -366,7 +399,7 @@ FunC::InterpretResult Machine::run()
   return fc_status;
 }
 
-void Machine::flush()
+void Machine::flush_msg_queue()
 {
   Message* msg = nullptr;
   while (m_queue.empty()==false) {
@@ -411,13 +444,13 @@ uint16_t Machine::add_iohandle(IOHandle* ptr)
       delete iohandles[i];
       iohandles[i] = ptr;
       //std::cout << "Machine::add_iohandle() reused handle=" << i+1 << std::endl;
-      return i+1; // Handles are 1 indexed
+      return i;
     }
   }
   // No available handles so append it
   iohandles.push_back(ptr);
   //std::cout << "Machine::add_iohandle() appended handle=" << iohandles.size() << std::endl;
-  return iohandles.size(); // Handles are 1 indexed
+  return iohandles.size()-1;
 }
 
 
@@ -425,20 +458,6 @@ uint16_t Machine::add_iohandle(IOHandle* ptr)
 // because FunC is written in C and doesn't have the foggest faintest idea what "this" is.
 // And it doesn't have to, because only one FunC VM will ever be running at any point in time
 // as long as we don't do anything colossaly stupid like try to run them in different threads.
-bool Machine::cpp_test(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
-{
-  std::cout<<"This is cpp_test() current machine=" << running <<std::endl;
-  std::cout<<"Called with "<<argc<<" arguments"<<std::endl;
-
-  std::cout<<"1: "<< FunC::to_double(argv[0]) <<std::endl;
-
-  std::cout<<"2: "<< FunC::to_cstring(argv[1]) <<std::endl;
-
-  const char* res = "This is a test";
-  *result = FunC::to_stringValue(running->vm, res);
-  return true;
-}
-
 
 // FunC calls this to print runtime errors
 void Machine::func_errorCallback(const char* errormsg) {
@@ -547,7 +566,7 @@ bool Machine::func_reset(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value
 
 // Get the next single character (or unprintable key) from the VM event queue,
 // this means reading keyboard input from the user (if any)
-// Synopsis: key = getc()
+// Synopsis: key = getkey()
 // Non-printable keys are translated into a multi-character string with "[Key name]"
 // The user script may differentiate between printable and
 // non-printable keys using the chars() function:
@@ -555,7 +574,7 @@ bool Machine::func_reset(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value
 // length 1 = Single printable character such as "a", "1" or "?"
 // length >1 = Unprintable key or combination like [Return], [Backspace] or [Ctrl Insert]
 // Note: This function will never block
-bool Machine::func_getc(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_getkey(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   // string = getc()
   // Return 1 UTF8 character (or "" if none are waiting)
@@ -616,7 +635,7 @@ bool Machine::func_chr(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* 
   int codepoint = (int) FunC::to_double(argv[0]);
   char buf[5] = {0,0,0,0,0};
   char* err = nullptr;
-  char* res = utf8::append(codepoint, buf, err); // utf8.h
+  char* res = UTF8hack::append(codepoint, buf, err); // utf8.h
   //std::cout << "utf8::append returned \"" << res << "\" for cp " << codepoint << std::endl;
   *result = FunC::to_stringValue(running->vm, (const char*) res);
   return true;
@@ -633,7 +652,7 @@ bool Machine::func_ord(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* 
   // int = ord(string)
   if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
   // We expect only a single char but utf8::codepoints accepts a longer string
-  std::vector<int> results = utf8::codepoints(FunC::to_cstring(argv[0]));
+  std::vector<int> results = UTF8hack::codepoints(FunC::to_cstring(argv[0]));
   // Return the first integer, if any
   if (results.empty()) { *result = FunC::to_numberValue(-1); return false; }
   *result = FunC::to_numberValue(results[0]);
@@ -646,6 +665,7 @@ bool Machine::func_ord(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* 
 // Synopsis: str = substr(string, offset, length)
 // negative offset = count from right hand side
 // negative length = remaining length minus this
+/*
 bool Machine::func_sub(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result) {
   if (argc < 2 || argc > 3) { *result = FunC::to_numberValue(-1); return false; }
   char* str = FunC::to_cstring(argv[0]);
@@ -667,7 +687,7 @@ bool Machine::func_sub(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* 
   *result = FunC::to_stringValue(running->vm, res.c_str());
   return true;
 }
-
+*/
 
 
 
@@ -675,6 +695,7 @@ bool Machine::func_sub(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* 
 // Synopsis: str = substr(string, offset, length)
 // negative offset = count from right hand side
 // negative length = remaining length minus this
+/*
 bool Machine::func_substr(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result) {
   if (argc < 2 || argc > 3) { *result = FunC::to_numberValue(-1); return false; }
   char* str = FunC::to_cstring(argv[0]);
@@ -714,6 +735,7 @@ bool Machine::func_substr(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Valu
   *result = FunC::to_stringValue(running->vm, res.c_str());
   return true;
 }
+*/
 
 // Hide or show blinking cursor
 // Synopsis: cursor(0) // Hide
@@ -1091,7 +1113,7 @@ bool Machine::func_read(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value*
   int handle = (int) FunC::to_double(argv[0]);
   int bytes = (int) FunC::to_double(argv[1]);
   //std::cout << "Machine::func_read() handle=" << handle << " bytes=" << bytes << std::endl;
-  std::string res = running->iohandles[handle-1]->read(bytes);
+  std::string res = running->iohandles[handle]->read(bytes);
   *result = FunC::to_stringValue(running->vm, res.c_str());
   return true;
 }
@@ -1107,7 +1129,7 @@ bool Machine::func_readln(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Valu
   if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
   int handle = (int) FunC::to_double(argv[0]);
   //std::cout << "Machine::func_readln() handle=" << handle << std::endl;
-  std::string res = running->iohandles[handle-1]->readln();
+  std::string res = running->iohandles[handle]->readln();
   *result = FunC::to_stringValue(running->vm, res.c_str());
   return true;
 }
@@ -1119,7 +1141,7 @@ bool Machine::func_eof(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* 
   if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
   int handle = (int) FunC::to_double(argv[0]);
   //std::cout << "Machine::func_eof() handle=" << handle << std::endl;
-  int res = running->iohandles[handle-1]->is_eof() ? 1 : 0;
+  int res = running->iohandles[handle]->is_eof() ? 1 : 0;
   *result = FunC::to_numberValue(res); return true;
 }
 
@@ -1131,7 +1153,7 @@ bool Machine::func_error(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value
   if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
   int handle = (int) FunC::to_double(argv[0]);
   //std::cout << "Machine::func_close() handle=" << handle << std::endl;
-  int res = running->iohandles[handle-1]->last_error();
+  int res = running->iohandles[handle]->last_error();
   *result = FunC::to_numberValue(res); return true;
 }
 
@@ -1141,7 +1163,7 @@ bool Machine::func_close(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value
   if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
   int handle = (int) FunC::to_double(argv[0]);
   //std::cout << "Machine::func_close() handle=" << handle << std::endl;
-  running->iohandles[handle-1]->close();
+  running->iohandles[handle]->close();
   *result = FunC::to_numberValue(1); return true;
 }
 
@@ -1167,9 +1189,9 @@ bool Machine::func_readdir(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Val
   if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
   int handle = (int) FunC::to_double(argv[0]);
   //std::cout << "Machine::func_readdir() handle=" << handle << std::endl;
-  if (running->iohandles[handle-1]->last_error() == 0 && running->iohandles[handle-1]->is_closed() == false) {
+  if (running->iohandles[handle]->last_error() == 0 && running->iohandles[handle]->is_closed() == false) {
     //std::cout << "Machine::func_readdir(" << handle << ")...";
-    std::string res = running->iohandles[handle-1]->read();
+    std::string res = running->iohandles[handle]->read();
     //std::cout << "done" << std::endl;
     *result = FunC::to_stringValue(running->vm, res.c_str());
   } else {

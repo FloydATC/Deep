@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "Fontcache.h"
-#include "utf8.h"
+#include "UTF8hack.h"
 
 Fontcache::Fontcache()
 {
@@ -75,7 +75,7 @@ GLuint Fontcache::glyph(int codepoint)
     //std::string str = UnicodeToUTF8(codepoint);
     char buf[5] = {0};
     char* err = nullptr;
-    char* res = utf8::append(codepoint, buf, err);
+    char* res = UTF8hack::append(codepoint, buf, err);
     if (strlen(res)==0) { strcpy(res, "X"); }
     //std::cout << "glyph() String representation is '" << res << "'" << std::endl;
     //SDL_Surface* surface = TTF_RenderUTF8_Solid(font, str.c_str(), fcolor);

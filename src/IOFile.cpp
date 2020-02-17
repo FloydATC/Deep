@@ -7,7 +7,6 @@
 #include <string>
 #include <cstdio>
 #include <errno.h>
-//#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -75,7 +74,7 @@ IOFile* IOFile::open(std::string filename, std::string mode) {
 void IOFile::fill_buffer()
 {
   //std::cout << "IOFile::fill_buffer()" << std::endl;
-  const size_t buflen = 4096;
+  size_t buflen = this->bufsize;
   char buf[buflen];
 
   bytes_read = fread (buf, sizeof(char), buflen, handle);
@@ -92,20 +91,29 @@ void IOFile::fill_buffer()
   }
 }
 
-std::string IOFile::drain_buffer(uint16_t bytes)
+std::string IOFile::drain_buffer(int bytes)
 {
   //std::cout << "IOFile::drain_buffer() bytes=" << bytes << std::endl;
-  if (bytes > buffer.size()) bytes = buffer.size();
+  if (bytes > (int) buffer.size()) bytes = buffer.size();
   std::string result = buffer.substr(0, bytes);
   buffer = buffer.substr(bytes);
   return result;
 }
 
-std::string IOFile::read(uint16_t bytes)
+std::string IOFile::getc()
 {
+  //std::cout << "IOFile::getc()" << std::endl;
+  if ((int) buffer.size() < this->bufsize) fill_buffer();
+  return drain_buffer(1);
+}
+
+std::string IOFile::read(const int bytes)
+{
+  int read_bytes = bytes;
   //std::cout << "IOFile::read() bytes=" << bytes << std::endl;
-  if (buffer.size() < 4096) fill_buffer();
-  return drain_buffer(bytes);
+  if (read_bytes <= 0) read_bytes = this->bufsize;
+  if ((int) buffer.size() < this->bufsize) fill_buffer();
+  return drain_buffer(read_bytes);
 }
 
 std::string IOFile::readln() {
@@ -130,6 +138,22 @@ std::string IOFile::readln() {
     return drain_buffer(pos + 1); // Return line from buffer.
   }
 }
+
+
+int IOFile::write(const std::string data) {
+  this->buffer.append(data);
+  return data.length();
+}
+
+
+int IOFile::writeln(const std::string data) {
+  this->buffer.append(data);
+  this->buffer.append(this->crlf);
+  return data.length() + this->crlf.length();
+}
+
+
+
 
 void IOFile::close() {
   fclose(handle);

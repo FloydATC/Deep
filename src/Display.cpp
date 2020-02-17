@@ -2,7 +2,7 @@
 
 #include "Display.h"
 #include "Fontcache.h"
-#include "utf8.h"
+#include "UTF8hack.h"
 //#include <glew.h>
 //#include "SDL_opengl.h"
 //#include "SDL.h"
@@ -208,17 +208,33 @@ void Display::draw_point(int x, int y)
 
 
 
-void Display::print(const char* str)
+void Display::print(const char* string)
 {
+  char* str = (char*) string;
   check_gl("print() enter");
   int len = strlen(str);
+  if (len > 4000) {
+    // Sanity check:
+    // If we get a ridiculously large string, it makes little sense to print
+    // more than the last 4000 bytes because there is no way
+    // to fit more than 1000 utf-8 characters on a 40 x 25 screen.
+    // Even printing as many as 1000 characters in one go would be fairly exotic.
+    // Note that THEORETICALLY this can break ridiculously long strings that
+    // rewrite the same line(s) using Carriage Return, or if autoscroll is off.
+    // This is such an exotic scenario, we set 4000 as the official limit and
+    // demand such prints be split into multiple calls.
+    // Printing large joined arrays (possibly by accident) is far more likely
+    // and needs to be handled gracefully.
+    str = str + len - 4000;
+    len = 4000;
+  }
   //std::cout << "Display::print() str=" << str << " len=" << len << std::endl;
   if (len==0) return;
   //int codepoint;
   //SDL_Surface* block = font.glyph(0x2588); // Use for drawing the background
   GLuint block = font.glyph(0x2588); // Use for drawing the background
   hide_cursor();
-  for (const auto& codepoint : utf8::codepoints(str)) {
+  for (const auto& codepoint : UTF8hack::codepoints(str)) {
     //std::cout << "cp=" << codepoint << std::endl;
     // If printable, draw background then codepoint glyph
     if (codepoint == 10) {
@@ -520,7 +536,7 @@ std::string Display::char_at(int row, int col)
   if (col >= cols) { col = cols - 1; }
   char buf[5] = {0};
   char* err = nullptr;
-  char* res = utf8::append(ccmem[row][col], buf, err);
+  char* res = UTF8hack::append(ccmem[row][col], buf, err);
   return res;
   //return Fontcache::UnicodeToUTF8(ccmem[row][col]);
 }

@@ -16,8 +16,11 @@ class IOFile : public IOHandle
 
     static IOFile* open(std::string filename, std::string mode);
     static IOFile* stat(std::string filename);
-    std::string read(uint16_t bytes);
+    std::string read(const int bytes);
     std::string readln();
+    int write(const std::string data);
+    int writeln(const std::string data);
+    std::string getc();
     void close();
     bool is_eof();
     int uid() { return statbuf.st_uid; };
@@ -38,11 +41,10 @@ class IOFile : public IOHandle
     struct stat statbuf;
     FILE* handle;
     std::string openmode;
-    std::string buffer;
     ssize_t bytes_read;
 
     void fill_buffer();
-    std::string drain_buffer(uint16_t bytes);
+    std::string drain_buffer(int bytes);
 
 };
 

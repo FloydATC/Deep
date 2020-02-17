@@ -3,7 +3,7 @@
 
 #include "IOHandle.h"
 
-class IOSocket : protected IOHandle
+class IOSocket : public IOHandle
 {
   public:
     IOSocket();

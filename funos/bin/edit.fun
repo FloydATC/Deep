@@ -1,191 +1,27 @@
 
+// Initialize
+var bgc = 6; // blue
+var fgc = 3; // cyan
+var docL = 0;
+var docC = 0;
+var scrR = 1;
+var scrC = 0;
+var mode = "INSERT";
 
-// ---- Linked list v1.0 ----
+var lines = [""]; // Empty document
+var line = "";
 
-class List {}
-
-// Initialize linked list
-fun new_list() {
-  var list = List();
-  list.length = 0;
-  list.head = null;
-  list.tail = null;
-  return list;
-}
-
-class ListItem {}
-
-// Add item at the beginning
-fun unshift_list(list, value) {
-  var item = ListItem();
-  item.value = value;
-  item.prev = null;
-  item.next = list.head;
-  if (item.next==null) {
-    // First
-    list.tail = item;
-  } else {
-    // Attach self to beginning of list
-    item.next.prev = item;
-  }
-  list.head = item;
-  list.length = list.length + 1;
-  return list.length;
-}
-
-// Add item at the end
-fun push_list(list, value) {
-  var item = ListItem();
-  item.value = value;
-  item.next = null;
-  item.prev = list.tail;
-  if (item.prev==null) {
-    // First
-    list.head = item;
-  } else {
-    // Attach self to end of list
-    item.prev.next = item;
-  }
-  list.tail = item;
-  list.length = list.length + 1;
-  return list.length;
-}
-
-// Remove first item
-fun shift_list(list) {
-  if (list.length == 0) { return null; }
-  var item = list.head;
-  if (item.next == null) {
-    list.tail = null;
-  } else {
-    item.next.prev = null;
-  }
-  list.head = item.next;
-  list.length = list.length - 1;
-  return item.value;
-}
-
-// Remove last item
-fun pop_list(list) {
-  if (list.length == 0) { return null; }
-  var item = list.tail;
-  if (item.prev == null) {
-    list.head = null;
-  } else {
-    item.prev.next = null;
-  }
-  list.tail = item.prev;
-  list.length = list.length - 1;
-  return item.value;
-}
-
-// Loop through list
-fun foreach_list(list, function) {
-  var item = list.head;
+fun foreach_list(list, fn) {
   var i = 0;
-  while (item!=null) {
-    function(item.value, i++);
-    item = item.next;
+  while (i<list.length) {
+    fn(list[i], i++);
   }
 }
-
-
-fun join_list(list, delimiter) {
-  var str = "";
-  fun concat(value, i) {
-    if (i>0) { str = str + delimiter; }
-    str = str + value;
-  }
-  foreach_list(list, concat);
-  return str;
-}
-
-fun get_list(list, n) {
-  var i=0;
-  if (n >= list.length) { return null; } // Invalid
-  var item = list.head;
-  while (item!=null) {
-    if (i==n) {
-      //debug(str("get_list(",n,") =>", item.value));
-      return item.value;
-    }
-    item = item.next;
-    i++;
-  }
-  return null; // Unreachable
-}
-
-fun set_list(list, n, value) {
-  var i=0;
-  if (n >= list.length) { return null; } // Invalid
-  var item = list.head;
-  while (item!=null) {
-    if (i==n) {
-      item.value = value;
-      //debug(str("set_list(",n,",",value,") ok"));
-      return item.value;
-    }
-    item = item.next;
-    i++;
-  }
-  return null; // Unreachable
-}
-
-fun del_list(list, n) {
-  var i=0;
-  if (n >= list.length) { return null; } // Invalid
-  // First and last items are special cases
-  if (n == 0) { return shift_list(list); }
-  if (n == list.length-1) { return pop_list(list); }
-
-  var item = list.head;
-  while (item!=null) {
-    if (i==n) {
-      item.prev.next = item.next;
-      item.next.prev = item.prev;
-      list.length = list.length - 1;
-      return item.value;
-    }
-    item = item.next;
-    i++;
-  }
-  return null; // Unreachable
-}
-
-fun ins_list(list, n, value) {
-  var new = ListItem();
-  new.value = value;
-  new.prev = null;
-  new.next = null;
-  var i=0;
-  // First and last items are special cases
-  if (n == 0) { return unshift_list(list, value); }
-  if (n >= list.length) { return push_list(list, value); }
-
-  var item = list.head;
-  while (item!=null) {
-    if (i==n) {
-      item.prev.next = new; // link to new from previous
-      new.prev = item.prev; // link from new to previous
-      new.next = item;      // link from new to current
-      item.prev = new;      // link from current to new
-      list.length = list.length + 1;
-      return new.value;
-    }
-    item = item.next;
-    i = i + 1;
-  }
-  return null; // Unreachable
-}
-
-// =============================
-
-
 
 
 // Prepare screen
-bg(6); // blue
-fg(3); // cyan
+bg(bgc); // blue
+fg(fgc); // cyan
 cls();
 
 // Draw title bar
@@ -207,6 +43,8 @@ fun statusbar(mode) {
   fg(6); // blue
   print("line:",docL," col:",docC," ",mode);
   cls(24,col(),24,39); // space
+  bg(bgc);
+  fg(bgc);
 }
 
 // Horizontal scroll bar
@@ -240,11 +78,11 @@ fun editor_scroll_up() {
   scr_up(1, 0, 22, 38);
   // Patch bottom line
   var this_line = docL-scrR+22;
-  var line = get_list(lines, this_line);
+  var line = lines[this_line];
   if (line != null) {
     pos(22,0);
     var fc = docC-scrC;
-    print(substr(line, fc, fc+39));
+    print(line.substr(fc, fc+39));
   }
 }
 
@@ -256,28 +94,26 @@ fun editor_scroll_down() {
   scr_down(1, 0, 22, 38);
   // Patch top line
   var this_line = docL-(scrR-1);
-  var line = get_list(lines, this_line);
+  var line = lines[this_line];
   if (line != null) {
     pos(1,0);
     var fc = docC-scrC;
-    print(substr(line, fc, fc+39));
+    print(line.substr(fc, fc+39));
   }
 }
 
 
 fun editor_scroll_left() {
   cursor(0);
-  set_list(lines, docL, line);
+  lines[docL] = line;
   fun patch_right_edge(line, i) {
     var first = docL-scrR+1;
     if (i >= first and i <= first+21) {
       pos(i+1-first, 38);
       var fc = docC-scrC;
-      var c = substr(line, fc+39, 1);
-      print(c ? c : " ");
+      print(line.chars>=fc+39 ? line.substr(fc+39, 1) : " ");
     }
   }
-  //debug("editor_scroll_left()");
   hscrollbar();
   bg(bgc);
   fg(fgc);
@@ -290,13 +126,13 @@ fun editor_scroll_left() {
 
 fun editor_scroll_right() {
   cursor(0);
-  set_list(lines, docL, line);
+  lines[docL] = line;
   fun patch_right_edge(line, i) {
     var first = docL-scrR+1;
     if (i >= first and i <= first+21) {
       pos(i+1-first, 0);
       var fc = docC-scrC;
-      var c = substr(line, fc, 1);
+      var c = line.substr(fc, 1);
       print(c ? c : " ");
     }
   }
@@ -315,19 +151,17 @@ fun redraw_screen() {
   cursor(0);
   if (scrR>docL+1) { scrR = docL+1; }
   //debug(str("redraw_screen() docL=",docL," docC=",docC," scrR=",scrR," scrC=",scrC));
-  set_list(lines, docL, line);
+  lines[docL] = line;
+  bg(bgc);
+  fg(fgc);
   cls(1,0,22,38);
   fun print_line(line, i) {
     //debug(str("redraw_screen() loop i=", i, " begin"));
     var first = docL-scrR+1;
     if (i >= first and i <= first+21) {
       var fc = docC-scrC;
-      //debug(str("redraw_screen() loop i=", i, " pos"));
       pos(i+1-first, 0);
-      //debug(str("redraw_screen() loop i=", i, " substr"));
-      //debug(str("redraw_screen() line=", line));
-      //debug(str("redraw_screen() fc=", fc));
-      print(substr(line, fc, 39));
+      if (fc<line.chars) print(line.substr(fc, 39));
     }
     //debug(str("redraw_screen() loop i=", i, " end"));
   }
@@ -376,11 +210,14 @@ fun check_cursor_pos() {
 
 fun handle_return() {
   // Break current line, insert a new one
-  var tail = substr(line, docC);
-  line = substr(line, 0, docC);
-  set_list(lines, docL, line);
+  //var tail = substr(line, docC);
+  var tail = line.substr(docC, 39);
+  //line = substr(line, 0, docC);
+  line = line.substr(0, docC);
+  lines[docL] = line;
   line = tail;
-  ins_list(lines, docL+1, line);
+  //debug("lines="+lines.length.base(10)+" docL="+docL.base(10));
+  lines[docL+1:0] = [line]; // Insert below
   if (docC-scrC == 0) {
     // We are scrolled all the way left
     cls(scrR, scrC, scrR, 38); // Clear rest of current line
@@ -392,13 +229,13 @@ fun handle_return() {
       // Push lines down
       scr_down(scrR, 0, 22, 38);
       pos(scrR, 0);
-      print(substr(tail, 0, 39));
+      print(tail.substr(0, 39));
     } else {
       // We need to scroll up instead
       scrR=22;
       scr_up(1, 0, 22, 38);
       pos(scrR, 0);
-      print(substr(tail, 0, 39));
+      print(tail.substr(0, 39));
       pos(scrR, 0);
     }
   } else {
@@ -413,11 +250,10 @@ fun handle_return() {
 }
 
 fun handle_up() {
-  set_list(lines, docL, line);
+  lines[docL] = line;
   if (docL > 0) {
     docL--;
-    line = get_list(lines, docL);
-    //debug("line"+str(docL)+" '"+line+"'");
+    line = lines[docL];
     if (scrR == 1) {
       // Need to scroll down
       editor_scroll_down();
@@ -430,12 +266,14 @@ fun handle_up() {
 }
 
 fun handle_down() {
-  set_list(lines, docL, line);
-  var peek = get_list(lines, docL+1);
-  if (peek == null) { return; } // End of file
+  lines[docL] = line;
+
+
+  if (docL+1 == lines.length) { return; } // End of file
+
   scrR++;
   docL++;
-  line = peek;
+  line = lines[docL];
   if (scrR>22) {
     // We need to scroll up
     scrR=22;
@@ -448,9 +286,9 @@ fun handle_left() {
   if (docC == 0) {
     // Go to end of previous line
     if (docL > 0) {
-      set_list(lines, docL, line);
+      lines[docL] = line;
       docL--;
-      line = get_list(lines, docL);
+      line = lines[docL];
       if (scrR==1) {
         editor_scroll_down();
       } else {
@@ -488,11 +326,10 @@ fun handle_right() {
     docC++;
   } else {
     // Jump to beginning of next line
-    var peek = get_list(lines, docL+1);
-    if (peek == null) { return; }
-    set_list(lines, docL, line);
-    line = peek;
+    if (docL+1 == lines.length) return; // End of file
+    lines[docL] = line;
     docL++;
+    line = lines[docL];
     scrR++;
     if (scrR>22) {
       scrR = 22;
@@ -526,11 +363,11 @@ fun handle_backspace() {
   if (docC == 0) {
     // Need to merge this line with previous line
     if (docL > 0) {
-      del_list(lines, docL);
+      lines[docL:1] = []; // Delete line
       scr_up(scrR, 0, 22, 38);
       docL--;
       scrR--;
-      var prev = get_list(lines, docL);
+      var prev = lines[docL];
       var linelen = prev.chars;
       line = prev + line;
       docC = linelen;
@@ -538,10 +375,10 @@ fun handle_backspace() {
       check_cursor_pos();
       var fc = docC-scrC;
       pos(scrR,scrC);
-      print(substr(line, docC, fc-docC+39));
+      print(line.substr(docC, fc-docC+39));
     }
   } else {
-    line = substr(line, 0, docC-1) + substr(line, docC);
+    line = line.substr(0, docC-1) + line.substr(docC); // HMMM
     if (scrC ==0) {
       editor_scroll_right();
     } else {
@@ -551,7 +388,7 @@ fun handle_backspace() {
       fg(fgc);
       pos(scrR, scrC);
       // Redraw line from cursor
-      print(substr(line+" ", docC, cols()-1-scrC));
+      print((line+" ").substr(docC, cols()-1-scrC));
     }
   }
 }
@@ -560,32 +397,31 @@ fun handle_delete() {
   var linelen = line.chars;
   if (docC == linelen) {
     // Need to merge previous line with this one
-    var next = get_list(lines, docL+1);
-    if (next != null) {
-      line = line + next;
-      del_list(lines, docL+1);
+    if (lines.length > docL+1) {
+      line = line + lines[docL+1];
+      lines[docL+1:1] = []; // Delete line below current
       if (scrR<22) {
         scr_up(scrR+1, 0, 22, 38);
       }
       pos(scrR,scrC);
-      print(substr(line+" ", docC, cols()-1-scrC));
+      print((line+" ").substr(docC, cols()-1-scrC));
     }
   } else {
     // Eat the next character
-    line = substr(line, 0, docC) + substr(line, docC+1);
-    print(substr(line+" ", docC, cols()-1-scrC));
+    line = line.substr(0, docC) + line.substr(docC+1); // HMMM
+    print((line+" ").substr(docC, cols()-1-scrC));
   }
 }
 
 fun handle_pgup() {
-  set_list(lines, docL, line);
+  lines[docL] = line;
   if (docL>0) {
     docL-=22;
     if (docL<0) {
       scrR=1;
       docL=0;
     }
-    line = get_list(lines, docL);
+    line = lines[docL];
     var linelen = line.chars;
     if (docC > linelen) { check_cursor_pos(); }
     redraw_screen();
@@ -593,7 +429,7 @@ fun handle_pgup() {
 }
 
 fun handle_pgdn() {
-  set_list(lines, docL, line);
+  lines[docL] = line;
   if (docL<lines.length-1) {
     docL+=22;
     if (docL>lines.length-23) {
@@ -601,7 +437,7 @@ fun handle_pgdn() {
       if (scrR>lines.length) { scrR=lines.length; }
       docL=lines.length-1;
     }
-    line = get_list(lines, docL);
+    line = lines[docL];
     var linelen = line.chars;
     if (docC > linelen) { check_cursor_pos(); }
     redraw_screen();
@@ -612,7 +448,10 @@ fun handle_character(key) {
   // Single, regular character key
 
   // Insert character into current line
-  line = substr(line, 0, docC) + key + substr(line, docC);
+  var temp = line;
+  line = temp.substr(0, docC)
+       + key
+       + temp.substr(docC); // HMMM
 
   // Push current line
   scr_right(scrR, scrC, scrR, cols()-2);
@@ -631,18 +470,22 @@ fun handle_character(key) {
   }
 }
 
-// Initialize
-var bgc = 6; // blue
-var fgc = 3; // cyan
-var docL = 0;
-var docC = 0;
-var scrR = 1;
-var scrC = 0;
-var mode = "INSERT";
+fun handle_string(string) {
+  // Multiple regular character keys at the same time (for efficiency)
 
-var lines = new_list();
-var line = "";
-push_list(lines, line);
+  // Insert string into current line
+  var temp = line;
+  line = temp.substr(0, docC)
+       + string
+       + temp.substr(docC); // HMMM
+
+  // Push current line
+  scrC+=string.chars;
+  docC+=string.chars;
+  if (scrC > 38) scrC = 38;
+  redraw_screen();
+}
+
 
 var running = true;
 titlebar("");
@@ -656,49 +499,51 @@ cursor(1);
 
 // Main loop
 while (running==true) {
-  var key = getc();
+  var key = "";
+  var string = "";
+  while((key = getkey()) and (key.chars==1) and (key.code>=32)) string += key;
+  if (string != "") {
+    if (string.chars == 1) {
+      handle_character(string);
+    } else {
+      handle_string(string);
+    }
+    statusbar(mode);
+  }
 
   if (key=="") {
     sleep(0); // Yield
   } else {
-    if (key.chars==1) {
-      handle_character(key);
-    } else {
       // Any other keystrokes:
 
-      switch (key) {
+    switch (key) {
 
-        // -- Navigation
-        case "[Up]":         handle_up();        break;
-        case "[Down]":       handle_down();      break;
-        case "[Left]":       handle_left();      break;
-        case "[Right]":      handle_right();     break;
-        case "[Home]":       handle_home();      break;
-        case "[End]":        handle_end();       break;
-        case "[PageUp]":     handle_pgup();      break;
-        case "[PageDown]":   handle_pgdn();      break;
+      // -- Navigation
+      case "[Up]":         handle_up();        break;
+      case "[Down]":       handle_down();      break;
+      case "[Left]":       handle_left();      break;
+      case "[Right]":      handle_right();     break;
+      case "[Home]":       handle_home();      break;
+      case "[End]":        handle_end();       break;
+      case "[PageUp]":     handle_pgup();      break;
+      case "[PageDown]":   handle_pgdn();      break;
 
-        // -- Editing
-        case "[Return]":     handle_return();    break;
-        case "[Backspace]":  handle_backspace(); break;
-        case "[Delete]":     handle_delete();    break;
+      // -- Editing
+      case "[Return]":     handle_return();    break;
+      case "[Backspace]":  handle_backspace(); break;
+      case "[Delete]":     handle_delete();    break;
 
-        // -- Application
-        case "[Ctrl C]":     running = false;    break;
+      // -- Application
+      case "[Ctrl C]":     running = false;    break;
 
-        // -- Unknown / ignored
-        default: {
-          pos(0,0);
-          print(key);
-        }
+      // -- Unknown / ignored
+      default: {
+        pos(0,0);
+        print(key);
       }
     }
 
-
     statusbar(mode);
-    pos(scrR,scrC);
-    bg(6); // blue
-    fg(3); // cyan
   }
 }
 

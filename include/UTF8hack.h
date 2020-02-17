@@ -3,11 +3,11 @@
 
 #include <vector>
 
-class utf8
+class UTF8hack
 {
   public:
-    //utf8();
-    //~utf8();
+    //UTF8();
+    //~UTF8();
 
     static char* append(int cp, char* result, char* error);
     static std::vector<int> codepoints(const char* str);
