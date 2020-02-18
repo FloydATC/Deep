@@ -1,6 +1,7 @@
 #ifndef IOFILE_H
 #define IOFILE_H
 
+#include <fstream>
 #include <vector>
 #include <string>
 
@@ -23,6 +24,8 @@ class IOFile : public IOHandle
     std::string getc();
     void close();
     bool is_eof();
+    bool is_readable();
+    bool is_writable();
     int uid() { return statbuf.st_uid; };
     int gid() { return statbuf.st_gid; };
     int mode() { return statbuf.st_mode; };
@@ -39,12 +42,17 @@ class IOFile : public IOHandle
 
   private:
     struct stat statbuf;
-    FILE* handle;
-    std::string openmode;
+    //FILE* handle;
+    std::fstream handle;
+    std::string filemode; // fopen style "rwa+" visible to user
+    std::ios_base::openmode fileflags; // internal std::fstream madness
     ssize_t bytes_read;
 
     void fill_buffer();
-    std::string drain_buffer(int bytes);
+    std::string drain_buffer(const size_t bytes);
+    size_t flush_buffer(const size_t bytes);
+    bool filemode_has(char c);
+    void set_fileflags(std::string mode);
 
 };
 

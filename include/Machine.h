@@ -83,6 +83,8 @@ class Machine
     static bool func_open      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_read      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_readln    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_write     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_writeln   (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_eof       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_opendir   (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_readdir   (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);

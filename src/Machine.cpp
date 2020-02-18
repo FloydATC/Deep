@@ -164,8 +164,10 @@ void Machine::set_callbacks()
 
   // Disk I/O functions
   FunC::defineNative(vm, "open",      (FunC::NativeFn) func_open); // Open a file
-  FunC::defineNative(vm, "read",      (FunC::NativeFn) func_read); // Read N bytes from an open file
-  FunC::defineNative(vm, "readln",    (FunC::NativeFn) func_readln); // Read one line from an open file
+  FunC::defineNative(vm, "read",      (FunC::NativeFn) func_read); // Read N bytes from an open file/socket/stream
+  FunC::defineNative(vm, "readln",    (FunC::NativeFn) func_readln); // Read one line from an open file/socket/stream
+  FunC::defineNative(vm, "write",     (FunC::NativeFn) func_write); // Write N bytes to an open file/socket/stream
+  FunC::defineNative(vm, "writeln",   (FunC::NativeFn) func_writeln); // Read one line from an open file/socket/stream
   FunC::defineNative(vm, "eof",       (FunC::NativeFn) func_eof); // Get end-of-file detection status for file
   FunC::defineNative(vm, "opendir",   (FunC::NativeFn) func_opendir); // Open a directory
   FunC::defineNative(vm, "readdir",   (FunC::NativeFn) func_readdir); // Read from an open directory
@@ -956,8 +958,8 @@ bool Machine::func_rand(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value*
 bool Machine::func_open(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   if (argc != 2) { *result = FunC::to_numberValue(-1); return false; }
-  char* filename = FunC::to_cstring(argv[0]);
-  char* mode = FunC::to_cstring(argv[1]);
+  std::string filename = FunC::to_cstring(argv[0]);
+  std::string mode = FunC::to_cstring(argv[1]);
   //std::cout << "Machine::func_open() filename=" << filename << " mode=" << mode << std::endl;
   IOFile* file = IOFile::open(filename, mode);
   int handle = running->add_iohandle(file);
@@ -981,10 +983,12 @@ bool Machine::func_read(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value*
 
 // Attempt to read from an open handle until '\n' is found or
 // end-of-file is detected.
-// Note: This operation may return emptystring "" for very long lines
+// Note: This operation MAY return emptystring "" for very long lines
 // (>4096 bytes) which may require multiple readln() // calls.
 // If this is the case, error(fh) will return EAGAIN (code 3406)
 // Synopsis: while (!eof(fh)) { var line = readln(fh); }
+// WARNING! The following code is UNSAFE:
+//   while (line = readln()) { ... } // May end prematurely for very long lines!
 bool Machine::func_readln(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
@@ -992,6 +996,35 @@ bool Machine::func_readln(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Valu
   //std::cout << "Machine::func_readln() handle=" << handle << std::endl;
   std::string res = running->iohandles[handle]->readln();
   *result = FunC::to_stringValue(running->vm, res.c_str());
+  return true;
+}
+
+// Attempt to write to an open file handle
+// Synopsis: var bytes_written = write(fh, buffer);
+bool Machine::func_write(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  if (argc != 2) { *result = FunC::to_numberValue(-1); return false; }
+  int handle = (int) FunC::to_double(argv[0]);
+  std::string buffer = FunC::to_cstring(argv[1]);
+  //std::cout << "Machine::func_write() handle=" << handle << " bytes=" << buffer.length() << std::endl;
+  int bytes_written = running->iohandles[handle]->write(buffer);
+  *result = FunC::to_numberValue(bytes_written);
+  return true;
+}
+
+// Attempt to write to an open file handle,
+// adding a platform dependent newline character sequence
+// ("\r\n" on Windows, "\n" elsewhere)
+// Synopsis: var bytes_written = writeln(fh, buffer);
+// Note: bytes_written INCLUDES the newline character sequence
+bool Machine::func_writeln(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  if (argc != 2) { *result = FunC::to_numberValue(-1); return false; }
+  int handle = (int) FunC::to_double(argv[0]);
+  std::string buffer = FunC::to_cstring(argv[1]);
+  //std::cout << "Machine::func_writeln() handle=" << handle << " bytes=" << buffer.length() << std::endl;
+  int bytes_written = running->iohandles[handle]->writeln(buffer);
+  *result = FunC::to_numberValue(bytes_written);
   return true;
 }
 

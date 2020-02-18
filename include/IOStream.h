@@ -19,7 +19,7 @@ class IOStream : public IOHandle
   protected:
 
   private:
-    std::string drain_buffer(int bytes);
+    std::string drain_buffer(const size_t bytes);
 };
 
 #endif // IOSTREAM_H

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #define ENOSTR 60 // Device not a stream
 
@@ -12,9 +13,13 @@ class IOHandle
     IOHandle();
     virtual ~IOHandle();
 
+    std::string strip_cr_lf(std::string str);
+
     bool is_closed() { return closed; }
     int last_error() { return error; }
     virtual bool is_eof() { return false; }
+    virtual bool is_readable() { return false; }
+    virtual bool is_writable() { return false; }
     virtual std::string read(const int bytes) { error=ENOSTR; return ""; }
     virtual std::string readln() { error=ENOSTR; return ""; }
     virtual int write(const std::string data) { error=ENOSTR; return -1; }
@@ -25,8 +30,16 @@ class IOHandle
 
   protected:
     int bufsize = 4096;
-    std::string buffer;
-    std::string crlf = "\r\n";
+    std::vector<char> r_buffer;
+    std::vector<char> w_buffer;
+    char readln_newline = '\n';
+#if defined _WIN32 || defined _WIN32_WINNT || defined _WIN64 || defined WIN32
+#define IS_WINDOWS
+    std::string newline = "\r\n";
+#endif
+#ifndef IS_WINDOWS
+    std::string newline = "\n";
+#endif
     bool closed = false;
     int error = 0;
 
