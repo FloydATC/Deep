@@ -11,6 +11,7 @@ namespace FunC {
 #include <SDL_ttf.h>
 
 #include "Display.h"
+#include "IOHandle.h"
 #include "Message.h"
 #include <queue>
 
@@ -81,10 +82,6 @@ class Machine
 
     // Disk I/O functions
     static bool func_open      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_read      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_readln    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_write     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_writeln   (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_eof       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_opendir   (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_readdir   (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
@@ -96,7 +93,18 @@ class Machine
     static bool func_file_mtime(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_file_ctime(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
 
+    // Network I/O functions
+    static bool func_connect   (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_listen    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_accept    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_send      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_recv      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+
     // Common I/O functions
+    static bool func_read      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_readln    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_write     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_writeln   (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_error     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_close     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
 

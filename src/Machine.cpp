@@ -164,10 +164,6 @@ void Machine::set_callbacks()
 
   // Disk I/O functions
   FunC::defineNative(vm, "open",      (FunC::NativeFn) func_open); // Open a file
-  FunC::defineNative(vm, "read",      (FunC::NativeFn) func_read); // Read N bytes from an open file/socket/stream
-  FunC::defineNative(vm, "readln",    (FunC::NativeFn) func_readln); // Read one line from an open file/socket/stream
-  FunC::defineNative(vm, "write",     (FunC::NativeFn) func_write); // Write N bytes to an open file/socket/stream
-  FunC::defineNative(vm, "writeln",   (FunC::NativeFn) func_writeln); // Read one line from an open file/socket/stream
   FunC::defineNative(vm, "eof",       (FunC::NativeFn) func_eof); // Get end-of-file detection status for file
   FunC::defineNative(vm, "opendir",   (FunC::NativeFn) func_opendir); // Open a directory
   FunC::defineNative(vm, "readdir",   (FunC::NativeFn) func_readdir); // Read from an open directory
@@ -179,7 +175,18 @@ void Machine::set_callbacks()
   FunC::defineNative(vm, "file_mtime",(FunC::NativeFn) func_file_mtime); // Return last modify time for named file
   FunC::defineNative(vm, "file_ctime",(FunC::NativeFn) func_file_ctime); // Return last create time for named file
 
+  // Network I/O functions
+  FunC::defineNative(vm, "connect",   (FunC::NativeFn) func_connect); // Read N bytes from an open file/socket/stream
+  FunC::defineNative(vm, "listen",    (FunC::NativeFn) func_listen); // Read N bytes from an open file/socket/stream
+  FunC::defineNative(vm, "accept",    (FunC::NativeFn) func_accept); // Read N bytes from an open file/socket/stream
+  FunC::defineNative(vm, "send",      (FunC::NativeFn) func_send); // Read N bytes from an open file/socket/stream
+  FunC::defineNative(vm, "recv",      (FunC::NativeFn) func_recv); // Read N bytes from an open file/socket/stream
+
   // Common I/O functions
+  FunC::defineNative(vm, "read",      (FunC::NativeFn) func_read); // Read N bytes from an open file/socket/stream
+  FunC::defineNative(vm, "readln",    (FunC::NativeFn) func_readln); // Read one line from an open file/socket/stream
+  FunC::defineNative(vm, "write",     (FunC::NativeFn) func_write); // Write N bytes to an open file/socket/stream
+  FunC::defineNative(vm, "writeln",   (FunC::NativeFn) func_writeln); // Read one line from an open file/socket/stream
   FunC::defineNative(vm, "close",     (FunC::NativeFn) func_close); // Close a file
   FunC::defineNative(vm, "error",     (FunC::NativeFn) func_error); // Get last error code for file (0=success)
 
@@ -1070,7 +1077,7 @@ bool Machine::func_opendir(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Val
   char* dirname = FunC::to_cstring(argv[0]);
   //std::cout << "Machine::func_opendir() name=" << dirname << std::endl;
   IODir* dir = IODir::open(dirname);
-  *result = FunC::to_numberValue(running->add_iohandle(dir)); // Handles are 1 indexed
+  *result = FunC::to_numberValue(running->add_iohandle(dir));
   //std::cout << "Machine::func_opendir() handle=" << running->iohandles.size() << std::endl;
   return true;
 }
@@ -1208,4 +1215,70 @@ bool Machine::func_file_ctime(FunC::VM* vm, int argc, FunC::Value argv[], FunC::
   return true;
 }
 
+
+bool Machine::func_connect(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  if (argc != 3) { *result = FunC::to_numberValue(-1); return false; }
+  std::string host = FunC::to_cstring(argv[0]);
+  uint16_t port = (uint16_t) FunC::to_double(argv[1]);
+  std::string protocol = FunC::to_cstring(argv[2]);
+
+  IOSocket* socket = IOSocket::connect(host, port, protocol);
+
+  *result = FunC::to_numberValue(running->add_iohandle(socket));
+  return true;
+}
+
+bool Machine::func_listen(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  if (argc != 2) { *result = FunC::to_numberValue(-1); return false; }
+  uint16_t port = (uint16_t) FunC::to_double(argv[0]);
+  std::string protocol = FunC::to_cstring(argv[1]);
+
+  IOSocket* socket = IOSocket::listen(port, protocol);
+
+  *result = FunC::to_numberValue(running->add_iohandle(socket));
+  return true;
+}
+
+bool Machine::func_accept(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
+  int handle = (int) FunC::to_double(argv[0]);
+
+  IOSocket* listener = (IOSocket*) running->iohandles[handle];
+  IOSocket* socket = listener->accept();
+
+  if (socket == nullptr) {
+    // If accept() failed, the listener may contain an error message
+    // so we just signal the failure by returning a negative value and move on
+    *result = FunC::to_numberValue(-1);
+  } else {
+    *result = FunC::to_numberValue(running->add_iohandle(socket));
+  }
+  return true;
+}
+
+bool Machine::func_send(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  if (argc != 2) { *result = FunC::to_numberValue(-1); return false; }
+  int handle = (int) FunC::to_double(argv[0]);
+  std::string data = FunC::to_cstring(argv[1]);
+
+  int bytes_sent = running->iohandles[handle]->send(data);
+
+  *result = FunC::to_numberValue(bytes_sent);
+  return true;
+}
+
+bool Machine::func_recv(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
+  int handle = (int) FunC::to_double(argv[0]);
+
+  std::string data = running->iohandles[handle]->recv();
+
+  *result = FunC::to_stringValue(running->vm, data.c_str());
+  return true;
+}
 

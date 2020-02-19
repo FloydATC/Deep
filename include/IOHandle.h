@@ -26,6 +26,10 @@ class IOHandle
     virtual int writeln(const std::string data) { error=ENOSTR; return -1; }
     virtual std::string getc() { error=ENOSTR; return ""; }
     virtual std::string read() { error=ENOSTR; return ""; }
+    virtual IOHandle* accept() { error=ENOSTR; return nullptr; }
+    virtual int send(std::string data) { error=ENOSTR; return -1; }
+    virtual std::string recv() { error=ENOSTR; return ""; }
+
     virtual void close() {}
 
   protected:
