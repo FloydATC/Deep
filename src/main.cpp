@@ -17,10 +17,11 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_net.h>
 
 #include "EventHandler.h"
 #include "GameState.h"
-#include "IOFile.h"
+//#include "IOFile.h"
 #include "Machine.h"
 #include "Message.h"
 #include "Scene3D.h"
@@ -275,12 +276,20 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
 }
 
 
-
+std::string init_sdl()
+{
+  if (SDL_Init(SDL_INIT_EVERYTHING) < 0) return SDL_GetError();
+  if (IMG_Init(IMG_INIT_PNG) < 0) return "IMG_Init() failed";
+  if (TTF_Init() < 0) return "TTF_Init() failed";
+  if (SDLNet_Init() < 0) return SDLNet_GetError();
+  return "success";
+}
 
 void shutdown_sdl(SDL_Window* window)
 {
   std::cout<<"Shutting down SDL"<<std::endl;
   SDL_DestroyWindow(window);
+  SDLNet_Quit();
   TTF_Quit();
   IMG_Quit();
   SDL_Quit();
@@ -294,36 +303,25 @@ int main(int argc, char* argv[])
   (void)(argc);
   (void)(argv);
 
-  SDL_Window* window;
-  SDL_Event event;
-  //const Uint8* SDL_KeyboardState;
-
-
   GameState gamestate = GameState();
   gamestate.width = 640;
   gamestate.height = 480;
 
   EventHandler event_handler = EventHandler();
 
-
+  SDL_Window* window;
+  SDL_Event event;
   SDL_GLContext context;
   //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-
-  if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
+  std::string msg = init_sdl();
+  if(msg != "success")
   {
-    std::string msg = "SDL failed to initialize: ";
-    msg.append(SDL_GetError());
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Init Failed", msg.c_str(), nullptr);
     return 0;
-  }
-  else
-  {
-    IMG_Init(IMG_INIT_PNG); // TODO: Error checking here
-    TTF_Init(); // TODO: Error checking here
-    //SDL_KeyboardState = SDL_GetKeyboardState(NULL);
+  } else {
 
     // Create Window here
     window = SDL_CreateWindow("Deep",
