@@ -17,7 +17,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#include <SDL_net.h>
 
 #include "EventHandler.h"
 #include "GameState.h"
@@ -281,7 +280,7 @@ std::string init_sdl()
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0) return SDL_GetError();
   if (IMG_Init(IMG_INIT_PNG) < 0) return "IMG_Init() failed";
   if (TTF_Init() < 0) return "TTF_Init() failed";
-  if (SDLNet_Init() < 0) return SDLNet_GetError();
+  //if (SDLNet_Init() < 0) return SDLNet_GetError();
   return "success";
 }
 
@@ -289,7 +288,7 @@ void shutdown_sdl(SDL_Window* window)
 {
   std::cout<<"Shutting down SDL"<<std::endl;
   SDL_DestroyWindow(window);
-  SDLNet_Quit();
+  //SDLNet_Quit();
   TTF_Quit();
   IMG_Quit();
   SDL_Quit();

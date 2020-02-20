@@ -3,7 +3,8 @@
 
 #include "IOHandle.h"
 
-#include "SDL_net.h"
+#include <ws2tcpip.h>
+
 
 class IOSocket : public IOHandle
 {
@@ -12,9 +13,10 @@ class IOSocket : public IOHandle
     ~IOSocket();
 
     bool is_eof();
+    bool is_closed();
 
-    static IOSocket* listen(uint16_t, std::string protocol);
-    static IOSocket* connect(std::string host, uint16_t port, std::string protocol);
+    static IOSocket* listen(std::string port, std::string protocol);
+    static IOSocket* connect(std::string host, std::string port, std::string protocol);
     IOSocket* accept();
     std::string read(const int bytes);
     std::string readln();
@@ -29,15 +31,11 @@ class IOSocket : public IOHandle
 
   private:
     int bufsize = 1024; // Applies to TCP communication
-    std::vector<UDPpacket> pr_buffer;
-    std::vector<UDPpacket> pw_buffer;
+    std::vector<char> pr_buffer; // FIXME
+    std::vector<char> pw_buffer; // FIXME
 
-    IPaddress peer_inetaddr; // ip+port
-    TCPsocket tcp_sock;
-    UDPsocket udp_sock;
-    SDLNet_SocketSet sock_set;
     std::string peer_host;
-    uint16_t peer_port;
+    std::string peer_port;
     std::string protocol;
 
     bool is_ready();
@@ -47,6 +45,26 @@ class IOSocket : public IOHandle
     size_t flush_tcp_buffer(size_t bytes); // Attempt to send data from w_buffer (bytes)
     void close_tcp();
     void close_udp();
+
+    // Winsock specific variables
+    WSADATA wsaData;
+    struct addrinfo* peer_addr = nullptr;
+    struct addrinfo host_addr;
+    SOCKET handle = INVALID_SOCKET;
+
+    // Winsock specific methods
+    bool ws_initialize();
+    bool ws_resolve_address(std::string hostname, std::string port);
+    bool ws_create_tcp_socket();
+    bool ws_create_udp_socket();
+    bool ws_set_nonblocking();
+    bool ws_connect();
+    bool ws_close();
+    std::string ws_recv();
+    size_t ws_send(std::string data);
+    bool ws_is_retry(int result);
+    bool ws_is_error(int result);
+    std::string ws_errormessage(int result);
 
 };
 

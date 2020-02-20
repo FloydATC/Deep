@@ -15,8 +15,8 @@ class IOHandle
 
     std::string strip_cr_lf(std::string str);
 
-    bool is_closed() { return closed; }
-    int last_error() { return error; }
+    virtual bool is_closed() { return closed; }
+    virtual int last_error() { return error; }
     virtual bool is_eof() { return false; }
     virtual bool is_readable() { return false; }
     virtual bool is_writable() { return false; }

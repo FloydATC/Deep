@@ -1220,7 +1220,7 @@ bool Machine::func_connect(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Val
 {
   if (argc != 3) { *result = FunC::to_numberValue(-1); return false; }
   std::string host = FunC::to_cstring(argv[0]);
-  uint16_t port = (uint16_t) FunC::to_double(argv[1]);
+  std::string port = FunC::to_cstring(argv[1]);
   std::string protocol = FunC::to_cstring(argv[2]);
 
   IOSocket* socket = IOSocket::connect(host, port, protocol);
@@ -1232,7 +1232,7 @@ bool Machine::func_connect(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Val
 bool Machine::func_listen(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   if (argc != 2) { *result = FunC::to_numberValue(-1); return false; }
-  uint16_t port = (uint16_t) FunC::to_double(argv[0]);
+  std::string port = FunC::to_cstring(argv[0]);
   std::string protocol = FunC::to_cstring(argv[1]);
 
   IOSocket* socket = IOSocket::listen(port, protocol);

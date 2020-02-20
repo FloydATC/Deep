@@ -1714,7 +1714,7 @@
 
 1158692810 c:\users\floyd\documents\cpp\deep\src\vertex.h
 
-1582109270 source:c:\users\floyd\documents\cpp\deep\src\main.cpp
+1582139595 source:c:\users\floyd\documents\cpp\deep\src\main.cpp
 	<iostream>
 	<fstream>
 	<iomanip>
@@ -1732,7 +1732,6 @@
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_ttf.h>
-	<SDL_net.h>
 	"EventHandler.h"
 	"GameState.h"
 	"Machine.h"
@@ -1817,7 +1816,7 @@
 	<cmath>
 	<iostream>
 
-1582114632 source:c:\users\floyd\documents\cpp\deep\src\machine.cpp
+1582148214 source:c:\users\floyd\documents\cpp\deep\src\machine.cpp
 	<iostream>
 	<fstream>
 	<functional>
@@ -2028,7 +2027,7 @@
 	"Obj3D.h"
 	"Obj3DScanner.h"
 
-1582114632 c:\users\floyd\documents\cpp\deep\include\iohandle.h
+1582199165 c:\users\floyd\documents\cpp\deep\include\iohandle.h
 	<iostream>
 	<string>
 	<vector>
@@ -2038,13 +2037,13 @@
 	<iostream>
 	<string>
 
-1582128069 source:c:\users\floyd\documents\cpp\deep\src\iosocket.cpp
+1582201014 source:c:\users\floyd\documents\cpp\deep\src\iosocket.cpp
 	"IOSocket.h"
 	<algorithm>
 
-1582127979 c:\users\floyd\documents\cpp\deep\include\iosocket.h
+1582199676 c:\users\floyd\documents\cpp\deep\include\iosocket.h
 	"IOHandle.h"
-	"SDL_net.h"
+	<ws2tcpip.h>
 
 1435247851 c:\mingw\x86_64-w64-mingw32\include\fcntl.h
 	<crtdefs.h>
@@ -2168,4 +2167,144 @@
 	"SDL_version.h"
 	"begin_code.h"
 	"close_code.h"
+
+1582139254 c:\users\floyd\documents\cpp\tacopie\includes\tacopie\tacopie
+	<tacopie/utils/error.hpp>
+	<tacopie/utils/logger.hpp>
+	<tacopie/utils/typedefs.hpp>
+	<tacopie/network/io_service.hpp>
+	<tacopie/network/tcp_server.hpp>
+	<tacopie/network/tcp_socket.hpp>
+	<tacopie/utils/thread_pool.hpp>
+
+1582139254 c:\users\floyd\documents\cpp\tacopie\includes\tacopie\utils\error.hpp
+	<cstdint>
+	<stdexcept>
+	<string>
+	<tacopie/utils/logger.hpp>
+
+1582139254 c:\users\floyd\documents\cpp\tacopie\includes\tacopie\utils\logger.hpp
+	<memory>
+	<mutex>
+	<string>
+
+1582139254 c:\users\floyd\documents\cpp\tacopie\includes\tacopie\utils\typedefs.hpp
+	<winsock2.h>
+	<BaseTsd.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\winsock2.h
+	<_mingw_unicode.h>
+	<windows.h>
+	<psdk_inc/_ws1_undef.h>
+	<_timeval.h>
+	<_bsd_types.h>
+	<inaddr.h>
+	<psdk_inc/_socket_types.h>
+	<psdk_inc/_fd_types.h>
+	<psdk_inc/_ip_types.h>
+	<psdk_inc/_wsadata.h>
+	<ws2def.h>
+	<psdk_inc/_wsa_errnos.h>
+	<qos.h>
+	<guiddef.h>
+	<poppack.h>
+	<wsipv6ok.h>
+
+1435247852 c:\mingw\x86_64-w64-mingw32\include\psdk_inc\_ws1_undef.h
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\ws2def.h
+	<_mingw.h>
+	<winapifamily.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\qos.h
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\wsipv6ok.h
+	<ws2tcpip.h>
+	<wspiapi.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\ws2tcpip.h
+	<_mingw_unicode.h>
+	<winsock2.h>
+	<ws2ipdef.h>
+	<psdk_inc/_ip_mreq1.h>
+	<winapifamily.h>
+	<ws2ipdef.h>
+	<mstcpip.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\ws2ipdef.h
+	<_mingw_unicode.h>
+	<winapifamily.h>
+	<in6addr.h>
+
+1435247848 c:\mingw\x86_64-w64-mingw32\include\in6addr.h
+	<_bsd_types.h>
+
+1435247849 c:\mingw\x86_64-w64-mingw32\include\mstcpip.h
+	<_mingw_unicode.h>
+	<winapifamily.h>
+
+1435247850 c:\mingw\x86_64-w64-mingw32\include\wspiapi.h
+	<stdio.h>
+	<stdlib.h>
+	<malloc.h>
+	<string.h>
+	<ws2tcpip.h>
+	<_mingw_print_push.h>
+	<_mingw_print_pop.h>
+
+1582139254 c:\users\floyd\documents\cpp\tacopie\includes\tacopie\network\io_service.hpp
+	<atomic>
+	<condition_variable>
+	<functional>
+	<memory>
+	<mutex>
+	<thread>
+	<unordered_map>
+	<vector>
+	<winsock2.h>
+	<sys/select.h>
+	<tacopie/network/self_pipe.hpp>
+	<tacopie/network/tcp_socket.hpp>
+	<tacopie/utils/thread_pool.hpp>
+
+1582139254 c:\users\floyd\documents\cpp\tacopie\includes\tacopie\network\self_pipe.hpp
+	<tacopie/utils/typedefs.hpp>
+
+1582139254 c:\users\floyd\documents\cpp\tacopie\includes\tacopie\network\tcp_socket.hpp
+	<cstdint>
+	<string>
+	<vector>
+	<tacopie/utils/typedefs.hpp>
+
+1582139254 c:\users\floyd\documents\cpp\tacopie\includes\tacopie\utils\thread_pool.hpp
+	<atomic>
+	<condition_variable>
+	<functional>
+	<list>
+	<mutex>
+	<queue>
+	<thread>
+	<vector>
+
+1582139254 c:\users\floyd\documents\cpp\tacopie\includes\tacopie\network\tcp_server.hpp
+	<atomic>
+	<cstdint>
+	<list>
+	<memory>
+	<mutex>
+	<string>
+	<tacopie/network/io_service.hpp>
+	<tacopie/network/tcp_client.hpp>
+	<tacopie/network/tcp_socket.hpp>
+	<tacopie/utils/typedefs.hpp>
+
+1582139254 c:\users\floyd\documents\cpp\tacopie\includes\tacopie\network\tcp_client.hpp
+	<atomic>
+	<cstdint>
+	<mutex>
+	<queue>
+	<string>
+	<tacopie/network/io_service.hpp>
+	<tacopie/network/tcp_socket.hpp>
+	<tacopie/utils/typedefs.hpp>
 
