@@ -204,20 +204,29 @@ std::string IOSocket::getc()
 
 int IOSocket::send(const std::string data)
 {
+  if (this->protocol == "tcp") return write(data);
 
-  // Send a packet from pw_buffer
+  // Place data into packet write buffer and try to flush it
+  std::vector<char> datagram(data.c_str(), data.c_str() + data.length());
+  pw_buffer.push_back(datagram);
+  flush_pw_buffer();
 
-  return 0;
+  return data.size();
 }
+
 
 std::string IOSocket::recv()
 {
+  if (this->protocol == "tcp") return read(this->bufsize);
 
-  // Receive a packet into pr_buffer
+  // Check for incoming packets and return one
+  fill_pr_buffer();
+  if (pr_buffer.size() == 0) return "";
+  std::vector<char> datagram = pr_buffer.front();
+  std::string data(datagram.begin(), datagram.end());
 
-  return "";
+  return data;
 }
-
 
 
 void IOSocket::close()
@@ -236,6 +245,7 @@ void IOSocket::close_tcp()
   this->w_buffer.clear();
 }
 
+
 // Do not call directly, use close() instead
 void IOSocket::close_udp()
 {
@@ -243,17 +253,22 @@ void IOSocket::close_udp()
 }
 
 
-
-void IOSocket::fill_udp_buffer()
+void IOSocket::fill_pr_buffer()
 {
-  if (this->closed) return;
 
-  //std::size_t current_size = pr_buffer.size();
-  //pr_buffer.resize(current_size + 1);
-  //UDPpacket* buffer_ptr = &pr_buffer[current_size];
+  // So... how do I READ from something not a bound socket?
+  // How does the network stack know to listen for these packets in the first place?
+  // I need to meditate on this.
 
-  //int packets_read = SDLNet_UDP_Recv(this->udp_sock, buffer_ptr); // Non-blocking
-  //if (!packets_read) pr_buffer.resize(current_size);
+}
+
+
+void IOSocket::flush_pw_buffer()
+{
+
+  // I have no socket to send packets from, do I?
+  // I need to meditate on this.
+
 }
 
 
@@ -269,6 +284,7 @@ void IOSocket::fill_r_buffer()
   //std::cout << "IOSocket" << this << "::fill_tcp_buffer() received " << tmpbuf.size() << " bytes (rq=" << r_buffer.size() << ")" << std::endl;
 }
 
+
 std::string IOSocket::drain_r_buffer(const size_t bytes)
 {
   //std::cout << "IOSocket" << this << "::drain_buffer() bytes=" << bytes << std::endl;
@@ -281,11 +297,13 @@ std::string IOSocket::drain_r_buffer(const size_t bytes)
   return result;
 }
 
+
 void IOSocket::fill_w_buffer(const std::string data)
 {
   if (this->closed) return;
   std::copy(data.begin(), data.end(), std::back_inserter(this->w_buffer));
 }
+
 
 void IOSocket::flush_w_buffer()
 {
@@ -452,8 +470,6 @@ bool IOSocket::ws_listen()
 }
 
 
-
-
 size_t IOSocket::ws_send(std::vector<char> buffer)
 {
   int status = ::send(this->handle, buffer.data(), buffer.size(), 0);
@@ -496,6 +512,7 @@ bool IOSocket::ws_close()
   return true;
 }
 
+
 bool IOSocket::ws_is_transient(int error)
 {
   if (error == WSAEINPROGRESS)        return true; // Call is in progress
@@ -505,6 +522,7 @@ bool IOSocket::ws_is_transient(int error)
   if (error == WSAENOTCONN)           return true; // Not connected
   return false;
 }
+
 
 bool IOSocket::ws_is_permanent(int error)
 {
@@ -537,6 +555,7 @@ bool IOSocket::ws_is_permanent(int error)
   if (error == WSAETIMEDOUT)          return true; // Connection timeout
   return false;
 }
+
 
 std::string IOSocket::ws_errormessage(int error)
 {
@@ -578,3 +597,4 @@ std::string IOSocket::ws_errormessage(int error)
 
   return std::string("UNKNOWN=").append(std::to_string(error));
 }
+

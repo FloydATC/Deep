@@ -31,20 +31,21 @@ class IOSocket : public IOHandle
 
   private:
     int bufsize = 1024; // Applies to TCP communication
-    std::vector<char> pr_buffer; // FIXME
-    std::vector<char> pw_buffer; // FIXME
+    std::vector<std::vector<char>> pr_buffer; // FIXME
+    std::vector<std::vector<char>> pw_buffer; // FIXME
     bool listen_pending = false;
 
     std::string peer_host;
     std::string peer_port;
     std::string protocol;
 
-    bool is_ready();
+//    bool is_ready();
     void fill_r_buffer(); // Receive into r_buffer (bytes)
-    void fill_udp_buffer(); // Receive into pr_buffer (packets)
+    void fill_pr_buffer(); // Receive into pr_buffer (packets)
     std::string drain_r_buffer(const size_t bytes); // Take bytes from r_buffer
     void fill_w_buffer(const std::string data); // Add data into w_buffer (bytes)
     void flush_w_buffer(); // Send data from w_buffer (bytes)
+    void flush_pw_buffer(); // Send data from pw_buffer (packets)
     void close_tcp();
     void close_udp();
 
