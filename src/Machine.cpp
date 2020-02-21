@@ -1250,9 +1250,9 @@ bool Machine::func_accept(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Valu
   IOSocket* socket = listener->accept();
 
   if (socket == nullptr) {
-    // If accept() failed, the listener may contain an error message
-    // so we just signal the failure by returning a negative value and move on
-    *result = FunC::to_numberValue(-1);
+    // If accept() failed, it usually just means no client was waiting
+    // If an error has occurred, it is flagged on the server socket
+    *result = FunC::to_numberValue(0);
   } else {
     *result = FunC::to_numberValue(running->add_iohandle(socket));
   }

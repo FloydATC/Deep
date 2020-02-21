@@ -18,6 +18,8 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
+#include <ws2tcpip.h>
+
 #include "EventHandler.h"
 #include "GameState.h"
 //#include "IOFile.h"
@@ -284,6 +286,12 @@ std::string init_sdl()
   return "success";
 }
 
+void init_winsock(WSADATA* wsaData)
+{
+  int status = WSAStartup(MAKEWORD(2,2), wsaData);
+  if (status != 0) std::cerr << "WARNING: WSAStartup error " << WSAGetLastError() << std::endl;
+}
+
 void shutdown_sdl(SDL_Window* window)
 {
   std::cout<<"Shutting down SDL"<<std::endl;
@@ -294,7 +302,11 @@ void shutdown_sdl(SDL_Window* window)
   SDL_Quit();
 }
 
-
+void shutdown_winsock()
+{
+  int status = WSACleanup();
+  if (status != 0) std::cerr << "WARNING: WSACleanup returned " << status << std::endl;
+}
 
 
 int main(int argc, char* argv[])
@@ -314,6 +326,9 @@ int main(int argc, char* argv[])
   //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+  WSADATA wsaData;
+  init_winsock(&wsaData);
 
   std::string msg = init_sdl();
   if(msg != "success")
@@ -453,6 +468,7 @@ int main(int argc, char* argv[])
 
       std::cout<<"main() Destroying window"<<std::endl;
       shutdown_sdl(window);
+      shutdown_winsock();
     }
   }
 

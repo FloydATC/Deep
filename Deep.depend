@@ -1714,7 +1714,7 @@
 
 1158692810 c:\users\floyd\documents\cpp\deep\src\vertex.h
 
-1582139595 source:c:\users\floyd\documents\cpp\deep\src\main.cpp
+1582281162 source:c:\users\floyd\documents\cpp\deep\src\main.cpp
 	<iostream>
 	<fstream>
 	<iomanip>
@@ -1732,6 +1732,7 @@
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_ttf.h>
+	<ws2tcpip.h>
 	"EventHandler.h"
 	"GameState.h"
 	"Machine.h"
@@ -1816,7 +1817,7 @@
 	<cmath>
 	<iostream>
 
-1582148214 source:c:\users\floyd\documents\cpp\deep\src\machine.cpp
+1582277538 source:c:\users\floyd\documents\cpp\deep\src\machine.cpp
 	<iostream>
 	<fstream>
 	<functional>
@@ -1952,7 +1953,7 @@
 1581453260 c:\users\floyd\documents\cpp\deep\include\utf8.h
 	<vector>
 
-1582112434 c:\users\floyd\documents\cpp\deep\include\machine.h
+1582202170 c:\users\floyd\documents\cpp\deep\include\machine.h
 	<vm.h>
 	"GFX.h"
 	<SDL_ttf.h>
@@ -2027,7 +2028,7 @@
 	"Obj3D.h"
 	"Obj3DScanner.h"
 
-1582199165 c:\users\floyd\documents\cpp\deep\include\iohandle.h
+1582202170 c:\users\floyd\documents\cpp\deep\include\iohandle.h
 	<iostream>
 	<string>
 	<vector>
@@ -2037,11 +2038,11 @@
 	<iostream>
 	<string>
 
-1582201014 source:c:\users\floyd\documents\cpp\deep\src\iosocket.cpp
+1582289784 source:c:\users\floyd\documents\cpp\deep\src\iosocket.cpp
 	"IOSocket.h"
 	<algorithm>
 
-1582199676 c:\users\floyd\documents\cpp\deep\include\iosocket.h
+1582289897 c:\users\floyd\documents\cpp\deep\include\iosocket.h
 	"IOHandle.h"
 	<ws2tcpip.h>
 

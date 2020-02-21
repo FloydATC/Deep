@@ -33,39 +33,50 @@ class IOSocket : public IOHandle
     int bufsize = 1024; // Applies to TCP communication
     std::vector<char> pr_buffer; // FIXME
     std::vector<char> pw_buffer; // FIXME
+    bool listen_pending = false;
 
     std::string peer_host;
     std::string peer_port;
     std::string protocol;
 
     bool is_ready();
-    void fill_tcp_buffer(); // Attempt to receive into r_buffer (bytes)
-    void fill_udp_buffer(); // Attempt to receive into pr_buffer (packets)
-    std::string drain_buffer(const size_t bytes); // Take bytes from r_buffer
-    size_t flush_tcp_buffer(size_t bytes); // Attempt to send data from w_buffer (bytes)
+    void fill_r_buffer(); // Receive into r_buffer (bytes)
+    void fill_udp_buffer(); // Receive into pr_buffer (packets)
+    std::string drain_r_buffer(const size_t bytes); // Take bytes from r_buffer
+    void fill_w_buffer(const std::string data); // Add data into w_buffer (bytes)
+    void flush_w_buffer(); // Send data from w_buffer (bytes)
     void close_tcp();
     void close_udp();
 
     // Winsock specific variables
-    WSADATA wsaData;
-    struct addrinfo* peer_addr = nullptr;
-    struct addrinfo host_addr;
+    addrinfo peer_addr = { 0 };
+    addrinfo host_addr = { 0 };
+    addrinfo* resolved = nullptr;
     SOCKET handle = INVALID_SOCKET;
 
     // Winsock specific methods
-    bool ws_initialize();
     bool ws_resolve_address(std::string hostname, std::string port);
-    bool ws_create_tcp_socket();
-    bool ws_create_udp_socket();
+    bool ws_socket(int af_family, int sock_type, int ip_proto);
     bool ws_set_nonblocking();
+    bool ws_set_keepalive();
+    bool ws_set_reuseaddr();
+    bool ws_check_error(std::string context);
+    bool ws_check_status(std::string context, int status);
+    bool ws_is_valid_socket(SOCKET);
+    SOCKET ws_accept();
     bool ws_connect();
+    bool ws_bind();
+    bool ws_listen();
     bool ws_close();
-    std::string ws_recv();
-    size_t ws_send(std::string data);
-    bool ws_is_retry(int result);
-    bool ws_is_error(int result);
-    std::string ws_errormessage(int result);
+    std::vector<char> ws_recv();
+    size_t ws_send(std::vector<char> buffer);
+    bool ws_is_transient(int error);
+    bool ws_is_permanent(int error);
+    std::string ws_errormessage(int error);
 
 };
+
+
+
 
 #endif // IOSOCKET_H

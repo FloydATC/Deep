@@ -40,6 +40,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-std=c++14" />
+			<Add option="-Wno-unknown-pragmas" />
 			<Add directory="C:/Users/floyd/Documents/Cpp/SDL2-2.0.10/x86_64-w64-mingw32/include/SDL2" />
 			<Add directory="C:/Users/floyd/Documents/Cpp/SDL2_image-2.0.5/x86_64-w64-mingw32/include/SDL2" />
 			<Add directory="C:/Users/floyd/Documents/Cpp/SDL2_ttf-2.0.15/x86_64-w64-mingw32/include/SDL2" />
@@ -47,9 +48,10 @@
 			<Add directory="C:/Users/floyd/Documents/Cpp/freeglut/include" />
 			<Add directory="C:/MinGW/x86_64-w64-mingw32/include" />
 			<Add directory="C:/Users/floyd/Documents/C/FunC" />
+			<Add directory="C:/Users/floyd/Documents/Cpp/tacopie/includes" />
 		</Compiler>
 		<Linker>
-			<Add option="-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lglew32 -lOpenGL32 -lfreeglut -lglu32 -lFunCx64" />
+			<Add option="-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lglew32 -lOpenGL32 -lfreeglut -lglu32 -lFunCx64 -lws2_32" />
 			<Add directory="C:/Users/floyd/Documents/Cpp/SDL2-2.0.10/x86_64-w64-mingw32/lib" />
 			<Add directory="C:/Users/floyd/Documents/Cpp/SDL2_image-2.0.5/x86_64-w64-mingw32/lib" />
 			<Add directory="C:/Users/floyd/Documents/Cpp/SDL2_ttf-2.0.15/x86_64-w64-mingw32/lib" />
