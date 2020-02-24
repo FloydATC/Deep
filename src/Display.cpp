@@ -52,6 +52,7 @@ void Display::check_gl(std::string when)
 
 void Display::draw_untextured_vbo(GLsizeiptr arrsize, const void* arr, GLenum type, GLsizei typesize, GLenum mode, GLsizei vertices)
 {
+  glUniform4fv(uniform_color, 1, this->color);
   GLuint vertexBufferID;
   glGenBuffers(1, &vertexBufferID);
   glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
@@ -767,6 +768,11 @@ void Display::set_fgcolor(int color)
 {
   hide_cursor();
   fgcolor = color % 16;
+  // Set draw color as well
+  this->color[0] = rgb[fgcolor][0];
+  this->color[1] = rgb[fgcolor][1];
+  this->color[2] = rgb[fgcolor][2];
+  this->color[3] = 1.0;
   show_cursor();
 }
 
