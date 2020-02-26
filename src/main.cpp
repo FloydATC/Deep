@@ -347,6 +347,7 @@ void OpenGL_debug_callback( GLenum source, GLenum type, GLuint id, GLenum severi
 }
 
 
+
 int main(int argc, char* argv[])
 {
   (void)(argc);
@@ -361,10 +362,6 @@ int main(int argc, char* argv[])
   SDL_Window* window;
   SDL_Event event;
   SDL_GLContext context;
-  //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
   WSADATA wsaData;
   init_winsock(&wsaData);
@@ -393,6 +390,12 @@ int main(int argc, char* argv[])
     else
     {
       SDL_GetWindowSize(window, &gamestate.width, &gamestate.height);
+
+      //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+      //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+      SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+      SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+
       // Create OpenGL context here
       std::cout<<"GameThread() creating OpenGL context"<<std::endl;
       context = SDL_GL_CreateContext(window);
@@ -435,18 +438,18 @@ int main(int argc, char* argv[])
       scene_shader->setUniformModelMatrix("model");
       scene_shader->setUniformDebugFlag("is_debug");
 
-      ShaderProgram* ortho_shader = scene.getShader("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
 
 
-      std::cout << "main() Creating virtual machines" << std::endl;
       std::vector<Machine*> vms;
-
+#ifndef DEBUG_NO_VIRTUAL_MACHINES
+      ShaderProgram* ortho_shader = scene.getShader("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
+      std::cout << "main() Creating virtual machines" << std::endl;
       vms.push_back(new Machine(ortho_shader->id(), font));
       vms.push_back(new Machine(ortho_shader->id(), font));
       vms.push_back(new Machine(ortho_shader->id(), font));
       vms.push_back(new Machine(ortho_shader->id(), font));
-
       std::cout << "main() Virtual machines ready" << std::endl;
+#endif
 
       Obj3D* test_object = scene.getObj3D("obj/screen.obj");
 
@@ -475,11 +478,12 @@ int main(int argc, char* argv[])
       p3->setShader(scene_shader);
       p4->setShader(scene_shader);
 
+#ifndef DEBUG_NO_VIRTUAL_MACHINES
       p1->setTexture(vms[0]->display.textureID);
       p2->setTexture(vms[1]->display.textureID);
       p3->setTexture(vms[2]->display.textureID);
       p4->setTexture(vms[3]->display.textureID);
-
+#endif
 
 
       std::cout << "main() ----------- Entering main loop" << std::endl;
