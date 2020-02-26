@@ -523,6 +523,20 @@ std::string Display::char_at(int row, int col)
   //return Fontcache::UnicodeToUTF8(ccmem[row][col]);
 }
 
+void Display::cursor_home()
+{
+  hide_cursor();
+  col = 0;
+  show_cursor();
+}
+
+void Display::cursor_end()
+{
+  hide_cursor();
+  col = cols-1;
+  show_cursor();
+}
+
 void Display::cursor_up()
 {
   hide_cursor();

@@ -270,6 +270,8 @@ void Machine::fullscreen_edit(Message* msg)
       switch (msg->key.sym)
       {
         // Cursor control
+        case SDLK_HOME:   display.cursor_home();   break;
+        case SDLK_END:    display.cursor_end();    break;
         case SDLK_LEFT:   display.cursor_left();   break;
         case SDLK_RIGHT:  display.cursor_right();  break;
         case SDLK_UP:     display.cursor_up();     break;

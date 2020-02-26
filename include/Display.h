@@ -34,6 +34,8 @@ class Display
     void print(const char* str);
 //    void draw_surface(int row, int col, float r, float g, float b, SDL_Surface* surface);
     void draw_surface(int row, int col, float r, float g, float b, GLuint surface);
+    void cursor_home();
+    void cursor_end();
     void cursor_up();
     void cursor_down();
     void cursor_left();
