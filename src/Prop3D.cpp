@@ -22,6 +22,7 @@ void Prop3D::render(Matrix4 camera_matrix) {
   if (this->need_recalc) this->recalculate();
 
   glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+  //std::cout << "Prop3D" << this << "::render() glBindTexture(GL_TEXTURE_2D, " << this->texture << ")" << std::endl;
   glBindTexture(GL_TEXTURE_2D, this->texture);
 
   glUseProgram(this->shader->id());
@@ -44,6 +45,7 @@ void Prop3D::render(Matrix4 camera_matrix) {
       this->object->bounding_box(i)->render(); // Render bounding box of Obj3D subobject i
     }
   }
+  glEnable(GL_DEPTH_TEST);
 #endif
 
 }
