@@ -28,9 +28,9 @@ void Box3D::render()
   //bind_ibo(this->ibo); // Intel drivers do not save ELEMENT_ARRAY_BUFFER_BINDING?
   //bind_vbo(this->vbo);
   glLineWidth(1.0);
-  glPointSize(1.0);
+  glPointSize(2.0);
   //std::cout << "Box3D::render() glDrawArrays(GL_POINTS, 0, 12)" << std::endl;
-  glDrawArrays(GL_POINTS, 0, 12);
+  glDrawArrays(GL_POINTS, 0, 8);
   //std::cout << "Box3D::render() glDrawElements(GL_LINES, " << index.size() << ", GL_UNSIGNED_INT, 0)" << std::endl;
   glDrawElements(GL_LINES, index.size(), GL_UNSIGNED_INT, 0); // Indexed draw
   unbind_vao();
