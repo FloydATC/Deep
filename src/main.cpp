@@ -309,6 +309,13 @@ void shutdown_winsock()
 }
 
 
+void OpenGL_debug_callback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *msg, const void *data )
+{
+  std::cout << "main:OpenGL source=" << source << " type=" << type << " id=" << id << " severity=" << severity << std::endl;
+  std::cout << "  " << msg << std::endl;
+}
+
+
 int main(int argc, char* argv[])
 {
   (void)(argc);
@@ -326,6 +333,7 @@ int main(int argc, char* argv[])
   //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
   WSADATA wsaData;
   init_winsock(&wsaData);
@@ -366,6 +374,11 @@ int main(int argc, char* argv[])
         return 0;
       } else {
         glewInit();
+
+        glDebugMessageCallback(OpenGL_debug_callback, NULL);
+        glEnable(GL_DEBUG_OUTPUT);
+        std::vector<GLuint> ignored = {}; // Debug messages to suppress
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, ignored.size(), ignored.data(), true);
       }
 
       TTF_Font* font = TTF_OpenFont("fonts/unscii-8-thin.ttf", 16);
@@ -389,16 +402,19 @@ int main(int argc, char* argv[])
       scene_shader->setAttributeVN("normal");
       scene_shader->setUniformCameraMatrix("scene");
       scene_shader->setUniformModelMatrix("model");
+      scene_shader->setUniformDebugFlag("is_debug");
 
       ShaderProgram* ortho_shader = scene.getShader("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
 
 
       std::cout << "main() Creating virtual machines" << std::endl;
       std::vector<Machine*> vms;
+
       vms.push_back(new Machine(ortho_shader->id(), font));
       vms.push_back(new Machine(ortho_shader->id(), font));
       vms.push_back(new Machine(ortho_shader->id(), font));
       vms.push_back(new Machine(ortho_shader->id(), font));
+
       std::cout << "main() Virtual machines ready" << std::endl;
 
       Obj3D* test_object = scene.getObj3D("obj/screen.obj");
@@ -432,6 +448,7 @@ int main(int argc, char* argv[])
       p2->setTexture(vms[1]->display.textureID);
       p3->setTexture(vms[2]->display.textureID);
       p4->setTexture(vms[3]->display.textureID);
+
 
 
       std::cout << "main() ----------- Entering main loop" << std::endl;
