@@ -15,13 +15,10 @@ class Display
     Display(GLuint shaderID, Fontcache font);
     ~Display();
 
-    void reset();
-    void check_gl(std::string when);
-    GLuint prepare_vao();
-    GLuint prepare_texture(GLsizei width, GLsizei height);
-    GLuint prepare_framebuffer(GLuint textureID);
     bool pre_render();
     bool post_render();
+    void reset();
+    GLuint prepare_texture(GLsizei width, GLsizei height);
 
     // Flip vertical axis when drawing
     inline int tx(int x) { return x; }
@@ -79,8 +76,6 @@ class Display
     int col = 0;
     bool cursor = true;
 
-    GLuint vertexArrayObjectID;
-    GLuint framebufferID;
     GLuint textureID;
     GLuint shaderID;
 
@@ -88,10 +83,16 @@ class Display
 
 
   private:
+    void prepare_vao();
+    void prepare_framebuffer(GLuint textureID);
     void invert_cursor();
     void update_cursor();
     void enable_cursor();
     void disable_cursor();
+    void bind_vao();
+    void unbind_vao();
+    void bind_fbo();
+    void unbind_fbo();
     static double now();
 
     double cursor_interval = 0.5;
@@ -115,6 +116,8 @@ class Display
     GLint attr_uv;
     GLuint uniform_ortho;
     GLuint uniform_color;
+    GLuint vao; // Vertex Array Object
+    GLuint fbo; // Framebuffer Object
 
     bool initialized = false;
     int ccmem[25][40];

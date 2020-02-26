@@ -3,9 +3,6 @@
 #include "Display.h"
 #include "Fontcache.h"
 #include "UTF8hack.h"
-//#include <glew.h>
-//#include "SDL_opengl.h"
-//#include "SDL.h"
 
 Display::Display()
 {
@@ -15,14 +12,11 @@ Display::Display()
 Display::Display(GLuint shaderID, Fontcache font)
 {
   //ctor
-  //this->framebufferID = framebufferID;
-  //this->textureID = textureID;
-  this->vertexArrayObjectID = prepare_vao();
+  prepare_vao();
   this->textureID = prepare_texture(width+b*2, height+b*2);
-  this->framebufferID = prepare_framebuffer(textureID);
+  prepare_framebuffer(textureID);
   this->shaderID = shaderID;
   this->font = font;
-  //this->m_ortho = Matrix4().Ortho(-1.0f-b, 319.0f+b, -1.0f-b, 199.0f+b, -1.0f, 1.0f);
   this->m_ortho = Matrix4().Ortho(-0.5f, width-0.5f, -0.0f, height-0.0f, -1.0f, 1.0f);
 
   glUseProgram(shaderID);
@@ -39,15 +33,6 @@ Display::~Display()
 
 }
 
-// check OpenGL errors
-void Display::check_gl(std::string when)
-{
-  GLenum err;
-  while ((err = glGetError()) != GL_NO_ERROR) {
-    std::cerr << "OpenGL error " << when << ": " << gluErrorString(err) << "(" << err << ")" << std::endl;
-    //running = false;
-  }
-}
 
 
 void Display::draw_untextured_vbo(GLsizeiptr arrsize, const void* arr, GLenum type, GLsizei typesize, GLenum mode, GLsizei vertices)
@@ -212,7 +197,6 @@ void Display::draw_point(int x, int y)
 void Display::print(const char* string)
 {
   char* str = (char*) string;
-  check_gl("print() enter");
   int len = strlen(str);
   if (len > 4000) {
     // Sanity check:
@@ -270,11 +254,9 @@ void Display::print(const char* string)
 
 void Display::draw_surface(int row, int col, float r, float g, float b, GLuint src_texture)
 {
-  check_gl("draw_surface(0) enter");
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glBlendEquation(GL_FUNC_ADD);
-  check_gl("draw_surface(0) blending setup");
 
   float x1 = tx(col*8);
   float y1 = ty((row+1)*8);
@@ -299,40 +281,24 @@ void Display::draw_surface(int row, int col, float r, float g, float b, GLuint s
   //   x   y   u  v
 
   glUseProgram(shaderID);
-  //check_gl("draw_surface(0)");
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, src_texture);
-  //check_gl("draw_surface(1)");
   GLfloat color[] = { r, g, b, 0.0 };
   glUniform4fv(uniform_color, 1, color);
 
-  //check_gl("draw_surface(2)");
   GLuint vertexBufferID;
   glGenBuffers(1, &vertexBufferID);
-  //check_gl("draw_surface(3)");
   glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-  //check_gl("draw_surface(4)");
   glBufferData(GL_ARRAY_BUFFER, sizeof(rect), rect, GL_STATIC_DRAW);
-  //check_gl("draw_surface(5)");
   glEnableVertexAttribArray(attr_vertex);
-  //check_gl("draw_surface(6)");
   glEnableVertexAttribArray(attr_uv);
-  //check_gl("draw_surface(7)");
   glVertexAttribPointer(attr_vertex, 2, GL_FLOAT, GL_TRUE, 4*sizeof(GLfloat), (char*) NULL+0*sizeof(GLfloat));
-  //check_gl("draw_surface(8)");
   glVertexAttribPointer(attr_uv, 2, GL_FLOAT, GL_TRUE, 4*sizeof(GLfloat), (char*) NULL+2*sizeof(GLfloat));
-  //check_gl("draw_surface(9)");
   glDrawArrays(GL_TRIANGLES, 0, 6);
-  //check_gl("draw_surface(10)");
   glDeleteBuffers(1, &vertexBufferID);
-  //check_gl("draw_surface(11)");
   glEnableVertexAttribArray(0);
-  //check_gl("draw_surface(12)");
   color[3] = 1.0;
   glUniform4fv(uniform_color, 1, color);
-  check_gl("draw_surface(13)");
-
-  //exit(99);
 }
 
 
@@ -424,12 +390,11 @@ void Display::set_rgbcolor(float r, float g, float b)
   glUniform4fv(uniform_color, 1, color);
 }
 
-GLuint Display::prepare_vao()
+void Display::prepare_vao()
 {
-  GLuint VertexArrayObjectID;
-  glGenVertexArrays(1, &VertexArrayObjectID);
-  glBindVertexArray(VertexArrayObjectID);
-  return VertexArrayObjectID;
+  glGenVertexArrays(1, &this->vao);
+  this->bind_vao();
+  return;
 }
 
 GLuint Display::prepare_texture(GLsizei width, GLsizei height)
@@ -438,50 +403,65 @@ GLuint Display::prepare_texture(GLsizei width, GLsizei height)
   glGenTextures(1, &textureID);
   glBindTexture(GL_TEXTURE_2D, textureID);
   GLfloat bordercolor[4] = { 0.30, 0.25, 0.35, 1.0 };
-  check_gl("binding framebuffer texture");
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0); // 0 = clear
   //glGenerateMipmap(GL_TEXTURE_2D);
-  check_gl("creating framebuffer texture");
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
   glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bordercolor);
-  check_gl("setting texture params");
   return textureID;
 }
 
-GLuint Display::prepare_framebuffer(GLuint textureID)
+void Display::prepare_framebuffer(GLuint textureID)
 {
   // Create framebuffer
-  GLuint framebufferID = 0;
-  glGenFramebuffers(1, &framebufferID);
-  glBindFramebuffer(GL_FRAMEBUFFER, framebufferID);
-  check_gl("creating framebuffer");
+  glGenFramebuffers(1, &this->fbo);
+  bind_fbo();
 
   // Set "textureID" as our colour attachement #0
   glBindTexture(GL_TEXTURE_2D, textureID);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureID, 0);
-  check_gl("attached framebuffer texture");
 
   // Set the list of draw buffers. (???)
   GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0}; // (???)
   glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers (???)
-  check_gl("set drawbuffers (?)");
 
   if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     std::cout << "glCheckFramebufferStatus = " << glCheckFramebufferStatus(GL_FRAMEBUFFER) << std::endl;
     //running = false;
   }
-  return framebufferID;
+  unbind_fbo();
 }
 
+void Display::bind_vao()
+{
+  glBindVertexArray(this->vao);
+}
+
+void Display::unbind_vao()
+{
+  glBindVertexArray(0);
+}
+
+
+
+void Display::bind_fbo()
+{
+  glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
+}
+
+void Display::unbind_fbo()
+{
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 
 bool Display::pre_render()
 {
   glViewport(b,b,width,height); // b,b = LOWER LEFT corner. width,height is the actual drawing area.
-  glBindVertexArray(vertexArrayObjectID);
-  glBindFramebuffer(GL_FRAMEBUFFER, framebufferID);
+  bind_vao();
+  bind_fbo();
+
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureID, 0);
 
   glDisable(GL_CULL_FACE);
@@ -506,8 +486,9 @@ bool Display::post_render()
 {
   update_cursor();
 
-  glDisableVertexAttribArray(0);
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  //glDisableVertexAttribArray(0);
+  unbind_fbo();
+  unbind_vao();
   return true;
 }
 
