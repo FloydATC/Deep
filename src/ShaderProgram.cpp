@@ -108,3 +108,10 @@ void ShaderProgram::setUniformModelMatrix(std::string name)
 {
   this->uniform_model_mat = glGetUniformLocation(this->programId, name.c_str());
 }
+
+void ShaderProgram::setUniformDebugFlag(std::string name)
+{
+  this->uniform_debug_flag = glGetUniformLocation(this->programId, name.c_str());
+}
+
+

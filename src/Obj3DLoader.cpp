@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 
-
+#include "Box3D.h"
 
 Obj3DLoader::Obj3DLoader()
 {
@@ -52,6 +52,7 @@ Obj3D* Obj3DLoader::load(std::string filename)
   free(vt_array);
   free(vn_array);
   object->set_subobjects(subobject_start, subobject_length);
+  object->set_bounding_boxes(bounding_boxes);
   return object;
 }
 
@@ -197,6 +198,7 @@ void Obj3DLoader::get_o()
   // Mark the beginning of sub-object
   subobject_start.push_back(linear_points.size());
   subobject_length.push_back(0);
+  bounding_boxes.push_back(new Box3D());
 
   // Discard name
   while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
@@ -216,6 +218,7 @@ void Obj3DLoader::get_v()
   float y = scanner->get_float();
   float z = scanner->get_float();
   indexed_v.push_back(Vector3(x, y, z));
+  bounding_boxes.back()->extend(Vector3(x, y, z));
   scanner->consume('\n');
 }
 

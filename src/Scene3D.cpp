@@ -40,9 +40,11 @@ void Scene3D::render()
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
 
+  // Render 3D models
   for (const auto& prop : prop3d) {
     prop->render(this->cam.matrix());
   }
+
 
 }
 

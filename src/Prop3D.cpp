@@ -25,19 +25,27 @@ void Prop3D::render(Matrix4 camera_matrix) {
   glBindTexture(GL_TEXTURE_2D, this->texture);
 
   glUseProgram(this->shader->id());
-  this->object->set_shader_v(this->shader->vertex_v);
-  this->object->set_shader_vt(this->shader->vertex_vt);
-  this->object->set_shader_vn(this->shader->vertex_vn);
   glUniformMatrix4fv(this->shader->uniform_camera_mat, 1, GL_FALSE, camera_matrix.get());
   glUniformMatrix4fv(this->shader->uniform_model_mat, 1, GL_FALSE, this->mat.get());
 
-
+  glUniform1i(this->shader->uniform_debug_flag, 0);
   for (int i=0; i<this->object->subobjects; i++) {
-    this->object->render(i);
+    this->object->render(i); // Render Obj3D subobject i
   }
 
   glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
+
+  // Render bounding boxes for debugging
+#ifdef DEBUG_RENDER_BOUNDING_BOXES
+  glDisable(GL_DEPTH_TEST);
+  if (true) {
+    glUniform1i(this->shader->uniform_debug_flag, 1);
+    for (int i=0; i<this->object->subobjects; i++) {
+      this->object->bounding_box(i)->render(); // Render bounding box of Obj3D subobject i
+    }
+  }
+#endif
+
 }
 
 void Prop3D::recalculate() {
@@ -95,5 +103,9 @@ void Prop3D::setTexture(GLuint texture)
 void Prop3D::setShader(ShaderProgram* shader)
 {
   this->shader = shader;
+  this->object->set_shader_v(this->shader->vertex_v);
+  this->object->set_shader_vt(this->shader->vertex_vt);
+  this->object->set_shader_vn(this->shader->vertex_vn);
 }
+
 

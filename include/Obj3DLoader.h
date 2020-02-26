@@ -36,6 +36,7 @@ class Obj3DLoader
 
     std::vector<int> subobject_start;
     std::vector<int> subobject_length;
+    std::vector<Box3D*> bounding_boxes;
 
     float* make_v_array();
     float* make_vt_array();

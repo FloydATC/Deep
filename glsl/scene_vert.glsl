@@ -3,6 +3,7 @@ layout(location = 0) in vec3 vertex;
 layout(location = 1) in vec2 uv;
 uniform mat4 scene;
 uniform mat4 model;
+uniform int is_debug;
 out vec4 v_color;
 out vec2 v_uv;
 void main() {

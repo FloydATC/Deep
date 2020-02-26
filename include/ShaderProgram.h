@@ -17,12 +17,14 @@ class ShaderProgram
     void setAttributeVN(std::string name);
     void setUniformCameraMatrix(std::string name);
     void setUniformModelMatrix(std::string name);
+    void setUniformDebugFlag(std::string name);
 
     int success;
     std::string error;
 
     GLuint uniform_camera_mat;
     GLuint uniform_model_mat;
+    GLuint uniform_debug_flag;
     GLuint vertex_v;
     GLuint vertex_vt;
     GLuint vertex_vn;
