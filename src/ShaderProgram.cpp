@@ -102,16 +102,25 @@ void ShaderProgram::setAttributeVN(std::string name)
 void ShaderProgram::setUniformCameraMatrix(std::string name)
 {
   this->uniform_camera_mat = glGetUniformLocation(this->programId, name.c_str());
+  if (this->uniform_camera_mat == -1) std::cerr << "ShaderProgram::setUniformCameraMatrix(" << name << ") name not found" << std::endl;
 }
 
 void ShaderProgram::setUniformModelMatrix(std::string name)
 {
   this->uniform_model_mat = glGetUniformLocation(this->programId, name.c_str());
+  if (this->uniform_model_mat == -1) std::cerr << "ShaderProgram::setUniformModelMatrix(" << name << ") name not found" << std::endl;
+}
+
+void ShaderProgram::setUniformColor(std::string name)
+{
+  this->uniform_color = glGetUniformLocation(this->programId, name.c_str());
+  if (this->uniform_color == -1) std::cerr << "ShaderProgram::setUniformColor(" << name << ") name not found" << std::endl;
 }
 
 void ShaderProgram::setUniformDebugFlag(std::string name)
 {
   this->uniform_debug_flag = glGetUniformLocation(this->programId, name.c_str());
+  if (this->uniform_debug_flag == -1) std::cerr << "ShaderProgram::setUniformDebugFlag(" << name << ") name not found" << std::endl;
 }
 
 

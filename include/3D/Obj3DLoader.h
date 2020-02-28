@@ -3,10 +3,10 @@
 
 #include <string>
 
-#include "IOFile.h"
+#include "IO/IOFile.h"
 #include "Matrices.h"
-#include "Obj3D.h"
-#include "Obj3DScanner.h"
+#include "3D/Obj3D.h"
+#include "3D/Obj3DScanner.h"
 
 typedef struct {
   Vector3 v;

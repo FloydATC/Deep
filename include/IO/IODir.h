@@ -4,7 +4,7 @@
 #include <dirent.h>
 #include <string>
 
-#include "IOHandle.h"
+#include "IO/IOHandle.h"
 
 class IODir : public IOHandle
 {

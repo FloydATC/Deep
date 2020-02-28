@@ -16,7 +16,7 @@ typedef __PTRDIFF_TYPE__ ptrdiff_t;
 
 
 //#define DEBUG_NO_VIRTUAL_MACHINES
-//#define DEBUG_RENDER_BOUNDING_BOXES
+#define DEBUG_RENDER_BOUNDING_BOXES
 
 
 /*

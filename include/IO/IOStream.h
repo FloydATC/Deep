@@ -1,7 +1,7 @@
 #ifndef IOSTREAM_H
 #define IOSTREAM_H
 
-#include "IOHandle.h"
+#include "IO/IOHandle.h"
 
 class IOStream : public IOHandle
 {

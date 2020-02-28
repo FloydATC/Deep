@@ -1,8 +1,8 @@
-#include "Obj3DScanner.h"
+#include "3D/Obj3DScanner.h"
 
 #include <iostream>
 
-#include "IOFile.h"
+#include "IO/IOFile.h"
 
 Obj3DScanner::Obj3DScanner()
 {

@@ -12,6 +12,7 @@ class Camera3D
     Matrix4 matrix();
 
     void setDimensions(int width, int height);
+    inline Vector2 getDimensions() { return Vector2(this->width, this->height); }
     void setAspect(float width_by_height);
     float getAspect();
     int getWidth();

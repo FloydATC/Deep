@@ -1,9 +1,12 @@
 #ifndef PROP3D_H
 #define PROP3D_H
 
+#include <vector>
+
 #include "GFX.h"
 #include "Matrices.h"
-#include "Obj3D.h"
+#include "3D/Obj3D.h"
+#include "3D/Camera3D.h"
 #include "ShaderProgram.h"
 /*
 
@@ -19,7 +22,9 @@ class Prop3D
     Prop3D();
     ~Prop3D();
 
-    void render(Matrix4 camera_matrix);
+    void render(Camera3D camera);
+    bool mouse_intersects(Vector2 mouse, Vector2 display);
+    Vector2 relative_mouse_pos(Vector2 mouse, Vector2 display);
     Obj3D* Object();
     void setObject(Obj3D* object);
     void setScale(float scale);
@@ -29,11 +34,16 @@ class Prop3D
     void setShader(ShaderProgram* shader);
     void setTexture(GLuint texture);
 
+    // Make private once values have been verified
+    std::vector<Vector3> xy_plane;
+    bool xy_plane_visible();
+
   protected:
 
   private:
     Obj3D* object;
-    ShaderProgram* shader;
+
+    ShaderProgram* shader = nullptr;
     GLuint texture;
     Matrix4 mat;
     Vector3 pos;
@@ -41,8 +51,11 @@ class Prop3D
     Vector3 scale;
     bool need_recalc;
 
-    void recalculate();
+    void recalculate_matrix();
+    Vector3 project(Vector3 v3, Camera3D camera);
+    void recalculate_xy_plane(Camera3D camera);
 
 };
+
 
 #endif // PROP3D_H

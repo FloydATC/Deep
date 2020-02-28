@@ -1,6 +1,6 @@
 #include "Shader.h"
 
-#include "IOFile.h"
+#include "IO/IOFile.h"
 
 Shader::Shader(const std::string filename, GLenum shaderType)
 {

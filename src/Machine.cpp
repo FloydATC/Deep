@@ -7,11 +7,11 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-#include "IODir.h"
-#include "IOFile.h"
-#include "IOHandle.h"
-#include "IOStream.h"
-#include "IOSocket.h"
+#include "IO/IODir.h"
+#include "IO/IOFile.h"
+#include "IO/IOHandle.h"
+#include "IO/IOStream.h"
+#include "IO/IOSocket.h"
 #include "Machine.h"
 #include "Fontcache.h"
 #include "UTF8hack.h"

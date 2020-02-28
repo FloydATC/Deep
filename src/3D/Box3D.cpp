@@ -1,4 +1,4 @@
-#include "Box3D.h"
+#include "3D/Box3D.h"
 
 #include <initializer_list>
 
@@ -28,7 +28,7 @@ void Box3D::render()
   //bind_ibo(this->ibo); // Intel drivers do not save ELEMENT_ARRAY_BUFFER_BINDING?
   //bind_vbo(this->vbo);
   glLineWidth(1.0);
-  glPointSize(2.0);
+  glPointSize(4.0);
   //std::cout << "Box3D::render() glDrawArrays(GL_POINTS, 0, 12)" << std::endl;
   glDrawArrays(GL_POINTS, 0, 8);
   //std::cout << "Box3D::render() glDrawElements(GL_LINES, " << index.size() << ", GL_UNSIGNED_INT, 0)" << std::endl;
@@ -62,9 +62,9 @@ void Box3D::set_v()
 {
   // Define the eight corner vertices of a box
   for (int i=0; i<8; i++) {
-    vertices[i*3+0] = ((i&0b100)==0 ? minimum.x : maximum.x);
+    vertices[i*3+0] = ((i&0b001)==0 ? minimum.x : maximum.x);
     vertices[i*3+1] = ((i&0b010)==0 ? minimum.y : maximum.y);
-    vertices[i*3+2] = ((i&0b001)==0 ? minimum.z : maximum.z);
+    vertices[i*3+2] = ((i&0b100)==0 ? minimum.z : maximum.z);
     //std::cout << "  " << i << ": " << vertices[i*3+0] << ", " << vertices[i*3+1] << ", " << vertices[i*3+2] << std::endl;
   }
 

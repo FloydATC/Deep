@@ -4,12 +4,14 @@
 #include <unordered_map>
 #include <string>
 
-#include "Camera3D.h"
-#include "Obj3D.h"
-#include "Obj3DLoader.h"
-
-#include "Prop3D.h"
+#include "3D/Camera3D.h"
+#include "3D/Obj3D.h"
+#include "3D/Obj3DLoader.h"
+#include "3D/Prop3D.h"
+#include "Matrices.h"
 #include "ShaderProgram.h"
+
+
 
 class Scene3D
 {
@@ -18,9 +20,14 @@ class Scene3D
     ~Scene3D();
 
     void render();
+    void setDimensions(int width, int height);
+    int getWidth();
+    int getHeight();
     ShaderProgram* getShader(const std::string vs_filename, const std::string fs_filename);
     Obj3D* getObj3D(const std::string filename);
     Prop3D* addProp(Obj3D* object);
+    Prop3D* getProp(int index);
+    int getPropCount();
     Camera3D* camera();
 
   protected:

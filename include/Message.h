@@ -23,8 +23,8 @@ class Message
     };
 
     struct MouseMotion {
-      int x;
-      int y;
+      float x;
+      float y;
       int xrel;
       int yrel;
     };

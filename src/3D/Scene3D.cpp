@@ -1,4 +1,4 @@
-#include "Scene3D.h"
+#include "3D/Scene3D.h"
 
 #include "GFX.h"
 
@@ -42,11 +42,30 @@ void Scene3D::render()
 
   // Render 3D models
   for (const auto& prop : prop3d) {
-    prop->render(this->cam.matrix());
+    prop->render(this->cam);
   }
 
 
 }
+
+
+void Scene3D::setDimensions(int width, int height)
+{
+  this->cam.setDimensions(width, height);
+}
+
+
+int Scene3D::getWidth()
+{
+  return this->cam.getWidth();
+}
+
+
+int Scene3D::getHeight()
+{
+  return this->cam.getHeight();
+}
+
 
 
 ShaderProgram* Scene3D::getShader(const std::string vs_filename, const std::string fs_filename)
@@ -72,6 +91,23 @@ Prop3D* Scene3D::addProp(Obj3D* object)
   prop3d.push_back(prop);
   return prop;
 }
+
+
+Prop3D* Scene3D::getProp(int index)
+{
+  //std::cout << "Scene3D::getProp(index=" << index << ")" << std::endl;
+  //std::cout << "  prop3d.size()=" << prop3d.size() << std::endl;
+  if (index < 0 || index > ((int)prop3d.size())-1) return nullptr;
+  //std::cout << "  prop3d[index]=" << prop3d[index] << std::endl;
+  return prop3d[index];
+}
+
+
+int Scene3D::getPropCount()
+{
+  return prop3d.size();
+}
+
 
 Camera3D* Scene3D::camera()
 {

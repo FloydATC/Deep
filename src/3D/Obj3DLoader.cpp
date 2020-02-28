@@ -1,10 +1,10 @@
-#include "Obj3DLoader.h"
+#include "3D/Obj3DLoader.h"
 
 #include <iostream>
 #include <sstream>
 #include <string>
 
-#include "Box3D.h"
+#include "3D/Box3D.h"
 
 Obj3DLoader::Obj3DLoader()
 {

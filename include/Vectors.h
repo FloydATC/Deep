@@ -82,6 +82,7 @@ struct Vector3
     Vector3&    normalize();                            //
     float       dot(const Vector3& vec) const;          // dot product
     Vector3     cross(const Vector3& vec) const;        // cross product
+    Vector2     xy() const;
     bool        equal(const Vector3& vec, float e) const; // compare with epsilon
 
     // operators
@@ -170,6 +171,7 @@ inline float invSqrt(float x)
 ///////////////////////////////////////////////////////////////////////////////
 // inline functions for Vector2
 ///////////////////////////////////////////////////////////////////////////////
+
 inline Vector2 Vector2::operator-() const {
     return Vector2(-x, -y);
 }
@@ -398,6 +400,10 @@ inline float Vector3::dot(const Vector3& rhs) const {
 
 inline Vector3 Vector3::cross(const Vector3& rhs) const {
     return Vector3(y*rhs.z - z*rhs.y, z*rhs.x - x*rhs.z, x*rhs.y - y*rhs.x);
+}
+
+inline Vector2 Vector3::xy() const {
+  return Vector2(this->x, this->y);
 }
 
 inline bool Vector3::equal(const Vector3& rhs, float epsilon) const {

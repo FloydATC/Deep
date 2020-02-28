@@ -7,13 +7,14 @@ namespace FunC {
   }
 }
 
-#include "GFX.h"
+#include <queue>
+
 #include <SDL_ttf.h>
 
 #include "Display.h"
-#include "IOHandle.h"
+#include "GFX.h"
+#include "IO/IOHandle.h"
 #include "Message.h"
-#include <queue>
 
 /*
 

@@ -25,7 +25,8 @@
 //#include "IOFile.h"
 #include "Machine.h"
 #include "Message.h"
-#include "Scene3D.h"
+#include "2D/Overlay2D.h"
+#include "3D/Scene3D.h"
 #include "ShaderProgram.h"
 #include "UTF8hack.h"
 #include "hexdump.h" // For debugging only
@@ -179,7 +180,7 @@ void process_keydown(Message* msg, std::vector<Machine*> vms, GameState* gamesta
 }
 
 
-void process_mousemotion(Message* msg, Scene3D* scene, GameState* gamestate)
+void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene, GameState* gamestate)
 {
   // Mouse controls camera direction
   //std::cout << "processMsg() MouseMotion message x=" << msg->motion.x << " y=" << msg->motion.y << std::endl;
@@ -204,6 +205,29 @@ void process_mousemotion(Message* msg, Scene3D* scene, GameState* gamestate)
     } else {
       gamestate->current_vm = 3;
     }
+  }
+
+  // Detect Obj3D mouse intersection
+  // WARNING! This temporary code assumes a 1:1 relationship between Obj3Ds and VMs
+  Vector2 mouse = Vector2(msg->motion.x, msg->motion.y);
+  Vector2 display = scene->camera()->getDimensions();
+//  for (int i=0; i<scene->getPropCount(); i++) {
+  for (int i=0; i<1; i++) {
+    std::cout << "VM " << i << std::endl;
+    Prop3D* p = scene->getProp(i);
+    if (!p->xy_plane_visible()) continue;
+    if (!p->mouse_intersects(mouse, display)) continue;
+
+    Vector2 v = p->relative_mouse_pos(mouse, display);
+
+    if (v.x > 0 && v.x < 1 && v.y > 0 && v.y < 1) {
+      Message* relative = new Message(Message::Type::MouseMotion);
+      relative->motion.x = v.x;
+      relative->motion.y = v.y;
+      std::cout << "  mouse position " << v.x << "," << v.y << std::endl;
+      vms[i]->push(relative);
+    }
+
   }
 
   delete msg;
@@ -245,7 +269,7 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
       vms[gamestate->current_vm]->push(msg);
       break;
     case Message::Type::MouseMotion: {
-      process_mousemotion(msg, scene, gamestate);
+      process_mousemotion(msg, vms, scene, gamestate);
       break;
     }
     case Message::Type::MouseButtonDown:
@@ -425,9 +449,8 @@ int main(int argc, char* argv[])
       Fontcache fontcache = Fontcache(font);
 
 
-
       Scene3D scene = Scene3D();
-      scene.camera()->setDimensions(gamestate.width, gamestate.height);
+      scene.setDimensions(gamestate.width, gamestate.height);
 
       std::cout << "Load shaders" << std::endl;
       ShaderProgram* scene_shader = scene.getShader("glsl/scene_vert.glsl", "glsl/scene_frag.glsl");
@@ -438,11 +461,19 @@ int main(int argc, char* argv[])
       scene_shader->setUniformModelMatrix("model");
       scene_shader->setUniformDebugFlag("is_debug");
 
+      ShaderProgram* ortho_shader = scene.getShader("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
+      ortho_shader->setAttributeV("vertex");
+      ortho_shader->setAttributeVT("uv");
+      ortho_shader->setUniformModelMatrix("ortho");
+      ortho_shader->setUniformColor("color");
+
+      Overlay2D* ui = new Overlay2D();
+      ui->setShader(ortho_shader);
+
 
 
       std::vector<Machine*> vms;
 #ifndef DEBUG_NO_VIRTUAL_MACHINES
-      ShaderProgram* ortho_shader = scene.getShader("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
       std::cout << "main() Creating virtual machines" << std::endl;
       vms.push_back(new Machine(ortho_shader->id(), font));
       vms.push_back(new Machine(ortho_shader->id(), font));
@@ -453,36 +484,32 @@ int main(int argc, char* argv[])
 
       Obj3D* test_object = scene.getObj3D("obj/screen.obj");
 
-      Prop3D* p1 = scene.addProp(test_object);
-      Prop3D* p2 = scene.addProp(test_object);
-      Prop3D* p3 = scene.addProp(test_object);
-      Prop3D* p4 = scene.addProp(test_object);
+      scene.addProp(test_object);
+      scene.addProp(test_object);
+      scene.addProp(test_object);
+      scene.addProp(test_object);
 
-      p1->setScale(2.5);
-      p2->setScale(2.5);
-      p3->setScale(2.5);
-      p4->setScale(2.5);
 
-      p1->setPosition(Vector3(-0.60,  0.50,  0.0));
-      p2->setPosition(Vector3( 0.60,  0.50,  0.0));
-      p3->setPosition(Vector3(-0.60, -0.50,  0.0));
-      p4->setPosition(Vector3( 0.60, -0.50,  0.0));
+      scene.getProp(0)->setPosition(Vector3(-0.60,  0.50,  0.0));
+      scene.getProp(1)->setPosition(Vector3( 0.60,  0.50,  0.0));
+      scene.getProp(2)->setPosition(Vector3(-0.60, -0.50,  0.0));
+      scene.getProp(3)->setPosition(Vector3( 0.60, -0.50,  0.0));
 
-      p1->setDirection(Vector3(100, 20,  0));
-      p2->setDirection(Vector3(100,-20,  0));
-      p3->setDirection(Vector3( 80, 20,  0));
-      p4->setDirection(Vector3( 80,-20,  0));
+      scene.getProp(0)->setDirection(Vector3( 15, 15,  0));
+      scene.getProp(1)->setDirection(Vector3( 15,-15,  0));
+      scene.getProp(2)->setDirection(Vector3(-15, 15,  0));
+      scene.getProp(3)->setDirection(Vector3(-15,-15,  0));
 
-      p1->setShader(scene_shader);
-      p2->setShader(scene_shader);
-      p3->setShader(scene_shader);
-      p4->setShader(scene_shader);
+      scene.getProp(0)->setShader(scene_shader);
+      scene.getProp(1)->setShader(scene_shader);
+      scene.getProp(2)->setShader(scene_shader);
+      scene.getProp(3)->setShader(scene_shader);
 
 #ifndef DEBUG_NO_VIRTUAL_MACHINES
-      p1->setTexture(vms[0]->display.textureID);
-      p2->setTexture(vms[1]->display.textureID);
-      p3->setTexture(vms[2]->display.textureID);
-      p4->setTexture(vms[3]->display.textureID);
+      scene.getProp(0)->setTexture(vms[0]->display.textureID);
+      scene.getProp(1)->setTexture(vms[1]->display.textureID);
+      scene.getProp(2)->setTexture(vms[2]->display.textureID);
+      scene.getProp(3)->setTexture(vms[3]->display.textureID);
 #endif
 
 
@@ -503,7 +530,25 @@ int main(int argc, char* argv[])
           vm->run();
         }
 
+
         scene.render();
+
+        ui->setDimensions(scene.getWidth(), scene.getHeight());
+        ui->pre_render();
+
+        // For debugging, visualize the xy_plane of each Prop3D
+        for (int i=0; i<4; i++) {
+          Prop3D* p = scene.getProp(i);
+          if (p->xy_plane_visible())
+            ui->draw_quad(
+              Vector2(p->xy_plane[0].x, p->xy_plane[0].y),
+              Vector2(p->xy_plane[1].x, p->xy_plane[1].y),
+              Vector2(p->xy_plane[2].x, p->xy_plane[2].y),
+              Vector2(p->xy_plane[3].x, p->xy_plane[3].y)
+            );
+        }
+
+        ui->post_render();
 
         SDL_GL_SwapWindow(window);
       }
@@ -513,6 +558,7 @@ int main(int argc, char* argv[])
         delete vm;
       }
 
+      delete ui;
 
 
       TTF_CloseFont(font);
