@@ -41,6 +41,9 @@ class Obj3D
     void set_shader_vt(GLint attr);
     void set_shader_vn(GLint attr);
 
+    void setName(std::string name);
+    std::string getName();
+
     void render(int subobject);
     Box3D* bounding_box(int subobject);
 
@@ -53,6 +56,7 @@ class Obj3D
     std::vector<int> subobject_start;
     std::vector<int> subobject_length;
     std::vector<Box3D*> bounding_boxes;
+    std::string name;
 
     void bind_vao();
     void unbind_vao();

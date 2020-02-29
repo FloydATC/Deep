@@ -16,12 +16,25 @@ Obj3DLoader::~Obj3DLoader()
   //dtor
 }
 
+void Obj3DLoader::reset()
+{
+  this->indexed_v.clear();
+  this->indexed_vt.clear();
+  this->indexed_vn.clear();
+  this->linear_points.clear();
+  subobject_start.clear();
+  subobject_length.clear();
+  this->bounding_boxes.clear();
+}
+
 Obj3D* Obj3DLoader::load(std::string filename)
 {
   std::cout << "Obj3DLoader::load() filename=" << filename << std::endl;
-  scanner = new Obj3DScanner();
-  scanner->load(filename);
+  reset();
   int errors = 0;
+  this->scanner = new Obj3DScanner();
+  scanner->load(filename);
+  this->filename = filename;
 
 
   //std::cout << "Obj3DLoader::load() begin parse loop" << std::endl;
@@ -36,11 +49,11 @@ Obj3D* Obj3DLoader::load(std::string filename)
     std::cerr << "Obj3DLoader::load() errors parsing " << filename << ": " << errors << std::endl;
   }
 
-  delete scanner;
-  this->filename = filename;
+  delete this->scanner;
   //std::cout << "Obj3DLoader::load() produce object" << std::endl;
 
   Obj3D* object = new Obj3D();
+  object->setName(filename);
   int sz = linear_points.size();
   float* v_array = make_v_array();
   float* vt_array = make_vt_array();
@@ -51,8 +64,8 @@ Obj3D* Obj3DLoader::load(std::string filename)
   free(v_array);
   free(vt_array);
   free(vn_array);
-  object->set_subobjects(subobject_start, subobject_length);
-  object->set_bounding_boxes(bounding_boxes);
+  object->set_subobjects(std::vector<int>(subobject_start), std::vector<int>(subobject_length));
+  object->set_bounding_boxes(std::vector<Box3D*>(bounding_boxes));
   return object;
 }
 
@@ -195,10 +208,15 @@ void Obj3DLoader::get_l()
 
 void Obj3DLoader::get_o()
 {
-  // Mark the beginning of sub-object
+  // Mark the beginning of sub-object ("part")
   subobject_start.push_back(linear_points.size());
   subobject_length.push_back(0);
-  bounding_boxes.push_back(new Box3D());
+  Box3D* box = new Box3D();
+  bounding_boxes.push_back(box);
+  std::string subobject_no = std::to_string(bounding_boxes.size());
+  std::string boxname = this->filename;
+  boxname.append(":part").append(subobject_no); // e.g. box.obj:part2
+  box->setName(boxname);
 
   // Discard name
   while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }

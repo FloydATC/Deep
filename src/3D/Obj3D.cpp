@@ -10,18 +10,20 @@ Obj3D::Obj3D()
   glGenBuffers(1, &this->vbo_vt);
   glGenBuffers(1, &this->vbo_vn);
   subobjects = 0;
+  name = "(untitled)";
   std::cout << "Obj3D " << this << " created" << std::endl;
 }
 
 Obj3D::~Obj3D()
 {
   //dtor
+  std::cout << "Obj3D " << this << " (" << name << ") destruction" << std::endl;
   glDeleteBuffers(1, &this->vbo_v);
   glDeleteBuffers(1, &this->vbo_vt);
   glDeleteBuffers(1, &this->vbo_vn);
   glDeleteVertexArrays(1, &this->vao);
   for (auto& box : this->bounding_boxes) delete box;
-  std::cout << "Obj3D " << this << " destroyed" << std::endl;
+  std::cout << "Obj3D " << this << " " << name << " destruction complete" << std::endl;
 }
 
 
@@ -34,6 +36,17 @@ void Obj3D::render(int subobject)
 }
 
 
+void Obj3D::setName(std::string name)
+{
+  this->name = name;
+  std::cout << "Obj3D " << this << " named " << name << std::endl;
+}
+
+
+std::string Obj3D::getName()
+{
+  return this->name;
+}
 
 
 

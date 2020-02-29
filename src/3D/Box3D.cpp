@@ -9,16 +9,17 @@ Box3D::Box3D()
   glGenVertexArrays(1, &this->vao);
   glGenBuffers(1, &this->vbo);
   glGenBuffers(1, &this->ibo);
-  //std::cout << "Box3D " << this << " created" << std::endl;
+  std::cout << "Box3D " << this << " created" << std::endl;
 }
 
 Box3D::~Box3D()
 {
   //dtor
+  std::cout << "Box3D " << this << " " << name << " destruction" << std::endl;
   glDeleteBuffers(1, &this->ibo);
   glDeleteBuffers(1, &this->vbo);
   glDeleteVertexArrays(1, &this->vao);
-  //std::cout << "Box3D " << this << " destroyed" << std::endl;
+  std::cout << "Box3D " << this << " " << name << " destruction complete" << std::endl;
 }
 
 
@@ -34,6 +35,19 @@ void Box3D::render()
   //std::cout << "Box3D::render() glDrawElements(GL_LINES, " << index.size() << ", GL_UNSIGNED_INT, 0)" << std::endl;
   glDrawElements(GL_LINES, index.size(), GL_UNSIGNED_INT, 0); // Indexed draw
   unbind_vao();
+}
+
+
+void Box3D::setName(std::string name)
+{
+  this->name = name;
+  std::cout << "Box3D " << this << " named " << name << std::endl;
+}
+
+
+std::string Box3D::getName()
+{
+  return this->name;
 }
 
 

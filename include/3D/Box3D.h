@@ -17,6 +17,9 @@ class Box3D
     void finalize();
     void render();
 
+    void setName(std::string name);
+    std::string getName();
+
   protected:
 
   private:
@@ -30,6 +33,7 @@ class Box3D
     Vector3 maximum = Vector3(0,0,0);
     bool first = true;
     bool finalized = false;
+    std::string name;
 
     GLuint vao; // Vertex Array Object
     GLuint vbo; // Vertex Buffer Object
