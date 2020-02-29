@@ -9,7 +9,7 @@ class Camera3D
     Camera3D();
     ~Camera3D();
 
-    Matrix4 matrix();
+    Matrix4 getMatrix();
 
     void setDimensions(int width, int height);
     inline Vector2 getDimensions() { return Vector2(this->width, this->height); }
@@ -20,6 +20,9 @@ class Camera3D
     void setFOV(float degrees);
     void addFOV(float degrees);
     float getFOV();
+    float getNear();
+    float getFar();
+    Vector3 getPosition();
     void setPitch(float degrees);
     void addPitch(float degrees);
     float getPitch();
@@ -27,6 +30,13 @@ class Camera3D
     void addYaw(float degrees);
     float getYaw();
     void setPosition(Vector3 position);
+    Matrix4 getRotationMatrix();
+    void strafeLeft(float distance);
+    void strafeRight(float distance);
+    void strafeUp(float distance);
+    void strafeDown(float distance);
+    void strafeForward(float distance);
+    void strafeBackward(float distance);
 
   protected:
 
@@ -36,6 +46,8 @@ class Camera3D
 
     float fov;
     float aspect;
+    float clip_near = 0.1;
+    float clip_far = 100.0;
     int width;
     int height;
     float pitch;

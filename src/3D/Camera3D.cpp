@@ -32,7 +32,7 @@ float wrap( float target, int lower, int upper){
   return upper - tmp;
 }
 
-Matrix4 Camera3D::matrix()
+Matrix4 Camera3D::getMatrix()
 {
   if (this->need_recalc == true) this->recalculate();
   return this->mat;
@@ -41,9 +41,10 @@ Matrix4 Camera3D::matrix()
 void Camera3D::recalculate()
 {
   //std::cout << "Camera3D::recalculate() begin" << std::endl;
-  this->mat = Matrix4().Perspective(this->fov, this->aspect, 0.1f, 100.0f);
-  this->mat *= Matrix4().rotate(this->pitch, Vector3(1.0f, 0.0f, 0.0f));
-  this->mat *= Matrix4().rotate(this->yaw, Vector3(0.0f, 1.0f, 0.0f));
+  this->mat = Matrix4().Perspective(this->fov, this->aspect, this->clip_near, this->clip_far);
+  //this->mat *= Matrix4().rotate(this->pitch, Vector3(1.0f, 0.0f, 0.0f));
+  //this->mat *= Matrix4().rotate(this->yaw, Vector3(0.0f, 1.0f, 0.0f));
+  this->mat *= getRotationMatrix();
   //this->mat *= Matrix4().rotate(180, Vector3(0.0f, 0.0f, 1.0f)); // Why is the scene up-side-down??
   this->mat *= Matrix4().translate(Vector3( this->pos.x, this->pos.y, this->pos.z));
   //std::cout << "Camera3D::recalculate() done" << std::endl;
@@ -116,6 +117,21 @@ float Camera3D::getFOV()
   return this->fov;
 }
 
+float Camera3D::getNear()
+{
+  return this->clip_near;
+}
+
+float Camera3D::getFar()
+{
+  return this->clip_far;
+}
+
+Vector3 Camera3D::getPosition()
+{
+  return this->pos;
+}
+
 void Camera3D::setPitch(float degrees)
 {
   this->pitch = degrees;
@@ -162,5 +178,56 @@ void Camera3D::addYaw(float degrees)
 float Camera3D::getYaw()
 {
   return this->yaw;
+}
+
+
+Matrix4 Camera3D::getRotationMatrix()
+{
+  Matrix4 result = Matrix4().rotate(this->pitch, Vector3(1.0f, 0.0f, 0.0f));
+  result *= Matrix4().rotate(this->yaw, Vector3(0.0f, 1.0f, 0.0f));
+  return result;
+}
+
+
+void Camera3D::strafeLeft(float distance)
+{
+  Vector4 motion = Vector4(distance, 0, 0, 0) * getRotationMatrix();
+  this->pos += motion.xyz();
+  this->need_recalc = true;
+}
+
+void Camera3D::strafeRight(float distance)
+{
+  Vector4 motion = Vector4(-distance, 0, 0, 0) * getRotationMatrix();
+  this->pos += motion.xyz();
+  this->need_recalc = true;
+}
+
+void Camera3D::strafeUp(float distance)
+{
+  Vector4 motion = Vector4(0, -distance, 0, 0) * getRotationMatrix();
+  this->pos += motion.xyz();
+  this->need_recalc = true;
+}
+
+void Camera3D::strafeDown(float distance)
+{
+  Vector4 motion = Vector4(0, distance, 0, 0) * getRotationMatrix();
+  this->pos += motion.xyz();
+  this->need_recalc = true;
+}
+
+void Camera3D::strafeForward(float distance)
+{
+  Vector4 motion = Vector4(0, 0, distance, 0) * getRotationMatrix();
+  this->pos += motion.xyz();
+  this->need_recalc = true;
+}
+
+void Camera3D::strafeBackward(float distance)
+{
+  Vector4 motion = Vector4(0, 0, -distance, 0) * getRotationMatrix();
+  this->pos += motion.xyz();
+  this->need_recalc = true;
 }
 
