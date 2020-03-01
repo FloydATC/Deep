@@ -29,6 +29,7 @@
 #include "3D/Scene3D.h"
 #include "ShaderProgram.h"
 #include "UTF8hack.h"
+#include "3D/Ray3D.h" // for debugging only
 #include "hexdump.h" // For debugging only
 
 
@@ -213,13 +214,14 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
   Vector2 display = scene->camera()->getDimensions();
 //  for (int i=0; i<scene->getPropCount(); i++) {
   for (int i=0; i<1; i++) {
-    std::cout << "VM " << i << std::endl;
+    //std::cout << "VM " << i << std::endl;
     Prop3D* p = scene->getProp(i);
-    if (!p->xy_plane_visible()) continue;
-    if (!p->mouse_intersects(mouse, display)) continue;
+    //if (!p->xy_plane_visible()) continue;
+    //if (!p->mouse_intersects(mouse, display)) continue;
 
-    Vector2 v = p->relative_mouse_pos(mouse, display);
+    Vector2 v = p->relative_mouse_pos(mouse, scene->camera(), scene);
 
+    /*
     if (v.x > 0 && v.x < 1 && v.y > 0 && v.y < 1) {
       Message* relative = new Message(Message::Type::MouseMotion);
       relative->motion.x = v.x;
@@ -227,6 +229,7 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
       std::cout << "  mouse position " << v.x << "," << v.y << std::endl;
       vms[i]->push(relative);
     }
+    */
 
   }
 
@@ -285,6 +288,12 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
       break;
     case Message::Type::KeyDown:
       //std::cout << "processMsg() KeyDown message" << std::endl;
+      if (msg->key.sym == SDLK_KP_4) scene->camera()->strafeLeft(0.1);
+      if (msg->key.sym == SDLK_KP_6) scene->camera()->strafeRight(0.1);
+      if (msg->key.sym == SDLK_KP_8) scene->camera()->strafeUp(0.1);
+      if (msg->key.sym == SDLK_KP_2) scene->camera()->strafeDown(0.1);
+      if (msg->key.sym == SDLK_KP_PLUS) scene->camera()->strafeForward(0.1);
+      if (msg->key.sym == SDLK_KP_MINUS) scene->camera()->strafeBackward(0.1);
       process_keydown(msg, vms, gamestate);
       break;
     case Message::Type::KeyUp:
@@ -451,6 +460,7 @@ int main(int argc, char* argv[])
 
       Scene3D scene = Scene3D();
       scene.setDimensions(gamestate.width, gamestate.height);
+      scene.camera()->setPosition(Vector3(0.0, 0.0, -1.0));
 
       std::cout << "Load shaders" << std::endl;
       ShaderProgram* scene_shader = scene.getShader("glsl/scene_vert.glsl", "glsl/scene_frag.glsl");
@@ -460,12 +470,16 @@ int main(int argc, char* argv[])
       scene_shader->setUniformCameraMatrix("scene");
       scene_shader->setUniformModelMatrix("model");
       scene_shader->setUniformDebugFlag("is_debug");
+      scene_shader->setUniformTextureFlag("use_texture");
+      scene_shader->setUniformColor("color");
 
       ShaderProgram* ortho_shader = scene.getShader("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
       ortho_shader->setAttributeV("vertex");
       ortho_shader->setAttributeVT("uv");
       ortho_shader->setUniformModelMatrix("ortho");
       ortho_shader->setUniformColor("color");
+      ortho_shader->setUniformDebugFlag("is_debug");
+      ortho_shader->setUniformTextureFlag("use_texture");
 
       Overlay2D* ui = new Overlay2D();
       ui->setShader(ortho_shader);
@@ -475,30 +489,42 @@ int main(int argc, char* argv[])
       std::vector<Machine*> vms;
 #ifndef DEBUG_NO_VIRTUAL_MACHINES
       std::cout << "main() Creating virtual machines" << std::endl;
-      vms.push_back(new Machine(ortho_shader->id(), font));
-      vms.push_back(new Machine(ortho_shader->id(), font));
-      vms.push_back(new Machine(ortho_shader->id(), font));
-      vms.push_back(new Machine(ortho_shader->id(), font));
+      vms.push_back(new Machine(ortho_shader, font));
+      vms.push_back(new Machine(ortho_shader, font));
+      vms.push_back(new Machine(ortho_shader, font));
+      vms.push_back(new Machine(ortho_shader, font));
       std::cout << "main() Virtual machines ready" << std::endl;
 #endif
 
-      Obj3D* test_object = scene.getObj3D("obj/screen.obj");
+      Obj3D* screen = scene.getObj3D("obj/screen.obj");
+      Obj3D* cube = scene.getObj3D("obj/cube.obj");
+      Ray3D* ray = new Ray3D();
 
-      scene.addProp(test_object);
-      scene.addProp(test_object);
-      scene.addProp(test_object);
-      scene.addProp(test_object);
+      scene.addProp(screen);
+      scene.addProp(screen);
+      scene.addProp(screen);
+      scene.addProp(screen);
 
+      // Debug visualization
+      scene.addProp(cube);
+      scene.getProp(4)->setScale(0.1);
+      scene.getProp(4)->setShader(scene_shader);
+      scene.addProp(ray);
+      scene.getProp(5);
+      scene.getProp(5)->setShader(scene_shader);
+      //scene.getProp(5)->setColor(1.0, 1.0, 0.0, 1.0);
+      scene.getProp(5)->setPosition(Vector3(-0.60,  0.50,  0.0));
+      scene.getProp(5)->setDirection( 15, 15,  0);
 
       scene.getProp(0)->setPosition(Vector3(-0.60,  0.50,  0.0));
       scene.getProp(1)->setPosition(Vector3( 0.60,  0.50,  0.0));
       scene.getProp(2)->setPosition(Vector3(-0.60, -0.50,  0.0));
       scene.getProp(3)->setPosition(Vector3( 0.60, -0.50,  0.0));
 
-      scene.getProp(0)->setDirection(Vector3( 15, 15,  0));
-      scene.getProp(1)->setDirection(Vector3( 15,-15,  0));
-      scene.getProp(2)->setDirection(Vector3(-15, 15,  0));
-      scene.getProp(3)->setDirection(Vector3(-15,-15,  0));
+      scene.getProp(0)->setDirection( 15, 15,  0);
+      scene.getProp(1)->setDirection( 15,-15,  0);
+      scene.getProp(2)->setDirection(-15, 15,  0);
+      scene.getProp(3)->setDirection(-15,-15,  0);
 
       scene.getProp(0)->setShader(scene_shader);
       scene.getProp(1)->setShader(scene_shader);
@@ -506,10 +532,10 @@ int main(int argc, char* argv[])
       scene.getProp(3)->setShader(scene_shader);
 
 #ifndef DEBUG_NO_VIRTUAL_MACHINES
-      scene.getProp(0)->setTexture(vms[0]->display.textureID);
-      scene.getProp(1)->setTexture(vms[1]->display.textureID);
-      scene.getProp(2)->setTexture(vms[2]->display.textureID);
-      scene.getProp(3)->setTexture(vms[3]->display.textureID);
+//      scene.getProp(0)->setTexture(vms[0]->display.textureID);
+//      scene.getProp(1)->setTexture(vms[1]->display.textureID);
+//      scene.getProp(2)->setTexture(vms[2]->display.textureID);
+//      scene.getProp(3)->setTexture(vms[3]->display.textureID);
 #endif
 
 

@@ -34,12 +34,13 @@ std::uniform_real_distribution<double> rand_double(0.0, 1.0);
 
 
 
-Machine::Machine(GLuint shaderID, Fontcache fontcache)
+//Machine::Machine(GLuint shaderID, Fontcache fontcache)
+Machine::Machine(ShaderProgram* shader, Fontcache fontcache)
 {
   //ctor
   initialize_vm();
 
-  this->display = Display(shaderID, fontcache);
+  this->display = Display(shader, fontcache);
   std::cout << "Virtual Machine " << this << " initialized" << std::endl;
 
   // Run pre-designated FunC script

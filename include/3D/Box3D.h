@@ -5,8 +5,10 @@
 
 #include "GFX.h"
 #include "Matrices.h" // Vector3
+#include "3D/Mesh3D.h"
+#include "ShaderProgram.h"
 
-class Box3D
+class Box3D : public Mesh3D
 {
   public:
     Box3D();
@@ -15,10 +17,7 @@ class Box3D
     void extend(Vector3 vertex);
     void set_shader_v(GLint attr);
     void finalize();
-    void render();
-
-    void setName(std::string name);
-    std::string getName();
+    void render(ShaderProgram* shader);
 
   protected:
 
@@ -35,17 +34,17 @@ class Box3D
     bool finalized = false;
     std::string name;
 
-    GLuint vao; // Vertex Array Object
-    GLuint vbo; // Vertex Buffer Object
+//    GLuint vao; // Vertex Array Object
+//    GLuint vbo; // Vertex Buffer Object
     GLuint ibo; // Index Buffer Object
-    GLint shader_v;
+//    GLint shader_v;
 
     void set_v();
     void set_i();
 
-    void bind_vao();
-    void unbind_vao();
-    void bind_vbo(GLuint vbo);
+//    void bind_vao();
+//    void unbind_vao();
+//    void bind_vbo(GLuint vbo);
     void bind_ibo(GLuint ibo);
 
 };

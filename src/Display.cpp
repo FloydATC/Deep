@@ -4,26 +4,29 @@
 #include "Fontcache.h"
 #include "UTF8hack.h"
 
+
 Display::Display()
 {
   //ctor
 }
 
-Display::Display(GLuint shaderID, Fontcache font)
+//Display::Display(GLuint shaderID, Fontcache font)
+Display::Display(ShaderProgram* shader, Fontcache font)
 {
   //ctor
   prepare_vao();
   this->textureID = prepare_texture(width+b*2, height+b*2);
   prepare_framebuffer(textureID);
-  this->shaderID = shaderID;
+  this->shader = shader;
+  //this->shaderID = shaderID;
   this->font = font;
   this->m_ortho = Matrix4().Ortho(-0.5f, width-0.5f, -0.0f, height-0.0f, -1.0f, 1.0f);
 
-  glUseProgram(shaderID);
-  this->attr_vertex = glGetAttribLocation(shaderID, "vertex");
-  this->attr_uv = glGetAttribLocation(shaderID, "uv");
-  this->uniform_ortho = glGetUniformLocation(shaderID, "ortho");
-  this->uniform_color = glGetUniformLocation(shaderID, "color");
+  //glUseProgram(shaderID);
+  //this->attr_vertex = glGetAttribLocation(shaderID, "vertex");
+  //this->attr_uv = glGetAttribLocation(shaderID, "uv");
+  //this->uniform_ortho = glGetUniformLocation(shaderID, "ortho");
+  //this->uniform_color = glGetUniformLocation(shaderID, "color");
 
 }
 
@@ -37,14 +40,18 @@ Display::~Display()
 
 void Display::draw_untextured_vbo(GLsizeiptr arrsize, const void* arr, GLenum type, GLsizei typesize, GLenum mode, GLsizei vertices)
 {
-  glUniform4fv(uniform_color, 1, this->color);
+  this->shader->setColor(this->color);
+  this->shader->setTextureFlag(false);
+  //glUniform4fv(uniform_color, 1, this->color);
   GLuint vertexBufferID;
   glGenBuffers(1, &vertexBufferID);
   glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
   glBufferData(GL_ARRAY_BUFFER, arrsize, arr, GL_STREAM_DRAW); // Buffer will be used only once
-  glEnableVertexAttribArray(attr_vertex);
-  glDisableVertexAttribArray(attr_uv);
-  glVertexAttribPointer(attr_vertex, 2, type, GL_FALSE, 2*typesize, (char*) NULL+0*typesize);
+  this->shader->enableAttributeV();
+  //glEnableVertexAttribArray(attr_vertex);
+  //glDisableVertexAttribArray(attr_uv);
+  this->shader->setAttribPointerV(2, type, typesize, 2, 0);
+  //glVertexAttribPointer(attr_vertex, 2, type, GL_FALSE, 2*typesize, (char*) NULL+0*typesize);
   glDrawArrays(mode, 0, vertices);
   glDeleteBuffers(1, &vertexBufferID);
   glEnableVertexAttribArray(0);
@@ -280,25 +287,32 @@ void Display::draw_surface(int row, int col, float r, float g, float b, GLuint s
   };
   //   x   y   u  v
 
-  glUseProgram(shaderID);
+  glUseProgram(this->shader->id());
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, src_texture);
-  GLfloat color[] = { r, g, b, 0.0 };
-  glUniform4fv(uniform_color, 1, color);
+  GLfloat color[] = { r, g, b, 1.0 };
+  //glUniform4fv(uniform_color, 1, color);
+  this->shader->setColor(color); // Specific color for this call
+  this->shader->setTextureFlag(true);
 
   GLuint vertexBufferID;
   glGenBuffers(1, &vertexBufferID);
   glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
   glBufferData(GL_ARRAY_BUFFER, sizeof(rect), rect, GL_STATIC_DRAW);
-  glEnableVertexAttribArray(attr_vertex);
-  glEnableVertexAttribArray(attr_uv);
-  glVertexAttribPointer(attr_vertex, 2, GL_FLOAT, GL_TRUE, 4*sizeof(GLfloat), (char*) NULL+0*sizeof(GLfloat));
-  glVertexAttribPointer(attr_uv, 2, GL_FLOAT, GL_TRUE, 4*sizeof(GLfloat), (char*) NULL+2*sizeof(GLfloat));
+  this->shader->enableAttributeV();
+  this->shader->enableAttributeVT();
+  //glEnableVertexAttribArray(attr_vertex);
+  //glEnableVertexAttribArray(attr_uv);
+  this->shader->setAttribPointerV(2, GL_FLOAT, sizeof(GLfloat), 4, 0);
+  this->shader->setAttribPointerVT(2, GL_FLOAT, sizeof(GLfloat), 4, 2);
+  //glVertexAttribPointer(attr_vertex, 2, GL_FLOAT, GL_TRUE, 4*sizeof(GLfloat), (char*) NULL+0*sizeof(GLfloat));
+  //glVertexAttribPointer(attr_uv, 2, GL_FLOAT, GL_TRUE, 4*sizeof(GLfloat), (char*) NULL+2*sizeof(GLfloat));
   glDrawArrays(GL_TRIANGLES, 0, 6);
   glDeleteBuffers(1, &vertexBufferID);
-  glEnableVertexAttribArray(0);
+  //glEnableVertexAttribArray(0);
   color[3] = 1.0;
-  glUniform4fv(uniform_color, 1, color);
+  this->shader->setColor(this->color); // Restore "current" color
+  //glUniform4fv(uniform_color, 1, color);
 }
 
 
@@ -387,7 +401,8 @@ void Display::set_rgbcolor(float r, float g, float b)
   color[1] = clampf(g, 0.0, 1.0);
   color[2] = clampf(b, 0.0, 1.0);
   color[3] = alpha;
-  glUniform4fv(uniform_color, 1, color);
+  this->shader->setColor(color);
+  //glUniform4fv(uniform_color, 1, color);
 }
 
 void Display::prepare_vao()
@@ -467,10 +482,13 @@ bool Display::pre_render()
   glDisable(GL_CULL_FACE);
   glDisable(GL_DEPTH_TEST);
 
-  glUseProgram(shaderID);
+  glUseProgram(this->shader->id());
+  this->shader->setDebugFlag(false);
 
-  glUniformMatrix4fv(uniform_ortho, 1, GL_FALSE, m_ortho.get());
-  glEnableVertexAttribArray(attr_vertex);
+  //glUniformMatrix4fv(uniform_ortho, 1, GL_FALSE, m_ortho.get());
+  //glEnableVertexAttribArray(attr_vertex);
+  this->shader->setModelMatrix(this->m_ortho);
+  this->shader->enableAttributeV();
 
   if (initialized == false) {
     reset();

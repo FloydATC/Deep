@@ -6,13 +6,14 @@
 
 #include "Matrices.h"
 #include "Fontcache.h"
-
+#include "ShaderProgram.h"
 
 class Display
 {
   public:
     Display();
-    Display(GLuint shaderID, Fontcache font);
+//    Display(GLuint shaderID, Fontcache font);
+    Display(ShaderProgram* shader, Fontcache font);
     ~Display();
 
     bool pre_render();
@@ -79,7 +80,7 @@ class Display
     bool cursor = true;
 
     GLuint textureID;
-    GLuint shaderID;
+    //GLuint shaderID;
 
   protected:
 
@@ -114,10 +115,11 @@ class Display
     Fontcache font;
     Matrix4 m_ortho;
 
-    GLint attr_vertex;
-    GLint attr_uv;
-    GLuint uniform_ortho;
-    GLuint uniform_color;
+    ShaderProgram* shader;
+    //GLint attr_vertex;
+    //GLint attr_uv;
+    //GLuint uniform_ortho;
+    //GLuint uniform_color;
     GLuint vao; // Vertex Array Object
     GLuint fbo; // Framebuffer Object
 

@@ -15,6 +15,7 @@ namespace FunC {
 #include "GFX.h"
 #include "IO/IOHandle.h"
 #include "Message.h"
+#include "ShaderProgram.h"
 
 /*
 
@@ -31,7 +32,8 @@ class Machine
 {
   public:
 
-    Machine(GLuint shaderID, Fontcache fontcache);
+//    Machine(GLuint shaderID, Fontcache fontcache);
+    Machine(ShaderProgram* shader, Fontcache fontcache);
     ~Machine();
 
     void push(Message* msg);

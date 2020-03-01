@@ -84,10 +84,10 @@ Obj3D* Scene3D::getObj3D(const std::string filename)
   return obj;
 }
 
-Prop3D* Scene3D::addProp(Obj3D* object)
+Prop3D* Scene3D::addProp(Mesh3D* mesh)
 {
   Prop3D* prop = new Prop3D();
-  prop->setObject(object);
+  prop->setMesh(mesh);
   prop3d.push_back(prop);
   return prop;
 }

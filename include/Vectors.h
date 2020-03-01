@@ -130,6 +130,7 @@ struct Vector4
     Vector4&    normalize();                            //
     float       dot(const Vector4& vec) const;          // dot product
     bool        equal(const Vector4& vec, float e) const; // compare with epsilon
+    Vector3     xyz() const;
 
     // operators
     Vector4     operator-() const;                      // unary operator (negate)
@@ -425,6 +426,11 @@ inline std::ostream& operator<<(std::ostream& os, const Vector3& vec) {
 ///////////////////////////////////////////////////////////////////////////////
 // inline functions for Vector4
 ///////////////////////////////////////////////////////////////////////////////
+
+inline Vector3 Vector4::xyz() const {
+  return Vector3(x, y, z);
+}
+
 inline Vector4 Vector4::operator-() const {
     return Vector4(-x, -y, -z, -w);
 }

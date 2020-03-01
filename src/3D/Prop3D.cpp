@@ -2,17 +2,17 @@
 
 #include "Matrices.h"
 
+#include "Scene3D.h" // debugging
 
 Prop3D::Prop3D()
 {
   //ctor
-  this->object = nullptr;
+  this->mesh = nullptr;
   this->shader = nullptr;
-  this->pos = Vector3(0.0, 0.0, 0.0);
-  this->dir = Vector3(0.0, 0.0, 0.0);
   this->scale = Vector3(1.0, 1.0, 1.0);
-  this->need_recalc = true;
+  this->scale_matrix = Matrix4();
   this->xy_plane.resize(4); // 4 x Vector2
+  this->texture_mapped = false;
 }
 
 Prop3D::~Prop3D()
@@ -23,49 +23,121 @@ Prop3D::~Prop3D()
 
 void Prop3D::render(Camera3D camera) {
   if (this->need_recalc) this->recalculate_matrix();
+  //std::cout << "Prop3D" << this << "::render() called for object '" << this->object->getName() << "'" << std::endl;
+/*
+  materials are now handled at the subobject level
 
-  glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
-  //std::cout << "Prop3D" << this << "::render() glBindTexture(GL_TEXTURE_2D, " << this->texture << ")" << std::endl;
-  glBindTexture(GL_TEXTURE_2D, this->texture);
+  if (this->texture_mapped) {
+    glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+    //std::cout << "Prop3D" << this << "::render() glBindTexture(GL_TEXTURE_2D, " << this->texture << ")" << std::endl;
+    glBindTexture(GL_TEXTURE_2D, this->texture);
+  } else {
+    //std::cout << "Prop3D" << this << "::render() no texture" << std::endl;
+    glBindTexture(GL_TEXTURE_2D, 0);
+  }
+*/
 
-  glUseProgram(this->shader->id());
-  glUniformMatrix4fv(this->shader->uniform_camera_mat, 1, GL_FALSE, camera.matrix().get());
-  glUniformMatrix4fv(this->shader->uniform_model_mat, 1, GL_FALSE, this->mat.get());
-
-  glUniform1i(this->shader->uniform_debug_flag, 0);
-  for (int i=0; i<this->object->subobjects; i++) {
-    this->object->render(i); // Render Obj3D subobject i
+  if (this->shader == nullptr) {
+    std::cerr << "Prop3D" << this  << "::render() no shader!" << std::endl;
+    return;
   }
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glUseProgram(this->shader->id());
+  this->shader->setCameraMatrix(camera.getMatrix());
+  this->shader->setModelMatrix(this->matrix);
+  //this->shader->setColor(1.0, 1.0, 1.0, 1.0);
+  //this->shader->setDebugFlag(false);
+  //this->shader->setTextureFlag(false);
+
+  //for (int i=0; i<this->object->subobjects; i++) {
+  this->mesh->render(this->shader); // Render Mesh3D
+  //}
+
+  //if (this->texture_mapped) glBindTexture(GL_TEXTURE_2D, 0);
 
   // Render bounding boxes for debugging
+  /*
 #ifdef DEBUG_RENDER_BOUNDING_BOXES
   glDisable(GL_DEPTH_TEST);
   if (true) {
-    glUniform1i(this->shader->uniform_debug_flag, 1);
+    this->shader->setDebugFlag(true);
     for (int i=0; i<this->object->subobjects; i++) {
       this->object->bounding_box(i)->render(); // Render bounding box of Obj3D subobject i
     }
   }
   glEnable(GL_DEPTH_TEST);
 #endif
+*/
 
   recalculate_xy_plane(camera);
+  //std::cout << "Prop3D" << this << "::render() done" << std::endl;
+}
+
+
+Matrix4 Prop3D::getScaleMatrix()
+{
+  if (this->need_recalc == false) return this->scale_matrix;
+  this->scale_matrix = Matrix4().scale(this->scale.x, this->scale.y, this->scale.z);
+  return this->scale_matrix;
 }
 
 
 void Prop3D::recalculate_matrix()
 {
   //std::cout << "Prop3D::recalculate() begin" << std::endl;
-  this->mat = Matrix4().translate(this->pos); // Relative position
-  this->mat *= Matrix4().rotate(this->dir.z, Vector3(0.0f, 0.0f, 1.0f)); // Rotation angle and axis
-  this->mat *= Matrix4().rotate(this->dir.y, Vector3(0.0f, 1.0f, 0.0f)); // Rotation angle and axis
-  this->mat *= Matrix4().rotate(this->dir.x, Vector3(1.0f, 0.0f, 0.0f)); // Rotation angle and axis
-  this->mat *= Matrix4().scale(this->scale.x, this->scale.y, this->scale.z);
+  this->matrix  = getPositionMatrix(); // Matrix4().translate(this->position); // Relative position
+  this->matrix *= getRotationMatrix();
+  this->matrix *= getScaleMatrix();
   //std::cout << "Prop3D::recalculate() done" << std::endl;
   this->need_recalc = false;
 }
+
+
+
+Mesh3D* Prop3D::Mesh()
+{
+  return this->mesh;
+}
+
+
+void Prop3D::setMesh(Mesh3D* mesh)
+{
+  this->mesh = mesh;
+}
+
+void Prop3D::setScale(float scale)
+{
+  this->scale = Vector3(scale, scale, scale);
+  this->need_recalc = true;
+}
+
+void Prop3D::setScale(Vector3 scale)
+{
+  this->scale = scale;
+  this->need_recalc = true;
+}
+
+
+/*
+void Prop3D::setTexture(GLuint texture)
+{
+  this->texture = texture;
+  this->texture_mapped = true;
+}
+*/
+
+void Prop3D::setShader(ShaderProgram* shader)
+{
+  this->shader = shader;
+  //this->object->set_shader_v(this->shader->vertex_v);
+  //this->object->set_shader_vt(this->shader->vertex_vt);
+  //this->object->set_shader_vn(this->shader->vertex_vn);
+}
+
+
+
+////// Experimental code follows -- beware of dragons //////
+
 
 
 Vector3 Prop3D::project(Vector3 v3, Camera3D camera)
@@ -75,7 +147,7 @@ Vector3 Prop3D::project(Vector3 v3, Camera3D camera)
   // to pinpoint mouse events relative to the 3D object.
 
   // We need a Vector4 for the projection since the matrices are 4x4 and use perspective
-  Vector4 v4 =  camera.matrix() * this->mat * Vector4(v3.x, v3.y, v3.z, 1.0);
+  Vector4 v4 =  camera.getMatrix() * this->matrix * Vector4(v3.x, v3.y, v3.z, 1.0);
 
   // Return 2D display coordinates + depth component
   int w2 = camera.getWidth() / 2;
@@ -91,10 +163,10 @@ void Prop3D::recalculate_xy_plane(Camera3D camera)
   // The Obj3D size must be (roughly) 1.0 and it must be (roughly) centered at 0,0,0
 
   // Calculate 4 corners of Obj3D XY plane
-  this->xy_plane[0] = project(Vector3(-0.5, 0.5, 0.0), camera);
-  this->xy_plane[1] = project(Vector3( 0.5, 0.5, 0.0), camera);
-  this->xy_plane[2] = project(Vector3(-0.5,-0.5, 0.0), camera);
-  this->xy_plane[3] = project(Vector3( 0.5,-0.5, 0.0), camera);
+  xy_plane[0] = project(Vector3(-0.5, 0.5, 0.0), camera);
+  xy_plane[1] = project(Vector3( 0.5, 0.5, 0.0), camera);
+  xy_plane[2] = project(Vector3(-0.5,-0.5, 0.0), camera);
+  xy_plane[3] = project(Vector3( 0.5,-0.5, 0.0), camera);
 }
 
 
@@ -103,10 +175,10 @@ bool Prop3D::xy_plane_visible()
   // Check the depth component of each xy_plane corner
   // Return false if either point intersects the camera plane and should be culled/ignored
   return (
-    this->xy_plane[0].z > 0.0 && this->xy_plane[0].z < 1.0 &&
-    this->xy_plane[1].z > 0.0 && this->xy_plane[1].z < 1.0 &&
-    this->xy_plane[2].z > 0.0 && this->xy_plane[2].z < 1.0 &&
-    this->xy_plane[3].z > 0.0 && this->xy_plane[3].z < 1.0
+    xy_plane[0].z > 0.0 && xy_plane[0].z < 1.0 &&
+    xy_plane[1].z > 0.0 && xy_plane[1].z < 1.0 &&
+    xy_plane[2].z > 0.0 && xy_plane[2].z < 1.0 &&
+    xy_plane[3].z > 0.0 && xy_plane[3].z < 1.0
   );
 }
 
@@ -121,87 +193,117 @@ bool Prop3D::mouse_intersects(Vector2 mouse, Vector2 display)
 
   // We need 3-component vectors to calculate cross products
   Vector3 m3 = Vector3(mouse.x, mouse.y, 0.0);
-  Vector3 p1 = Vector3(this->xy_plane[0].x, this->xy_plane[0].y, 0.0);
-  Vector3 p2 = Vector3(this->xy_plane[1].x, this->xy_plane[1].y, 0.0);
-  Vector3 p3 = Vector3(this->xy_plane[2].x, this->xy_plane[2].y, 0.0);
-  Vector3 p4 = Vector3(this->xy_plane[3].x, this->xy_plane[3].y, 0.0);
+  Vector3 p0 = Vector3(xy_plane[0].x, xy_plane[0].y, 0.0);
+  Vector3 p1 = Vector3(xy_plane[1].x, xy_plane[1].y, 0.0);
+  Vector3 p2 = Vector3(xy_plane[2].x, xy_plane[2].y, 0.0);
+  Vector3 p3 = Vector3(xy_plane[3].x, xy_plane[3].y, 0.0);
 
-  if ((m3 - p1).cross(p1 - p2).z < 0) return false;
-  if ((m3 - p2).cross(p2 - p4).z < 0) return false;
-  if ((m3 - p4).cross(p4 - p3).z < 0) return false;
-  if ((m3 - p3).cross(p3 - p1).z < 0) return false;
+  // Check each edge
+  if ((m3 - p0).cross(p0 - p1).z < 0) return false;
+  if ((m3 - p1).cross(p1 - p3).z < 0) return false;
+  if ((m3 - p3).cross(p3 - p2).z < 0) return false;
+  if ((m3 - p2).cross(p2 - p0).z < 0) return false;
 
-  //std::cout << "Prop3D::mouse_intersects() returning TRUE" << std::endl;
+  //std::cout << "The mouse is inside the quadrilateral polygon" << std::endl;
+  // ...but where? Tune in for the next exciting episode in relative_mouse_pos()
+
   return true;
 }
 
 
 
-Vector2 Prop3D::relative_mouse_pos(Vector2 mouse, Vector2 display)
-{
-  // Return the mouse position relative to the xy_plane
-  // Note: The resulting vector is scaled to 1;
+
+
+Vector2 Prop3D::relative_mouse_pos(Vector2 mouse, Camera3D* camera, void* scene)
+{                                                                // ^^^^^^^^^^^^^^ DEBUGGING
+  // Return the mouse position relative to the xy_plane of this object
   // Upper left corner = 0,0
   // Lower right corner = 1,1
 
-  Vector2 v1 = mouse - xy_plane[0].xy();
-  Vector2 v2 = mouse - xy_plane[1].xy();
-  Vector2 v3 = mouse - xy_plane[2].xy();
-  Vector2 v4 = mouse - xy_plane[3].xy();
+  // https://stackoverflow.com/questions/2093096/implementing-ray-picking
+
+  std::cout << "  object position = WS " << this->position << std::endl;
+  std::cout << "  camera position = WS " << camera->getPosition() << std::endl;
+
+  Vector4 mouse_clip = Vector4(
+    (float)mouse.x * 2.0 / (float)camera->getWidth() - 1.0,
+    1.0 - (float)mouse.y * 2.0 / (float)camera->getHeight(), // Invert y
+    (float)camera->getNear(),
+    1.0
+  );
+  //std::cout << "  mouse  position = CS " << mouse_clip << std::endl;
+
+
+  Matrix4 C = camera->getMatrix(); // perspective, direction and position of eye
+  C.invert();
+  Vector4 mouse_worldspace = C * mouse_clip;
+  //mouse_worldspace.x /= mouse_worldspace.w;
+  //mouse_worldspace.y /= mouse_worldspace.w;
+  std::cout << "  mouse  position = WS " << mouse_worldspace << std::endl;
+
+  Matrix4 O = this->matrix;
+  O.invert();
+  Vector4 mouse_objectspace = O * mouse_worldspace;
+  std::cout << "  mouse  position = OS " << mouse_objectspace << std::endl;
+
+  ((Scene3D*)scene)->getProp(4)->setPosition(mouse_worldspace.xyz()); // DEBUGGING
+
+  //((Scene3D*)scene)->getProp(5)->setPosition(mouse_worldspace.xyz()); // DEBUGGING
+
+
+  // origin of camera in worldspace
+  Vector3 ray_origin = camera->getPosition();
+
+
+  // unit vector from p through mouse pos in worldspace
+  Vector3 ray_world = Vector3(mouse_worldspace.xyz() - ray_origin).normalize();
 
 
 
+  // https://stackoverflow.com/questions/7168484/3d-line-segment-and-plane-intersection
+   // get d value
+  //float d = Dot(normal, coord);
+  Vector3 normal = getDirection();
 
-  return mouse;
+  float d = normal.dot(this->position); // 'dir' = direction, normal vector
+
+  //if (Dot(normal, ray) == 0) {
+  //    return false; // No intersection, the line is parallel to the plane
+  //}
+  if (normal.dot(ray_world) == 0) {
+    std::cerr << "  No intersection possible" << std::endl;
+  }
+
+  // Compute the X value for the directed line ray intersecting the plane
+  //float x = (d - Dot(normal, rayOrigin)) / Dot(normal, ray);
+  float x = (d - normal.dot(ray_origin)) / normal.dot(ray_world);
+
+  // output contact point
+  //*contact = rayOrigin + normalize(ray)*x; //Make sure your ray vector is normalized
+  Vector3 intersection = ray_origin + ray_world.normalize()*x; //Make sure your ray vector is normalized
+
+  std::cout << "  intersection: " << intersection.xy() << std::endl;
+  // The result is plain wrong... -0.3:741, -0.2:73
+
+  return Vector2(rand(), rand()); // Might as well do this
 }
 
-
-Obj3D* Prop3D::Object()
+/*
+void Prop3D::setColor(float* color)
 {
-  return this->object;
+  this->color[0] = color[0];
+  this->color[1] = color[1];
+  this->color[2] = color[2];
+  this->color[3] = color[3];
 }
 
 
-void Prop3D::setObject(Obj3D* object)
+void Prop3D::setColor(float r, float g, float b, float a)
 {
-  this->object = object;
+  this->color[0] = r;
+  this->color[1] = g;
+  this->color[2] = b;
+  this->color[3] = a;
 }
-
-void Prop3D::setScale(float scale)
-{
-  this->scale = Vector3(scale, scale, scale);
-  this->need_recalc = true;
-}
-
-void Prop3D::setScale(Vector3 scale)
-{
-  this->scale = scale;
-  this->need_recalc = true;
-}
-
-void Prop3D::setPosition(Vector3 position)
-{
-  this->pos = position;
-  this->need_recalc = true;
-}
-
-void Prop3D::setDirection(Vector3 direction)
-{
-  this->dir = direction;
-  this->need_recalc = true;
-}
-
-void Prop3D::setTexture(GLuint texture)
-{
-  this->texture = texture;
-}
-
-void Prop3D::setShader(ShaderProgram* shader)
-{
-  this->shader = shader;
-  this->object->set_shader_v(this->shader->vertex_v);
-  this->object->set_shader_vt(this->shader->vertex_vt);
-  this->object->set_shader_vn(this->shader->vertex_vn);
-}
-
+*/
 

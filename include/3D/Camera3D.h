@@ -2,15 +2,18 @@
 #define CAMERA3D_H
 
 #include "Matrices.h"
+#include "3D/Entity3D.h"
 
-class Camera3D
+class Camera3D : public Entity3D
 {
   public:
     Camera3D();
     ~Camera3D();
 
-    Matrix4 getMatrix();
+    Matrix4 getPerspectiveMatrix();
+    Matrix4 getRotationMatrix(); // Camera rotation must be applied in reverse order
 
+    Vector3 getDirection();
     void setDimensions(int width, int height);
     inline Vector2 getDimensions() { return Vector2(this->width, this->height); }
     void setAspect(float width_by_height);
@@ -22,27 +25,13 @@ class Camera3D
     float getFOV();
     float getNear();
     float getFar();
-    Vector3 getPosition();
-    void setPitch(float degrees);
-    void addPitch(float degrees);
-    float getPitch();
-    void setYaw(float degrees);
-    void addYaw(float degrees);
-    float getYaw();
-    void setPosition(Vector3 position);
-    Matrix4 getRotationMatrix();
-    void strafeLeft(float distance);
-    void strafeRight(float distance);
-    void strafeUp(float distance);
-    void strafeDown(float distance);
-    void strafeForward(float distance);
-    void strafeBackward(float distance);
+
+
 
   protected:
 
   private:
-    bool need_recalc;
-    void recalculate();
+    void recalculate_matrix();
 
     float fov;
     float aspect;
@@ -50,10 +39,9 @@ class Camera3D
     float clip_far = 100.0;
     int width;
     int height;
-    float pitch;
-    float yaw;
-    Vector3 pos;
-    Matrix4 mat;
+
+
+    Matrix4 perspective_matrix;
 
 };
 

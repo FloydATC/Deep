@@ -22,9 +22,10 @@ void Obj3DLoader::reset()
   this->indexed_vt.clear();
   this->indexed_vn.clear();
   this->linear_points.clear();
-  subobject_start.clear();
-  subobject_length.clear();
-  this->bounding_boxes.clear();
+  this->subobject_mesh.clear();
+  this->subobject_start.clear();
+  this->subobject_length.clear();
+  this->box = nullptr;
 }
 
 Obj3D* Obj3DLoader::load(std::string filename)
@@ -35,6 +36,7 @@ Obj3D* Obj3DLoader::load(std::string filename)
   this->scanner = new Obj3DScanner();
   scanner->load(filename);
   this->filename = filename;
+  this->object = new Obj3D();
 
 
   //std::cout << "Obj3DLoader::load() begin parse loop" << std::endl;
@@ -52,20 +54,22 @@ Obj3D* Obj3DLoader::load(std::string filename)
   delete this->scanner;
   //std::cout << "Obj3DLoader::load() produce object" << std::endl;
 
-  Obj3D* object = new Obj3D();
   object->setName(filename);
-  int sz = linear_points.size();
   float* v_array = make_v_array();
   float* vt_array = make_vt_array();
   float* vn_array = make_vn_array();
-  object->set_v(v_array,   sz);
-  object->set_vt(vt_array, sz);
-  object->set_vn(vn_array, sz);
+  // Now copy the array data for each sub object using the offsets and lengths
+  for (unsigned int i=0; i<subobject_mesh.size(); i++) {
+    SubObject3D* mesh = this->subobject_mesh[i];
+    int offset = this->subobject_start[i];
+    int length = this->subobject_length[i];
+    mesh->set_v(v_array+offset, length);
+    mesh->set_vt(vt_array+offset, length);
+    mesh->set_vn(vn_array+offset, length);
+  }
   free(v_array);
   free(vt_array);
   free(vn_array);
-  object->set_subobjects(std::vector<int>(subobject_start), std::vector<int>(subobject_length));
-  object->set_bounding_boxes(std::vector<Box3D*>(bounding_boxes));
   return object;
 }
 
@@ -77,11 +81,6 @@ float* Obj3DLoader::make_v_array()
     arr[i++] = p.v.x;
     arr[i++] = p.v.y;
     arr[i++] = p.v.z;
-    //std::cout << "Obj3DLoader::make_v_array()"
-    //          << " x=" << p.v.x
-    //          << " y=" << p.v.y
-    //          << " z=" << p.v.z
-    //          << std::endl;
   }
   return arr;
 }
@@ -109,22 +108,7 @@ float* Obj3DLoader::make_vn_array()
   return arr;
 }
 
-/*
-std::vector<float> Obj3DLoader::tokens_to_floats(std::vector<std::string> tokens)
-{
-  std::vector<float> result;
-  std::string::size_type sz; // alias of size_t
-  for(auto&& str: tokens) {
-    std::cout << "str=" << str << " ";
-    result.push_back(std::stof(str, &sz));
 
-//  terminate called after throwing an instance of 'std::invalid_argument'
-//  what():  stof
-
-  }
-  return result;
-}
-*/
 
 void Obj3DLoader::get_keyword()
 {
@@ -208,19 +192,30 @@ void Obj3DLoader::get_l()
 
 void Obj3DLoader::get_o()
 {
-  // Mark the beginning of sub-object ("part")
-  subobject_start.push_back(linear_points.size());
-  subobject_length.push_back(0);
-  Box3D* box = new Box3D();
-  bounding_boxes.push_back(box);
-  std::string subobject_no = std::to_string(bounding_boxes.size());
-  std::string boxname = this->filename;
-  boxname.append(":part").append(subobject_no); // e.g. box.obj:part2
-  box->setName(boxname);
-
-  // Discard name
+  // Get subobject name
+  std::string name = scanner->get_keyword();
   while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
   scanner->consume('\n');
+  // Prefix name with subobject number
+  name = std::to_string(this->subobject_mesh.size()).append(":").append(name);
+
+  // Mark the beginning of sub-object ("part")
+  this->subobject_start.push_back(this->linear_points.size());
+  this->subobject_length.push_back(0);
+
+  // For now, just use the filename for naming
+  this->box = new Box3D();
+  this->box->setName(name);
+
+
+  SubObject3D* mesh = new SubObject3D();
+  mesh->setName(name);
+  mesh->setBounds(this->box);
+
+  this->object->addPart(mesh);
+  this->object->setName(this->filename);
+  this->subobject_mesh.push_back(mesh);
+
 }
 
 void Obj3DLoader::get_s()
@@ -236,7 +231,7 @@ void Obj3DLoader::get_v()
   float y = scanner->get_float();
   float z = scanner->get_float();
   indexed_v.push_back(Vector3(x, y, z));
-  bounding_boxes.back()->extend(Vector3(x, y, z));
+  this->box->extend(Vector3(x, y, z));
   scanner->consume('\n');
 }
 

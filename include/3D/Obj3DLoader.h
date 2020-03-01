@@ -6,6 +6,7 @@
 #include "IO/IOFile.h"
 #include "Matrices.h"
 #include "3D/Obj3D.h"
+#include "3D/SubObject3D.h"
 #include "3D/Obj3DScanner.h"
 
 typedef struct {
@@ -26,6 +27,7 @@ class Obj3DLoader
   protected:
 
   private:
+    Obj3D* object;
     Obj3DScanner* scanner;
     std::string filename;
 
@@ -36,7 +38,8 @@ class Obj3DLoader
 
     std::vector<int> subobject_start;
     std::vector<int> subobject_length;
-    std::vector<Box3D*> bounding_boxes;
+    std::vector<SubObject3D*> subobject_mesh;
+    Box3D* box;
 
     void reset();
     float* make_v_array();

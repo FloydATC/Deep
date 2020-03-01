@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include "GFX.h"
+#include "Matrices.h"
 
 class ShaderProgram
 {
@@ -19,6 +20,20 @@ class ShaderProgram
     void setUniformModelMatrix(std::string name);
     void setUniformColor(std::string name);
     void setUniformDebugFlag(std::string name);
+    void setUniformTextureFlag(std::string name);
+
+    void enableAttributeV();
+    void enableAttributeVT();
+    void enableAttributeVN();
+    void setAttribPointerV(GLint values, GLenum type, GLsizei typesize, GLsizei stride, GLsizei offset);
+    void setAttribPointerVT(GLint values, GLenum type, GLsizei typesize, GLsizei stride, GLsizei offset);
+    void setAttribPointerVN(GLint values, GLenum type, GLsizei typesize, GLsizei stride, GLsizei offset);
+    void setCameraMatrix(Matrix4 matrix);
+    void setModelMatrix(Matrix4 matrix);
+    void setDebugFlag(bool value);
+    void setTextureFlag(bool value);
+    void setColor(float r, float g, float b, float a);
+    void setColor(GLfloat* color);
 
     int success;
     std::string error;
@@ -27,6 +42,7 @@ class ShaderProgram
     GLint uniform_model_mat;
     GLint uniform_color;
     GLint uniform_debug_flag;
+    GLint uniform_texture_flag;
     GLint vertex_v;
     GLint vertex_vt;
     GLint vertex_vn;

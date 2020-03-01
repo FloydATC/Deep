@@ -6,28 +6,26 @@ Box3D::Box3D()
 {
   //ctor
   this->vertices.resize(8*3); // 8 corners, 3 dimensions (x,y,z)
-  glGenVertexArrays(1, &this->vao);
-  glGenBuffers(1, &this->vbo);
   glGenBuffers(1, &this->ibo);
-  std::cout << "Box3D " << this << " created" << std::endl;
+  //std::cout << "Box3D " << this << " created" << std::endl;
 }
 
 Box3D::~Box3D()
 {
   //dtor
-  std::cout << "Box3D " << this << " " << name << " destruction" << std::endl;
+  //std::cout << "Box3D " << this << " " << name << " destruction" << std::endl;
   glDeleteBuffers(1, &this->ibo);
-  glDeleteBuffers(1, &this->vbo);
-  glDeleteVertexArrays(1, &this->vao);
-  std::cout << "Box3D " << this << " " << name << " destruction complete" << std::endl;
+  //std::cout << "Box3D " << this << " " << name << " destruction complete" << std::endl;
 }
 
 
-void Box3D::render()
+void Box3D::render(ShaderProgram* shader)
 {
+  //std::cout << "Box3D" << this << "::render()" << std::endl;
   bind_vao();
-  //bind_ibo(this->ibo); // Intel drivers do not save ELEMENT_ARRAY_BUFFER_BINDING?
-  //bind_vbo(this->vbo);
+  if (!this->finalized) this->finalize();
+  if (!this->initialized) this->initialize(shader);
+  shader->setColor(1.0, 1.0, 0.0, 1.0);
   glLineWidth(1.0);
   glPointSize(4.0);
   //std::cout << "Box3D::render() glDrawArrays(GL_POINTS, 0, 12)" << std::endl;
@@ -35,19 +33,6 @@ void Box3D::render()
   //std::cout << "Box3D::render() glDrawElements(GL_LINES, " << index.size() << ", GL_UNSIGNED_INT, 0)" << std::endl;
   glDrawElements(GL_LINES, index.size(), GL_UNSIGNED_INT, 0); // Indexed draw
   unbind_vao();
-}
-
-
-void Box3D::setName(std::string name)
-{
-  this->name = name;
-  std::cout << "Box3D " << this << " named " << name << std::endl;
-}
-
-
-std::string Box3D::getName()
-{
-  return this->name;
 }
 
 
@@ -60,18 +45,6 @@ void Box3D::finalize()
 }
 
 
-void Box3D::set_shader_v(GLint attr)
-{
-  shader_v = attr;
-
-  bind_vbo(this->vbo);
-  //std::cout << "Obj3D::set_shader_v() glEnableVertexAttribArray(attr=" << attr << ")" << std::endl;
-  glEnableVertexAttribArray(attr);
-  //std::cout << "Obj3D::set_shader_v() glVertexAttribPointer(attr=" << attr << ", 3, GL_FLOAT, GL_FALSE, " << 3*sizeof(GLfloat) << ", (char*) NULL)" << std::endl;
-  glVertexAttribPointer(attr, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*) NULL);
-}
-
-
 void Box3D::set_v()
 {
   // Define the eight corner vertices of a box
@@ -81,8 +54,9 @@ void Box3D::set_v()
     vertices[i*3+2] = ((i&0b100)==0 ? minimum.z : maximum.z);
     //std::cout << "  " << i << ": " << vertices[i*3+0] << ", " << vertices[i*3+1] << ", " << vertices[i*3+2] << std::endl;
   }
+  this->count_v = 8;
 
-  bind_vbo(this->vbo);
+  bind_vbo(this->vbo_v);
   //std::cout << "Box3D::set_v() glBufferData(GL_ARRAY_BUFFER, " << sizeof(GLfloat)*vertices.size() << ", vertices.data(), GL_STATIC_DRAW)" << std::endl;
   // Box3D::set_v() glBufferData(GL_ARRAY_BUFFER, 0, vertices.data(), GL_STATIC_DRAW)
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
@@ -119,28 +93,6 @@ void Box3D::extend(Vector3 vertex)
     if (vertex.z < minimum.z) minimum.z = vertex.z;
     if (vertex.z > maximum.z) maximum.z = vertex.z;
   }
-}
-
-
-void Box3D::bind_vao()
-{
-  //std::cout << "Box3D::bind_vao() glBindVertexArray(" << this->vao << ")" << std::endl;
-  glBindVertexArray(this->vao);
-}
-
-
-void Box3D::unbind_vao()
-{
-  //std::cout << "Box3D::unbind_vao() glBindVertexArray(0)" << std::endl;
-  glBindVertexArray(0);
-}
-
-
-void Box3D::bind_vbo(GLuint vbo)
-{
-  bind_vao();
-  //std::cout << "Box3D::bind_vbo() glBindBuffer(GL_ARRAY_BUFFER, " << vbo << ")" << std::endl;
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
 }
 
 
