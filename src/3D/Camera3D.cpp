@@ -31,12 +31,6 @@ Matrix4 Camera3D::getPerspectiveMatrix()
   return this->perspective_matrix;
 }
 
-void Camera3D::getPerspectiveMatrixDoubleV(double matrix[16])
-{
-  const float* matrix_f = getPerspectiveMatrix().get();
-  for (int i=0; i<16; i++) matrix[i] = (double) matrix_f[i];
-}
-
 Matrix4 Camera3D::getRotationMatrix()
 {
   // Camera rotation must be applied in reverse order and in opposite directions
@@ -63,13 +57,6 @@ Matrix4 Camera3D::getViewMatrix()
   this->view_matrix = getRotationMatrix() * getPositionMatrix();
   return this->view_matrix;
 }
-
-void Camera3D::getViewMatrixDoubleV(double matrix[16])
-{
-  const float* matrix_f = getPerspectiveMatrix().get();
-  for (int i=0; i<16; i++) matrix[i] = (double) matrix_f[i];
-}
-
 
 void Camera3D::recalculate_matrix()
 {

@@ -170,6 +170,7 @@ public:
     void        setColumn(int index, const Vector3& v);
 
     const float* get() const;
+    void get(double matrix[16]);
     const float* getTranspose();                        // return transposed matrix
     float       getDeterminant() const;
     Matrix3     getRotationMatrix() const;              // return 3x3 rotation part
@@ -754,6 +755,11 @@ inline void Matrix4::setColumn(int index, const Vector3& v)
 inline const float* Matrix4::get() const
 {
     return m;
+}
+
+inline void Matrix4::get(double matrix[16])
+{
+  for (int i=0; i<16; i++) matrix[i] = (double) m[i];
 }
 
 

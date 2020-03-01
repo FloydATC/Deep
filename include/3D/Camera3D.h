@@ -11,9 +11,7 @@ class Camera3D : public Entity3D
     ~Camera3D();
 
     Matrix4 getPerspectiveMatrix();
-    void getPerspectiveMatrixDoubleV(double matrix[16]);
     Matrix4 getViewMatrix();
-    void getViewMatrixDoubleV(double matrix[16]);
     Matrix4 getRotationMatrix(); // Camera rotation must be applied in reverse order
     Matrix4 getPositionMatrix(); // Camera position must be applied in opposite direction
 
