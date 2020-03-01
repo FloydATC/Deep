@@ -20,12 +20,12 @@ void Ray3D::render(ShaderProgram* shader)
   glDisable(GL_DEPTH_TEST);
   if (this->finalized == false) finalize();
   if (this->initialized == false) initialize(shader);
-  shader->setColor(0.0, 1.0, 0.0, 1.0);
+  shader->setColor(this->color);
   shader->setDebugFlag(false);
   shader->setTextureFlag(false);
   glLineWidth(1.0);
   glPointSize(4.0);
-  glDrawArrays(GL_LINES, 0, 1);
+  glDrawArrays(GL_LINES, 0, 2);
   glDrawArrays(GL_POINTS, 0, 1);
   glEnable(GL_DEPTH_TEST);
   unbind_vao();
@@ -39,5 +39,5 @@ void Ray3D::finalize()
     0.0, 0.0, 10.0
   };
   set_v(vertices, 2);
-  this->initialized = true;
+  this->finalized = true;
 }

@@ -63,9 +63,9 @@ Obj3D* Obj3DLoader::load(std::string filename)
     SubObject3D* mesh = this->subobject_mesh[i];
     int offset = this->subobject_start[i];
     int length = this->subobject_length[i];
-    mesh->set_v(v_array+offset, length);
-    mesh->set_vt(vt_array+offset, length);
-    mesh->set_vn(vn_array+offset, length);
+    mesh->set_v(v_array+offset*3, length);
+    mesh->set_vt(vt_array+offset*2, length);
+    mesh->set_vn(vn_array+offset*3, length);
   }
   free(v_array);
   free(vt_array);

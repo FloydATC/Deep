@@ -31,6 +31,8 @@ class Scene3D
     int getWidth();
     int getHeight();
     ShaderProgram* getShader(const std::string vs_filename, const std::string fs_filename);
+    void setShader(ShaderProgram* shader);
+
     Obj3D* getObj3D(const std::string filename);
     Prop3D* addProp(Mesh3D* mesh);
     Prop3D* getProp(int index);

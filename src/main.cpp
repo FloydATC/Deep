@@ -497,8 +497,16 @@ int main(int argc, char* argv[])
 #endif
 
       Obj3D* screen = scene.getObj3D("obj/screen.obj");
+      screen->getPart(1)->setColor(0.2, 0.2, 0.3, 1.0); // Enclosure
+
       Obj3D* cube = scene.getObj3D("obj/cube.obj");
-      Ray3D* ray = new Ray3D();
+
+      Ray3D* green_ray = new Ray3D();
+      green_ray->setColor(0.0, 1.0, 0.0, 1.0);
+      cube->addPart(green_ray);
+
+      Ray3D* magenta_ray = new Ray3D();
+      magenta_ray->setColor(1.0, 0.0, 1.0, 1.0);
 
       scene.addProp(screen);
       scene.addProp(screen);
@@ -508,11 +516,9 @@ int main(int argc, char* argv[])
       // Debug visualization
       scene.addProp(cube);
       scene.getProp(4)->setScale(0.1);
-      scene.getProp(4)->setShader(scene_shader);
-      scene.addProp(ray);
+      scene.addProp(magenta_ray);
       scene.getProp(5);
-      scene.getProp(5)->setShader(scene_shader);
-      //scene.getProp(5)->setColor(1.0, 1.0, 0.0, 1.0);
+
       scene.getProp(5)->setPosition(Vector3(-0.60,  0.50,  0.0));
       scene.getProp(5)->setDirection( 15, 15,  0);
 
@@ -526,16 +532,14 @@ int main(int argc, char* argv[])
       scene.getProp(2)->setDirection(-15, 15,  0);
       scene.getProp(3)->setDirection(-15,-15,  0);
 
-      scene.getProp(0)->setShader(scene_shader);
-      scene.getProp(1)->setShader(scene_shader);
-      scene.getProp(2)->setShader(scene_shader);
-      scene.getProp(3)->setShader(scene_shader);
+      scene.setShader(scene_shader); // Set same shader on all Props
 
 #ifndef DEBUG_NO_VIRTUAL_MACHINES
-//      scene.getProp(0)->setTexture(vms[0]->display.textureID);
-//      scene.getProp(1)->setTexture(vms[1]->display.textureID);
-//      scene.getProp(2)->setTexture(vms[2]->display.textureID);
-//      scene.getProp(3)->setTexture(vms[3]->display.textureID);
+      // Bind VM textures to props (NOT to the underlying, shared mesh objects)
+      for (int i=0; i<(int)vms.size(); i++) {
+        std::cout << "main() applying VM texture " << i << std::endl;
+        scene.getProp(i)->setTexture(vms[i]->display.textureID);
+      }
 #endif
 
 

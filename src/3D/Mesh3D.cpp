@@ -9,11 +9,16 @@ Mesh3D::Mesh3D()
   glGenBuffers(1, &this->vbo_v);
   glGenBuffers(1, &this->vbo_vt);
   glGenBuffers(1, &this->vbo_vn);
-  count_v = -1;
-  count_vt = -1;
-  count_vn = -1;
-  name = "(untitled)";
-  initialized = false; // False until shader attributes has been set
+  this->count_v = -1;
+  this->count_vt = -1;
+  this->count_vn = -1;
+  this->name = "(untitled)";
+  this->initialized = false; // False until shader attributes has been set
+  this->texture = 0;
+  this->texture_set = false;
+  this->render_enabled = true;
+  this->bounds = nullptr;
+  this->debug = false;
 }
 
 Mesh3D::~Mesh3D()
@@ -111,3 +116,58 @@ std::string Mesh3D::getName()
 {
   return this->name;
 }
+
+void Mesh3D::setTexture(GLuint texture)
+{
+  std::cout << "Mesh3D" << this << "::setTexture() name=" << this->name << " texture=" << texture << " enabled" << std::endl;
+  this->texture = texture;
+  this->texture_set = true;
+}
+
+void Mesh3D::setBounds(Mesh3D* box)
+{
+  std::cout << "Mesh3D" << this << "::setBounds() name=" << this->name << " bounds set" << std::endl;
+  if (bounds != nullptr) delete bounds;
+  this->bounds = box;
+}
+
+Mesh3D* Mesh3D::getBounds()
+{
+  return this->bounds;
+}
+
+bool Mesh3D::isEnabled()
+{
+  return this->render_enabled;
+}
+
+void Mesh3D::show()
+{
+  std::cout << "Mesh3D" << this << "::show() name=" << this->name << " render enabled" << std::endl;
+  this->render_enabled = true;
+}
+
+void Mesh3D::hide()
+{
+  std::cout << "Mesh3D" << this << "::hide() name=" << this->name << " render disabled" << std::endl;
+  this->render_enabled = false;
+}
+
+
+void Mesh3D::setColor(float* color)
+{
+  this->color[0] = color[0];
+  this->color[1] = color[1];
+  this->color[2] = color[2];
+  this->color[3] = color[3];
+}
+
+
+void Mesh3D::setColor(float r, float g, float b, float a)
+{
+  this->color[0] = r;
+  this->color[1] = g;
+  this->color[2] = b;
+  this->color[3] = a;
+}
+

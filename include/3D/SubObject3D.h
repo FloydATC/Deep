@@ -12,11 +12,8 @@ class SubObject3D : public Mesh3D
     ~SubObject3D();
 
     void render(ShaderProgram* shader);
-    void setBounds(Box3D* box);
 
   protected:
-
-    Box3D* bounds;
 
   private:
 };

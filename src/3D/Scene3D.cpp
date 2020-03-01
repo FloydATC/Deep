@@ -84,6 +84,7 @@ Obj3D* Scene3D::getObj3D(const std::string filename)
   return obj;
 }
 
+
 Prop3D* Scene3D::addProp(Mesh3D* mesh)
 {
   Prop3D* prop = new Prop3D();
@@ -114,3 +115,8 @@ Camera3D* Scene3D::camera()
   return &this->cam;
 }
 
+
+void Scene3D::setShader(ShaderProgram* shader)
+{
+  for (const auto& prop : this->prop3d) prop->setShader(shader);
+}

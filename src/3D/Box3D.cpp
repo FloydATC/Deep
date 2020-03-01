@@ -26,6 +26,8 @@ void Box3D::render(ShaderProgram* shader)
   if (!this->finalized) this->finalize();
   if (!this->initialized) this->initialize(shader);
   shader->setColor(1.0, 1.0, 0.0, 1.0);
+  shader->setDebugFlag(false);
+  shader->setTextureFlag(false);
   glLineWidth(1.0);
   glPointSize(4.0);
   //std::cout << "Box3D::render() glDrawArrays(GL_POINTS, 0, 12)" << std::endl;

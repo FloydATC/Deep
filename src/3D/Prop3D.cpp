@@ -12,7 +12,9 @@ Prop3D::Prop3D()
   this->scale = Vector3(1.0, 1.0, 1.0);
   this->scale_matrix = Matrix4();
   this->xy_plane.resize(4); // 4 x Vector2
-  this->texture_mapped = false;
+  this->texture = 0;
+  this->texture_set = false;
+
 }
 
 Prop3D::~Prop3D()
@@ -23,19 +25,7 @@ Prop3D::~Prop3D()
 
 void Prop3D::render(Camera3D camera) {
   if (this->need_recalc) this->recalculate_matrix();
-  //std::cout << "Prop3D" << this << "::render() called for object '" << this->object->getName() << "'" << std::endl;
-/*
-  materials are now handled at the subobject level
-
-  if (this->texture_mapped) {
-    glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
-    //std::cout << "Prop3D" << this << "::render() glBindTexture(GL_TEXTURE_2D, " << this->texture << ")" << std::endl;
-    glBindTexture(GL_TEXTURE_2D, this->texture);
-  } else {
-    //std::cout << "Prop3D" << this << "::render() no texture" << std::endl;
-    glBindTexture(GL_TEXTURE_2D, 0);
-  }
-*/
+  //std::cout << "Prop3D" << this << "::render() called for object '" << this->mesh->getName() << "'" << std::endl;
 
   if (this->shader == nullptr) {
     std::cerr << "Prop3D" << this  << "::render() no shader!" << std::endl;
@@ -43,31 +33,23 @@ void Prop3D::render(Camera3D camera) {
   }
 
   glUseProgram(this->shader->id());
+
+  // Textures can be attached to underlying Mesh3D objects or to individual Prop3D objects
+  if (this->texture_set) {
+    //std::cout << "Prop3D" << this << "::render() bind texture " << this->texture << std::endl;
+    shader->setTextureFlag(true);
+    glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+    glBindTexture(GL_TEXTURE_2D, this->texture);
+  } else {
+    //std::cout << "Prop3D" << this << "::render() has no texture set" << std::endl;
+    shader->setTextureFlag(false);
+    glBindTexture(GL_TEXTURE_2D, 0);
+  }
+
   this->shader->setCameraMatrix(camera.getMatrix());
   this->shader->setModelMatrix(this->matrix);
-  //this->shader->setColor(1.0, 1.0, 1.0, 1.0);
-  //this->shader->setDebugFlag(false);
-  //this->shader->setTextureFlag(false);
 
-  //for (int i=0; i<this->object->subobjects; i++) {
   this->mesh->render(this->shader); // Render Mesh3D
-  //}
-
-  //if (this->texture_mapped) glBindTexture(GL_TEXTURE_2D, 0);
-
-  // Render bounding boxes for debugging
-  /*
-#ifdef DEBUG_RENDER_BOUNDING_BOXES
-  glDisable(GL_DEPTH_TEST);
-  if (true) {
-    this->shader->setDebugFlag(true);
-    for (int i=0; i<this->object->subobjects; i++) {
-      this->object->bounding_box(i)->render(); // Render bounding box of Obj3D subobject i
-    }
-  }
-  glEnable(GL_DEPTH_TEST);
-#endif
-*/
 
   recalculate_xy_plane(camera);
   //std::cout << "Prop3D" << this << "::render() done" << std::endl;
@@ -94,7 +76,7 @@ void Prop3D::recalculate_matrix()
 
 
 
-Mesh3D* Prop3D::Mesh()
+Mesh3D* Prop3D::getMesh()
 {
   return this->mesh;
 }
@@ -246,7 +228,10 @@ Vector2 Prop3D::relative_mouse_pos(Vector2 mouse, Camera3D* camera, void* scene)
   Vector4 mouse_objectspace = O * mouse_worldspace;
   std::cout << "  mouse  position = OS " << mouse_objectspace << std::endl;
 
-  ((Scene3D*)scene)->getProp(4)->setPosition(mouse_worldspace.xyz()); // DEBUGGING
+  Prop3D* white_cube = ((Scene3D*)scene)->getProp(4);
+  Prop3D* magenta_ray = ((Scene3D*)scene)->getProp(5);
+  white_cube->setPosition(mouse_worldspace.xyz()); // DEBUGGING
+  magenta_ray->setDirection(mouse_worldspace.xyz());
 
   //((Scene3D*)scene)->getProp(5)->setPosition(mouse_worldspace.xyz()); // DEBUGGING
 
@@ -288,22 +273,16 @@ Vector2 Prop3D::relative_mouse_pos(Vector2 mouse, Camera3D* camera, void* scene)
   return Vector2(rand(), rand()); // Might as well do this
 }
 
-/*
-void Prop3D::setColor(float* color)
+
+
+
+
+void Prop3D::setTexture(GLuint texture)
 {
-  this->color[0] = color[0];
-  this->color[1] = color[1];
-  this->color[2] = color[2];
-  this->color[3] = color[3];
+  std::cout << "Prop3D" << this << "::setTexture() texture=" << texture << " enabled" << std::endl;
+  this->texture = texture;
+  this->texture_set = true;
 }
 
 
-void Prop3D::setColor(float r, float g, float b, float a)
-{
-  this->color[0] = r;
-  this->color[1] = g;
-  this->color[2] = b;
-  this->color[3] = a;
-}
-*/
 

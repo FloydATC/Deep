@@ -23,21 +23,23 @@ void SubObject3D::render(ShaderProgram* shader)
   if (this->count_v > 0) {
     bind_vao();
     if (!this->initialized) this->initialize(shader);
-    shader->setDebugFlag(true);
-    shader->setTextureFlag(false);
-    shader->setColor(0.5, 0.4, 0.4, 1.0);
+    shader->setDebugFlag(this->debug);
+
+    if (this->texture_set) {
+      shader->setTextureFlag(true);
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, this->texture);
+    }
+
+    shader->setColor(this->color);
+
     glDrawArrays(GL_TRIANGLES, 0, this->count_v);
+
     unbind_vao();
   }
 
   // Render bounding box
   if (this->bounds != nullptr) this->bounds->render(shader);
-}
-
-void SubObject3D::setBounds(Box3D* box)
-{
-  if (bounds != nullptr) delete bounds;
-  this->bounds = box;
 }
 
 

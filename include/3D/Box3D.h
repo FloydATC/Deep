@@ -34,17 +34,11 @@ class Box3D : public Mesh3D
     bool finalized = false;
     std::string name;
 
-//    GLuint vao; // Vertex Array Object
-//    GLuint vbo; // Vertex Buffer Object
     GLuint ibo; // Index Buffer Object
-//    GLint shader_v;
 
     void set_v();
     void set_i();
 
-//    void bind_vao();
-//    void unbind_vao();
-//    void bind_vbo(GLuint vbo);
     void bind_ibo(GLuint ibo);
 
 };

@@ -29,21 +29,20 @@ class Prop3D : public Entity3D
     void render(Camera3D camera);
 
     void setMesh(Mesh3D* mesh);
+    Mesh3D* getMesh();
+
     void setScale(float scale);
     void setScale(Vector3 scale);
     Matrix4 getScaleMatrix();
 
     bool mouse_intersects(Vector2 mouse, Vector2 display);
     Vector2 relative_mouse_pos(Vector2 mouse, Camera3D* camera, void* scene);
-    Mesh3D* Mesh();
 
     void setShader(ShaderProgram* shader);
 
-    /*
+    // Texture can be set on invididual Props,
+    // and/or on the underlying shared mesh objects
     void setTexture(GLuint texture);
-    void setColor(float* color);
-    void setColor(float r, float g, float b, float a);
-    */
 
     // Make private once values have been verified
     std::vector<Vector3> xy_plane;
@@ -55,8 +54,10 @@ class Prop3D : public Entity3D
     Mesh3D* mesh;
 
     ShaderProgram* shader = nullptr;
+
     GLuint texture;
-    bool texture_mapped;
+    bool texture_set;
+
     Vector3 scale;
     Matrix4 scale_matrix;
 

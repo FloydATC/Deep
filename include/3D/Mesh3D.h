@@ -18,6 +18,20 @@ class Mesh3D
     void setName(std::string name);
     std::string getName();
 
+    void setTexture(GLuint texture);
+
+    void setColor(float* color);
+    void setColor(float r, float g, float b, float a);
+
+    void setBounds(Mesh3D* box);
+    Mesh3D* getBounds();
+
+    bool isEnabled();
+    void show();
+    void hide();
+
+    bool debug;
+
 
   protected:
     Mesh3D();
@@ -39,12 +53,20 @@ class Mesh3D
     GLuint vbo_v;
     GLuint vbo_vt;
     GLuint vbo_vn;
+    GLuint texture;
+
+    bool texture_set;
+    bool render_enabled;
+
+    Mesh3D* bounds;
 
     void bind_vao();
     void unbind_vao();
     void bind_vbo(GLuint vbo);
 
     bool initialized;
+
+    GLfloat color[4] = { 1.0, 1.0, 1.0, 1.0 };
 
   private:
 };
