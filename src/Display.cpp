@@ -48,6 +48,7 @@ void Display::draw_untextured_vbo(GLsizeiptr arrsize, const void* arr, GLenum ty
   glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
   glBufferData(GL_ARRAY_BUFFER, arrsize, arr, GL_STREAM_DRAW); // Buffer will be used only once
   this->shader->enableAttributeV();
+  this->shader->disableAttributeVT();
   //glEnableVertexAttribArray(attr_vertex);
   //glDisableVertexAttribArray(attr_uv);
   this->shader->setAttribPointerV(2, type, typesize, 2, 0);

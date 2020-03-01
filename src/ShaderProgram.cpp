@@ -228,6 +228,34 @@ void ShaderProgram::enableAttributeVN()
 }
 
 
+void ShaderProgram::disableAttributeV()
+{
+  if (this->vertex_v == -1) {
+    std::cerr << "ShaderProgram::disableAttributeV() attribute not set" << std::endl;
+    return;
+  }
+  glDisableVertexAttribArray(this->vertex_v);
+}
+
+void ShaderProgram::disableAttributeVT()
+{
+  if (this->vertex_vt == -1) {
+    std::cerr << "ShaderProgram::disableAttributeVT() attribute not set" << std::endl;
+    return;
+  }
+  glDisableVertexAttribArray(this->vertex_vt);
+}
+
+void ShaderProgram::disableAttributeVN()
+{
+  if (this->vertex_vn == -1) {
+    std::cerr << "ShaderProgram::disableAttributeVN() attribute not set" << std::endl;
+    return;
+  }
+  glDisableVertexAttribArray(this->vertex_vn);
+}
+
+
 void ShaderProgram::setAttribPointerV(GLint values, GLenum type, GLsizei typesize, GLsizei stride, GLsizei offset)
 {
   if (this->vertex_v == -1) {

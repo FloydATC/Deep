@@ -187,11 +187,11 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
   //std::cout << "processMsg() MouseMotion message x=" << msg->motion.x << " y=" << msg->motion.y << std::endl;
   int x = msg->motion.x;
   int y = msg->motion.y;
-  int w = scene->camera()->getWidth();
-  int h = scene->camera()->getHeight();
+  int w = scene->getCamera()->getWidth();
+  int h = scene->getCamera()->getHeight();
   float sensitivity = 0.2;
-  scene->camera()->setPitch((float) (y - (h/2)) * sensitivity);
-  scene->camera()->setYaw((float) (x - (w/2)) * sensitivity);
+  scene->getCamera()->setPitch(-(float) (y - (h/2)) * sensitivity);
+  scene->getCamera()->setYaw(-(float) (x - (w/2)) * sensitivity);
 
   // Focus on VM based on where the user is looking
   if (msg->motion.x < w/2) {
@@ -211,7 +211,7 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
   // Detect Obj3D mouse intersection
   // WARNING! This temporary code assumes a 1:1 relationship between Obj3Ds and VMs
   Vector2 mouse = Vector2(msg->motion.x, msg->motion.y);
-  Vector2 display = scene->camera()->getDimensions();
+  Vector2 display = scene->getCamera()->getDimensions();
 //  for (int i=0; i<scene->getPropCount(); i++) {
   for (int i=0; i<1; i++) {
     //std::cout << "VM " << i << std::endl;
@@ -219,7 +219,7 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
     //if (!p->xy_plane_visible()) continue;
     //if (!p->mouse_intersects(mouse, display)) continue;
 
-    Vector2 v = p->relative_mouse_pos(mouse, scene->camera(), scene);
+    Vector2 v = p->relative_mouse_pos(mouse, scene->getCamera(), scene);
 
     /*
     if (v.x > 0 && v.x < 1 && v.y > 0 && v.y < 1) {
@@ -240,9 +240,9 @@ void process_mousewheel(Message* msg, Scene3D* scene)
 {
   // Mouse wheel controls camera zoom
   //std::cout << "processMsg() MouseWheel message" << std::endl;
-  float fov = scene->camera()->getFOV();
+  float fov = scene->getCamera()->getFOV();
   fov *= (msg->wheel.y > 0 ? 0.95f : 1.05f );
-  scene->camera()->setFOV(fov);
+  scene->getCamera()->setFOV(fov);
   delete msg;
 }
 
@@ -261,7 +261,7 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
       break;
     case Message::Type::Resize:
       //std::cout << "processMsg() Resize message" << std::endl;
-      scene->camera()->setDimensions(msg->screen.width, msg->screen.height);
+      scene->setDimensions(msg->screen.width, msg->screen.height);
       gamestate->width = msg->screen.width;
       gamestate->height = msg->screen.height;
       delete msg;
@@ -288,12 +288,12 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
       break;
     case Message::Type::KeyDown:
       //std::cout << "processMsg() KeyDown message" << std::endl;
-      if (msg->key.sym == SDLK_KP_4) scene->camera()->strafeLeft(0.1);
-      if (msg->key.sym == SDLK_KP_6) scene->camera()->strafeRight(0.1);
-      if (msg->key.sym == SDLK_KP_8) scene->camera()->strafeUp(0.1);
-      if (msg->key.sym == SDLK_KP_2) scene->camera()->strafeDown(0.1);
-      if (msg->key.sym == SDLK_KP_PLUS) scene->camera()->strafeForward(0.1);
-      if (msg->key.sym == SDLK_KP_MINUS) scene->camera()->strafeBackward(0.1);
+      if (msg->key.sym == SDLK_KP_4) scene->getCamera()->strafeLeft(0.1);
+      if (msg->key.sym == SDLK_KP_6) scene->getCamera()->strafeRight(0.1);
+      if (msg->key.sym == SDLK_KP_8) scene->getCamera()->strafeUp(0.1);
+      if (msg->key.sym == SDLK_KP_2) scene->getCamera()->strafeDown(0.1);
+      if (msg->key.sym == SDLK_KP_PLUS) scene->getCamera()->strafeForward(0.1);
+      if (msg->key.sym == SDLK_KP_MINUS) scene->getCamera()->strafeBackward(0.1);
       process_keydown(msg, vms, gamestate);
       break;
     case Message::Type::KeyUp:
@@ -460,7 +460,7 @@ int main(int argc, char* argv[])
 
       Scene3D scene = Scene3D();
       scene.setDimensions(gamestate.width, gamestate.height);
-      scene.camera()->setPosition(Vector3(0.0, 0.0, -1.0));
+      scene.getCamera()->setPosition(Vector3(0.0, 0.0, 0.5));
 
       std::cout << "Load shaders" << std::endl;
       ShaderProgram* scene_shader = scene.getShader("glsl/scene_vert.glsl", "glsl/scene_frag.glsl");
@@ -516,16 +516,14 @@ int main(int argc, char* argv[])
       // Debug visualization
       scene.addProp(cube);
       scene.getProp(4)->setScale(0.1);
+
       scene.addProp(magenta_ray);
       scene.getProp(5);
 
-      scene.getProp(5)->setPosition(Vector3(-0.60,  0.50,  0.0));
-      scene.getProp(5)->setDirection( 15, 15,  0);
-
-      scene.getProp(0)->setPosition(Vector3(-0.60,  0.50,  0.0));
-      scene.getProp(1)->setPosition(Vector3( 0.60,  0.50,  0.0));
-      scene.getProp(2)->setPosition(Vector3(-0.60, -0.50,  0.0));
-      scene.getProp(3)->setPosition(Vector3( 0.60, -0.50,  0.0));
+      scene.getProp(0)->setPosition(Vector3(-0.60,  0.50, -0.5));
+      scene.getProp(1)->setPosition(Vector3( 0.60,  0.50, -0.5));
+      scene.getProp(2)->setPosition(Vector3(-0.60, -0.50, -0.5));
+      scene.getProp(3)->setPosition(Vector3( 0.60, -0.50, -0.5));
 
       scene.getProp(0)->setDirection( 15, 15,  0);
       scene.getProp(1)->setDirection( 15,-15,  0);

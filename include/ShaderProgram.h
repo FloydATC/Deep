@@ -25,6 +25,9 @@ class ShaderProgram
     void enableAttributeV();
     void enableAttributeVT();
     void enableAttributeVN();
+    void disableAttributeV();
+    void disableAttributeVT();
+    void disableAttributeVN();
     void setAttribPointerV(GLint values, GLenum type, GLsizei typesize, GLsizei stride, GLsizei offset);
     void setAttribPointerVT(GLint values, GLenum type, GLsizei typesize, GLsizei stride, GLsizei offset);
     void setAttribPointerVN(GLint values, GLenum type, GLsizei typesize, GLsizei stride, GLsizei offset);
