@@ -37,7 +37,7 @@ class Scene3D
     Prop3D* addProp(Mesh3D* mesh);
     Prop3D* getProp(int index);
     int getPropCount();
-    Camera3D* camera();
+    Camera3D* getCamera();
 
   protected:
 
@@ -47,7 +47,7 @@ class Scene3D
     std::unordered_map<std::string, ShaderProgram*> shaderProgram;
     std::unordered_map<std::string, Obj3D*> obj3d;
     std::vector<Prop3D*> prop3d;
-    Camera3D cam;
+    Camera3D* cam;
 };
 
 #endif // SCENE3D_H

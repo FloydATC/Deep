@@ -2,16 +2,23 @@
 
 #include "GFX.h"
 
+//#define DEBUG_TRACE_SCENE
+
 Scene3D::Scene3D()
 {
   //ctor
-  this->cam = Camera3D();
+  this->cam = new Camera3D();
+#ifdef DEBUG_TRACE_SCENE
   std::cout << "Scene3D() created" << std::endl;
+#endif
 }
 
 Scene3D::~Scene3D()
 {
   //dtor
+#ifdef DEBUG_TRACE_SCENE
+  std::cout << "Scene3D" << this << " destruction" << std::endl;
+#endif
 
   // Destroy all Prop3D objects in std::vector
   for (const auto& prop : prop3d) {
@@ -27,13 +34,20 @@ Scene3D::~Scene3D()
   for( const auto& shader : shaderProgram ) {
     delete shader.second; // first=key, second=value
   }
-  std::cout << "Scene3D() destroyed" << std::endl;
+
+  delete this->cam;
+#ifdef DEBUG_TRACE_SCENE
+  std::cout << "Scene3D" << this << " destruction complete" << std::endl;
+#endif
 }
 
 
 void Scene3D::render()
 {
-  glViewport(0, 0, this->cam.getWidth(), this->cam.getHeight());
+#ifdef DEBUG_TRACE_SCENE
+  std::cout << "Scene3D" << this << "::render() begin" << std::endl;
+#endif
+  glViewport(0, 0, this->cam->getWidth(), this->cam->getHeight());
 
   glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -45,25 +59,30 @@ void Scene3D::render()
     prop->render(this->cam);
   }
 
-
+#ifdef DEBUG_TRACE_SCENE
+  std::cout << "Scene3D" << this << "::render() completed" << std::endl;
+#endif
 }
 
 
 void Scene3D::setDimensions(int width, int height)
 {
-  this->cam.setDimensions(width, height);
+#ifdef DEBUG_TRACE_SCENE
+  std::cout << "Scene3D" << this << "::setDimensions() width=" << width << " height=" << height << std::endl;
+#endif
+  this->cam->setDimensions(width, height);
 }
 
 
 int Scene3D::getWidth()
 {
-  return this->cam.getWidth();
+  return this->cam->getWidth();
 }
 
 
 int Scene3D::getHeight()
 {
-  return this->cam.getHeight();
+  return this->cam->getHeight();
 }
 
 
@@ -87,6 +106,9 @@ Obj3D* Scene3D::getObj3D(const std::string filename)
 
 Prop3D* Scene3D::addProp(Mesh3D* mesh)
 {
+#ifdef DEBUG_TRACE_SCENE
+  std::cout << "Scene3D" << this << "::addProp() mesh=" << mesh << " name=" << mesh->getName() << std::endl;
+#endif
   Prop3D* prop = new Prop3D();
   prop->setMesh(mesh);
   prop3d.push_back(prop);
@@ -96,10 +118,7 @@ Prop3D* Scene3D::addProp(Mesh3D* mesh)
 
 Prop3D* Scene3D::getProp(int index)
 {
-  //std::cout << "Scene3D::getProp(index=" << index << ")" << std::endl;
-  //std::cout << "  prop3d.size()=" << prop3d.size() << std::endl;
   if (index < 0 || index > ((int)prop3d.size())-1) return nullptr;
-  //std::cout << "  prop3d[index]=" << prop3d[index] << std::endl;
   return prop3d[index];
 }
 
@@ -110,13 +129,17 @@ int Scene3D::getPropCount()
 }
 
 
-Camera3D* Scene3D::camera()
+Camera3D* Scene3D::getCamera()
 {
-  return &this->cam;
+  return this->cam;
 }
 
 
 void Scene3D::setShader(ShaderProgram* shader)
 {
+#ifdef DEBUG_TRACE_SCENE
+  std::cout << "Scene3D" << this << "::setShader() shader=" << shader << std::endl;
+#endif
   for (const auto& prop : this->prop3d) prop->setShader(shader);
 }
+

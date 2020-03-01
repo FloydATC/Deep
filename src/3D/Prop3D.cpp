@@ -4,6 +4,8 @@
 
 #include "Scene3D.h" // debugging
 
+//#define DEBUG_TRACE_PROP
+
 Prop3D::Prop3D()
 {
   //ctor
@@ -14,18 +16,25 @@ Prop3D::Prop3D()
   this->xy_plane.resize(4); // 4 x Vector2
   this->texture = 0;
   this->texture_set = false;
-
+#ifdef DEBUG_TRACE_PROP
+  std::cout << "Prop3D" << this << " created" << std::endl;
+#endif
 }
 
 Prop3D::~Prop3D()
 {
   //dtor
+#ifdef DEBUG_TRACE_PROP
+  std::cout << "Prop3D" << this << " destroyed" << std::endl;
+#endif
 }
 
 
-void Prop3D::render(Camera3D camera) {
+void Prop3D::render(Camera3D* camera) {
   if (this->need_recalc) this->recalculate_matrix();
-  //std::cout << "Prop3D" << this << "::render() called for object '" << this->mesh->getName() << "'" << std::endl;
+#ifdef DEBUG_TRACE_PROP
+  std::cout << "Prop3D" << this << "::render() called for object '" << this->mesh->getName() << "'" << std::endl;
+#endif
 
   if (this->shader == nullptr) {
     std::cerr << "Prop3D" << this  << "::render() no shader!" << std::endl;
@@ -46,8 +55,10 @@ void Prop3D::render(Camera3D camera) {
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 
-  this->shader->setCameraMatrix(camera.getMatrix());
+  this->shader->setCameraMatrix(camera->getMatrix());
   this->shader->setModelMatrix(this->matrix);
+  //std::cout << "Prop3D" << this << "::render() model matrix:" << std::endl;
+  //std::cout << this->matrix << std::endl;
 
   this->mesh->render(this->shader); // Render Mesh3D
 
@@ -66,11 +77,12 @@ Matrix4 Prop3D::getScaleMatrix()
 
 void Prop3D::recalculate_matrix()
 {
-  //std::cout << "Prop3D::recalculate() begin" << std::endl;
+#ifdef DEBUG_TRACE_PROP
+  std::cout << "Prop3D" << this << "::recalculate_matrix()" << std::endl;
+#endif
   this->matrix  = getPositionMatrix(); // Matrix4().translate(this->position); // Relative position
   this->matrix *= getRotationMatrix();
   this->matrix *= getScaleMatrix();
-  //std::cout << "Prop3D::recalculate() done" << std::endl;
   this->need_recalc = false;
 }
 
@@ -84,37 +96,51 @@ Mesh3D* Prop3D::getMesh()
 
 void Prop3D::setMesh(Mesh3D* mesh)
 {
+#ifdef DEBUG_TRACE_PROP
+  std::cout << "Prop3D" << this << "::setMesh() mesh=" << mesh << " name=" << mesh->getName() << std::endl;
+#endif
   this->mesh = mesh;
 }
 
+
 void Prop3D::setScale(float scale)
 {
+#ifdef DEBUG_TRACE_PROP
+  std::cout << "Prop3D" << this << "::setScale() scale=" << scale << std::endl;
+#endif
   this->scale = Vector3(scale, scale, scale);
   this->need_recalc = true;
 }
 
+
 void Prop3D::setScale(Vector3 scale)
 {
+#ifdef DEBUG_TRACE_PROP
+  std::cout << "Prop3D" << this << "::setScale() scale=" << scale << std::endl;
+#endif
   this->scale = scale;
   this->need_recalc = true;
 }
 
 
-/*
-void Prop3D::setTexture(GLuint texture)
-{
-  this->texture = texture;
-  this->texture_mapped = true;
-}
-*/
-
 void Prop3D::setShader(ShaderProgram* shader)
 {
+#ifdef DEBUG_TRACE_PROP
+  std::cout << "Prop3D" << this << "::setShader() shader=" << shader << std::endl;
+#endif
   this->shader = shader;
-  //this->object->set_shader_v(this->shader->vertex_v);
-  //this->object->set_shader_vt(this->shader->vertex_vt);
-  //this->object->set_shader_vn(this->shader->vertex_vn);
 }
+
+
+void Prop3D::setTexture(GLuint texture)
+{
+#ifdef DEBUG_TRACE_PROP
+  std::cout << "Prop3D" << this << "::setTexture() texture=" << texture << " enabled" << std::endl;
+#endif
+  this->texture = texture;
+  this->texture_set = true;
+}
+
 
 
 
@@ -122,23 +148,23 @@ void Prop3D::setShader(ShaderProgram* shader)
 
 
 
-Vector3 Prop3D::project(Vector3 v3, Camera3D camera)
+Vector3 Prop3D::project(Vector3 v3, Camera3D* camera)
 {
   // This function is used to project (transform) each of the four xy_plane corners
   // from world coordinates onto the screen. We will use this 2-dimensional plane
   // to pinpoint mouse events relative to the 3D object.
 
   // We need a Vector4 for the projection since the matrices are 4x4 and use perspective
-  Vector4 v4 =  camera.getMatrix() * this->matrix * Vector4(v3.x, v3.y, v3.z, 1.0);
+  Vector4 v4 =  camera->getMatrix() * this->matrix * Vector4(v3.x, v3.y, v3.z, 1.0);
 
   // Return 2D display coordinates + depth component
-  int w2 = camera.getWidth() / 2;
-  int h2 = camera.getHeight() / 2;
+  int w2 = camera->getWidth() / 2;
+  int h2 = camera->getHeight() / 2;
   return Vector3(w2+(v4.x*w2/v4.w), h2+(v4.y*-h2/v4.w), v4.z/v4.w); // flip Y so 0,0 is upper left corner
 }
 
 
-void Prop3D::recalculate_xy_plane(Camera3D camera)
+void Prop3D::recalculate_xy_plane(Camera3D* camera)
 {
   // This function is called right after we render the prop in 3D,
   // as we then have both the camera and model matrix available.
@@ -198,77 +224,53 @@ bool Prop3D::mouse_intersects(Vector2 mouse, Vector2 display)
 
 Vector2 Prop3D::relative_mouse_pos(Vector2 mouse, Camera3D* camera, void* scene)
 {                                                                // ^^^^^^^^^^^^^^ DEBUGGING
+  std::cout << "Prop3D" << this << "::relative_mouse_pos" << std::endl;
   // Return the mouse position relative to the xy_plane of this object
   // Upper left corner = 0,0
   // Lower right corner = 1,1
 
-  // https://stackoverflow.com/questions/2093096/implementing-ray-picking
-
   std::cout << "  object position = WS " << this->position << std::endl;
   std::cout << "  camera position = WS " << camera->getPosition() << std::endl;
 
-  Vector4 mouse_clip = Vector4(
-    (float)mouse.x * 2.0 / (float)camera->getWidth() - 1.0,
-    1.0 - (float)mouse.y * 2.0 / (float)camera->getHeight(), // Invert y
-    (float)camera->getNear(),
-    1.0
-  );
-  //std::cout << "  mouse  position = CS " << mouse_clip << std::endl;
+  GLint viewport[4] = { 0, 0, camera->getWidth(), camera->getHeight() };
+  GLdouble modelview[16];
+  camera->getViewMatrixDoubleV(modelview);
+  GLdouble projection[16];
+  camera->getPerspectiveMatrixDoubleV(projection);
 
+  // Read depth buffer at mouse coordinates
+  GLint winX = mouse.x;
+  GLint winY = viewport[3] - mouse.y;
+  GLint winZ;
+  glReadPixels(winX, winY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+  std::cout << "  gluUnProject winX=" << winX << " winY=" << winY << " winZ=" << winZ << std::endl;
 
-  Matrix4 C = camera->getMatrix(); // perspective, direction and position of eye
-  C.invert();
-  Vector4 mouse_worldspace = C * mouse_clip;
-  //mouse_worldspace.x /= mouse_worldspace.w;
-  //mouse_worldspace.y /= mouse_worldspace.w;
-  std::cout << "  mouse  position = WS " << mouse_worldspace << std::endl;
+  GLdouble posX, posY, posZ;
+  gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
 
-  Matrix4 O = this->matrix;
-  O.invert();
-  Vector4 mouse_objectspace = O * mouse_worldspace;
-  std::cout << "  mouse  position = OS " << mouse_objectspace << std::endl;
+  std::cout << "  gluUnProject posX=" << posX << " posY=" << posY << " posZ=" << posZ << std::endl;
+  //((Scene3D*)scene)->getProp(5)->setPosition(mouse_worldspace.xyz()); // DEBUGGING
+
+  Vector3 mouse_worldspace = Vector3(posX, posY, posZ);
 
   Prop3D* white_cube = ((Scene3D*)scene)->getProp(4);
   Prop3D* magenta_ray = ((Scene3D*)scene)->getProp(5);
-  white_cube->setPosition(mouse_worldspace.xyz()); // DEBUGGING
-  magenta_ray->setDirection(mouse_worldspace.xyz());
-
-  //((Scene3D*)scene)->getProp(5)->setPosition(mouse_worldspace.xyz()); // DEBUGGING
+  white_cube->setPosition(mouse_worldspace); // DEBUGGING
 
 
   // origin of camera in worldspace
-  Vector3 ray_origin = camera->getPosition();
+  Vector3 ray_origin = Vector3(0,0,0); // camera->getPosition();
+  magenta_ray->setPosition(ray_origin);
 
 
   // unit vector from p through mouse pos in worldspace
-  Vector3 ray_world = Vector3(mouse_worldspace.xyz() - ray_origin).normalize();
+  Vector3 ray_world = Vector3(mouse_worldspace - ray_origin).normalize();
+
+  magenta_ray->setDirection(this->position);
 
 
 
-  // https://stackoverflow.com/questions/7168484/3d-line-segment-and-plane-intersection
-   // get d value
-  //float d = Dot(normal, coord);
-  Vector3 normal = getDirection();
 
-  float d = normal.dot(this->position); // 'dir' = direction, normal vector
-
-  //if (Dot(normal, ray) == 0) {
-  //    return false; // No intersection, the line is parallel to the plane
-  //}
-  if (normal.dot(ray_world) == 0) {
-    std::cerr << "  No intersection possible" << std::endl;
-  }
-
-  // Compute the X value for the directed line ray intersecting the plane
-  //float x = (d - Dot(normal, rayOrigin)) / Dot(normal, ray);
-  float x = (d - normal.dot(ray_origin)) / normal.dot(ray_world);
-
-  // output contact point
-  //*contact = rayOrigin + normalize(ray)*x; //Make sure your ray vector is normalized
-  Vector3 intersection = ray_origin + ray_world.normalize()*x; //Make sure your ray vector is normalized
-
-  std::cout << "  intersection: " << intersection.xy() << std::endl;
-  // The result is plain wrong... -0.3:741, -0.2:73
 
   return Vector2(rand(), rand()); // Might as well do this
 }
@@ -277,12 +279,6 @@ Vector2 Prop3D::relative_mouse_pos(Vector2 mouse, Camera3D* camera, void* scene)
 
 
 
-void Prop3D::setTexture(GLuint texture)
-{
-  std::cout << "Prop3D" << this << "::setTexture() texture=" << texture << " enabled" << std::endl;
-  this->texture = texture;
-  this->texture_set = true;
-}
 
 
 

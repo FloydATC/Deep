@@ -1,17 +1,25 @@
 #include "3D/Camera3D.h"
 
+#include <iostream>
+
+//#define DEBUG_TRACE_CAMERA
+
 Camera3D::Camera3D()
 {
   //ctor
   this->fov = 60;
   this->aspect = 640.0 / 480.0; // 1.333
-  //std::cout << "Camera3D() created" << std::endl;
+#ifdef DEBUG_TRACE_CAMERA
+  std::cout << "Camera3D" << this << " created" << std::endl;
+#endif
 }
 
 Camera3D::~Camera3D()
 {
   //dtor
-  //std::cout << "Camera3D() destroyed" << std::endl;
+#ifdef DEBUG_TRACE_CAMERA
+  std::cout << "Camera3D" << this << " destroyed" << std::endl;
+#endif
 }
 
 
@@ -23,24 +31,53 @@ Matrix4 Camera3D::getPerspectiveMatrix()
   return this->perspective_matrix;
 }
 
+void Camera3D::getPerspectiveMatrixDoubleV(double matrix[16])
+{
+  const float* matrix_f = getPerspectiveMatrix().get();
+  for (int i=0; i<16; i++) matrix[i] = (double) matrix_f[i];
+}
+
 Matrix4 Camera3D::getRotationMatrix()
 {
-  // Camera rotation must be applied in reverse order
+  // Camera rotation must be applied in reverse order and in opposite directions
   if (this->need_recalc == false) return this->rotation_matrix;
   this->rotation_matrix = Matrix4()
-    .rotate(this->roll, Vector3(0.0f, 0.0f, 1.0f))
-    .rotate(this->yaw, Vector3(0.0f, 1.0f, 0.0f))
-    .rotate(this->pitch, Vector3(1.0f, 0.0f, 0.0f));
+    .rotate(-this->roll, Vector3(0.0f, 0.0f, 1.0f))
+    .rotate(-this->yaw, Vector3(0.0f, 1.0f, 0.0f))
+    .rotate(-this->pitch, Vector3(1.0f, 0.0f, 0.0f));
   return this->rotation_matrix;
 }
 
+Matrix4 Camera3D::getPositionMatrix()
+{
+  // Camera movement must be applied in opposite direction
+  if (this->need_recalc == false) return this->position_matrix;
+  this->position_matrix = Matrix4().translate(Vector3(-this->position.x, -this->position.y, -this->position.z));
+  return this->position_matrix;
+}
+
+
+Matrix4 Camera3D::getViewMatrix()
+{
+  if (this->need_recalc == false) return this->view_matrix;
+  this->view_matrix = getRotationMatrix() * getPositionMatrix();
+  return this->view_matrix;
+}
+
+void Camera3D::getViewMatrixDoubleV(double matrix[16])
+{
+  const float* matrix_f = getPerspectiveMatrix().get();
+  for (int i=0; i<16; i++) matrix[i] = (double) matrix_f[i];
+}
+
+
 void Camera3D::recalculate_matrix()
 {
-  //std::cout << "Camera3D::recalculate() begin" << std::endl;
-  this->matrix  = getPerspectiveMatrix();
-  this->matrix *= getRotationMatrix();
-  this->matrix *= getPositionMatrix();
-  //std::cout << "Camera3D::recalculate() done" << std::endl;
+#ifdef DEBUG_TRACE_CAMERA
+  std::cout << "Camera3D" << this << "::recalculate_matrix() begin" << std::endl;
+#endif
+  this->matrix  = getPerspectiveMatrix() * getViewMatrix();
+  //std::cout << "Camera3D::recalculate_matrix() done" << std::endl;
   this->need_recalc = false;
 }
 
@@ -51,7 +88,9 @@ void Camera3D::setDimensions(int width, int height)
   this->width = width;
   this->height = height;
   this->aspect = (float) width / (float) height;
-  //std::cout << "Camera3D::setDimensions() width=" << width << " height=" << height << " ratio=" << this->aspect << std::endl;
+#ifdef DEBUG_TRACE_CAMERA
+  std::cout << "Camera3D" << this << "::setDimensions() width=" << width << " height=" << height << " ratio=" << this->aspect << std::endl;
+#endif
   this->need_recalc = true;
 }
 
@@ -61,7 +100,9 @@ void Camera3D::setAspect(float aspect_ratio)
   // Clamp to sane values
   if (this->aspect > 10.0) this->aspect = 10.0;
   if (this->aspect < 0.01) this->aspect = 0.01;
-  //std::cout << "Camera3D::setAspect() ratio=" << aspect_ratio << std::endl;
+#ifdef DEBUG_TRACE_CAMERA
+  std::cout << "Camera3D" << this << "::setAspect() ratio=" << aspect_ratio << std::endl;
+#endif
   this->need_recalc = true;
 }
 
@@ -87,7 +128,9 @@ void Camera3D::setFOV(float degrees)
   // Clamp to sane values
   if (this->fov > 140) this->fov = 140;
   if (this->fov < 20) this->fov = 20;
-  //std::cout << "Camera3D::setFOV() degrees=" << degrees << " fov=" << fov << std::endl;
+#ifdef DEBUG_TRACE_CAMERA
+  std::cout << "Camera3D" << this << "::setFOV() degrees=" << degrees << " fov=" << fov << std::endl;
+#endif
   this->need_recalc = true;
 }
 
@@ -97,7 +140,9 @@ void Camera3D::addFOV(float degrees)
   // Clamp to sane values
   if (this->fov > 140) this->fov = 140;
   if (this->fov < 20) this->fov = 20;
-  //std::cout << "Camera3D::addFOV() degrees=" << degrees << " fov=" << fov << std::endl;
+#ifdef DEBUG_TRACE_CAMERA
+  std::cout << "Camera3D" << this << "::addFOV() degrees=" << degrees << " fov=" << fov << std::endl;
+#endif
   this->need_recalc = true;
 }
 

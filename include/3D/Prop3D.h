@@ -26,7 +26,7 @@ class Prop3D : public Entity3D
     Prop3D();
     ~Prop3D();
 
-    void render(Camera3D camera);
+    void render(Camera3D* camera);
 
     void setMesh(Mesh3D* mesh);
     Mesh3D* getMesh();
@@ -62,8 +62,8 @@ class Prop3D : public Entity3D
     Matrix4 scale_matrix;
 
     void recalculate_matrix();
-    Vector3 project(Vector3 v3, Camera3D camera);
-    void recalculate_xy_plane(Camera3D camera);
+    Vector3 project(Vector3 v3, Camera3D* camera);
+    void recalculate_xy_plane(Camera3D* camera);
 
     //float color[4] = { 1.0, 1.0, 1.0, 1.0 };
 
