@@ -1,5 +1,12 @@
 #include "Entity3D.h"
 
+#include <iostream>
+
+//#define DEBUG_TRACE_ENTITY
+
+#define PI 3.1415
+#define RAD2DEG 180.0 / PI
+
 Entity3D::Entity3D()
 {
   //ctor
@@ -13,11 +20,17 @@ Entity3D::Entity3D()
   this->roll = 0.0;
 
   this->position = Vector3(0.0, 0.0, 0.0);
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << " created" << std::endl;
+#endif
 }
 
 Entity3D::~Entity3D()
 {
   //dtor
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << " destroyed" << std::endl;
+#endif
 }
 
 
@@ -73,14 +86,20 @@ void Entity3D::setDirection(float pitch, float yaw, float roll)
   this->yaw = yaw;
   this->roll = roll;
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::setDirection() pitch=" << pitch << " yaw=" << yaw << " roll=" << roll << std::endl;
+#endif
 }
 
 void Entity3D::setDirection(Vector3 direction)
 {
-  this->pitch = asin(-direction.y);
-  this->yaw = atan2(direction.x, direction.z);
+  this->pitch = asin(-direction.y) * RAD2DEG;
+  this->yaw = atan2(direction.x, direction.z) * RAD2DEG;
   this->roll = 0;
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::setDirection() vector=" << direction << " pitch=" << pitch << " yaw=" << yaw << std::endl;
+#endif
 }
 
 Vector3 Entity3D::getDirection()
@@ -94,7 +113,9 @@ void Entity3D::setPitch(float degrees)
   // Clamp to sane values
   if (this->pitch > 90.0) this->pitch = 90;
   if (this->pitch < -90.0) this->pitch = -90;
-  //std::cout << "Entity3D::setPitch() degrees=" << degrees << " pitch=" << pitch << std::endl;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::setPitch() degrees=" << degrees << " pitch=" << pitch << std::endl;
+#endif
   this->need_recalc = true;
 }
 
@@ -104,7 +125,9 @@ void Entity3D::addPitch(float degrees)
   // Clamp to sane values
   if (this->pitch > 90.0) this->pitch = 90;
   if (this->pitch < -90.0) this->pitch = -90;
-  //std::cout << "Entity3D::addPitch() degrees=" << degrees << " pitch=" << pitch << std::endl;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::addPitch() degrees=" << degrees << " pitch=" << pitch << std::endl;
+#endif
   this->need_recalc = true;
 }
 
@@ -118,7 +141,9 @@ void Entity3D::setYaw(float degrees)
   this->yaw = degrees;
   // Clamp to sane values
   this->yaw = wrap(this->yaw, -360.0, 360.0);
-  //std::cout << "Entity3D::setYaw() degrees=" << degrees << " yaw=" << yaw << std::endl;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::setYaw() degrees=" << degrees << " yaw=" << yaw << std::endl;
+#endif
   this->need_recalc = true;
 }
 
@@ -127,7 +152,9 @@ void Entity3D::addYaw(float degrees)
   this->yaw += degrees;
   // Clamp to sane values
   this->yaw = wrap(this->yaw, -360.0, 360.0);
-  //std::cout << "Entity3D::addYaw() degrees=" << degrees << " yaw=" << yaw << std::endl;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::addYaw() degrees=" << degrees << " yaw=" << yaw << std::endl;
+#endif
   this->need_recalc = true;
 }
 
@@ -141,7 +168,9 @@ void Entity3D::setRoll(float degrees)
   this->roll = degrees;
   // Clamp to sane values
   this->roll = wrap(this->roll, -360.0, 360.0);
-  //std::cout << "Entity3D::setRoll() degrees=" << degrees << " roll=" << roll << std::endl;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::setRoll() degrees=" << degrees << " roll=" << roll << std::endl;
+#endif
   this->need_recalc = true;
 }
 
@@ -150,7 +179,9 @@ void Entity3D::addRoll(float degrees)
   this->roll += degrees;
   // Clamp to sane values
   this->roll = wrap(this->roll, -360.0, 360.0);
-  //std::cout << "Entity3D::addRoll() degrees=" << degrees << " roll=" << roll << std::endl;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::addRoll() degrees=" << degrees << " roll=" << roll << std::endl;
+#endif
   this->need_recalc = true;
 }
 
@@ -166,6 +197,9 @@ void Entity3D::setPosition(Vector3 position)
 {
   this->position = position;
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::setPosition() vector=" << position << std::endl;
+#endif
 }
 
 Vector3 Entity3D::getPosition()
@@ -178,44 +212,62 @@ Vector3 Entity3D::getPosition()
 
 void Entity3D::strafeLeft(float distance)
 {
-  Vector4 motion = Vector4(distance, 0, 0, 0) * getRotationMatrix();
+  Vector4 motion = Vector4(-distance, 0, 0, 0) * getRotationMatrix();
   this->position += motion.xyz();
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::strafeLeft() position=" << this->position << std::endl;
+#endif
 }
 
 void Entity3D::strafeRight(float distance)
 {
-  Vector4 motion = Vector4(-distance, 0, 0, 0) * getRotationMatrix();
+  Vector4 motion = Vector4(distance, 0, 0, 0) * getRotationMatrix();
   this->position += motion.xyz();
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::strafeRight() position=" << this->position << std::endl;
+#endif
 }
 
 void Entity3D::strafeUp(float distance)
 {
-  Vector4 motion = Vector4(0, -distance, 0, 0) * getRotationMatrix();
+  Vector4 motion = Vector4(0, distance, 0, 0) * getRotationMatrix();
   this->position += motion.xyz();
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::strafeUp() position=" << this->position << std::endl;
+#endif
 }
 
 void Entity3D::strafeDown(float distance)
 {
-  Vector4 motion = Vector4(0, distance, 0, 0) * getRotationMatrix();
+  Vector4 motion = Vector4(0, -distance, 0, 0) * getRotationMatrix();
   this->position += motion.xyz();
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::strafeDown() position=" << this->position << std::endl;
+#endif
 }
 
 void Entity3D::strafeForward(float distance)
 {
-  Vector4 motion = Vector4(0, 0, distance, 0) * getRotationMatrix();
+  Vector4 motion = Vector4(0, 0, -distance, 0) * getRotationMatrix();
   this->position += motion.xyz();
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::strafeForward() position=" << this->position << std::endl;
+#endif
 }
 
 void Entity3D::strafeBackward(float distance)
 {
-  Vector4 motion = Vector4(0, 0, -distance, 0) * getRotationMatrix();
+  Vector4 motion = Vector4(0, 0, distance, 0) * getRotationMatrix();
   this->position += motion.xyz();
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::strafeBackward() position=" << this->position << std::endl;
+#endif
 }
 
 
@@ -225,36 +277,54 @@ void Entity3D::moveEast(float distance)
 {
   this->position.x += distance;
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::moveEast() position=" << this->position << std::endl;
+#endif
 }
 
 void Entity3D::moveWest(float distance)
 {
   this->position.x -= distance;
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::moveWest() position=" << this->position << std::endl;
+#endif
 }
 
 void Entity3D::moveUp(float distance)
 {
-  this->position.y -= distance;
+  this->position.y += distance;
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::moveUp() position=" << this->position << std::endl;
+#endif
 }
 
 void Entity3D::moveDown(float distance)
 {
-  this->position.y += distance;
+  this->position.y -= distance;
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::moveDown() position=" << this->position << std::endl;
+#endif
 }
 
 void Entity3D::moveNorth(float distance)
 {
   this->position.z += distance;
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::moveNorth() position=" << this->position << std::endl;
+#endif
 }
 
 void Entity3D::moveSouth(float distance)
 {
   this->position.z -= distance;
   this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::moveSouth() position=" << this->position << std::endl;
+#endif
 }
 
 
