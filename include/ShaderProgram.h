@@ -12,7 +12,9 @@ class ShaderProgram
     ShaderProgram(const std::string vs_filename, const std::string fs_filename);
     ~ShaderProgram();
 
+    GLint current();
     GLuint id();
+
     void setAttributeV(std::string name);
     void setAttributeVT(std::string name);
     void setAttributeVN(std::string name);

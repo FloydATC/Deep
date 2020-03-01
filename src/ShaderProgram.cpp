@@ -30,6 +30,13 @@ ShaderProgram::~ShaderProgram()
 }
 
 
+GLint ShaderProgram::current()
+{
+  GLint current;
+  glGetIntegerv(GL_CURRENT_PROGRAM, &current);
+  return current;
+}
+
 GLuint ShaderProgram::id()
 {
   return programId;
