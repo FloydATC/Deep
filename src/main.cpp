@@ -29,6 +29,7 @@
 #include "3D/Scene3D.h"
 #include "ShaderProgram.h"
 #include "UTF8hack.h"
+#include "3D/Plane3D.h" // for debugging only
 #include "3D/Ray3D.h" // for debugging only
 #include "hexdump.h" // For debugging only
 
@@ -460,7 +461,7 @@ int main(int argc, char* argv[])
 
       Scene3D scene = Scene3D();
       scene.setDimensions(gamestate.width, gamestate.height);
-      scene.getCamera()->setPosition(Vector3(0.0, 0.0, 0.5));
+      scene.getCamera()->setPosition(Vector3(0.0, 0.0, 1.0));
 
       std::cout << "Load shaders" << std::endl;
       ShaderProgram* scene_shader = scene.getShader("glsl/scene_vert.glsl", "glsl/scene_frag.glsl");
@@ -530,7 +531,15 @@ int main(int argc, char* argv[])
       scene.getProp(2)->setDirection(-15, 15,  0);
       scene.getProp(3)->setDirection(-15,-15,  0);
 
+      Plane3D* plane = new Plane3D();
+      scene.addProp(plane);
+      scene.getProp(6)->setPosition(Vector3(0.0, -1.0, 0.0));
+      scene.getProp(6)->setDirection(Vector3(0.0, 1.0, 0.0));
+
+
       scene.setShader(scene_shader); // Set same shader on all Props
+
+
 
 #ifndef DEBUG_NO_VIRTUAL_MACHINES
       // Bind VM textures to props (NOT to the underlying, shared mesh objects)
