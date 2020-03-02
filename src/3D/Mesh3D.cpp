@@ -20,6 +20,7 @@ Mesh3D::Mesh3D()
   this->texture_set = false;
   this->render_enabled = true;
   this->bounds = nullptr;
+  this->bounds_enabled = false;
   this->debug = false;
 #ifdef DEBUG_TRACE_MESH
   std::cout << "Mesh3D" << this << " created" << std::endl;

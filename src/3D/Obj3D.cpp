@@ -31,7 +31,10 @@ void Obj3D::render(ShaderProgram* shader)
 #ifdef DEBUG_TRACE_OBJ
     std::cout << "Obj3D" << this << "::render() part name=" << part->getName() << std::endl;
 #endif
-    if (part->isEnabled()) part->render(shader);
+    if (part->isEnabled()) {
+      part->bounds_enabled = this->bounds_enabled; // Propagate setting to subobject
+      part->render(shader);
+    }
   }
 }
 

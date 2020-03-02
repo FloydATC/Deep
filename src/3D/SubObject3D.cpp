@@ -39,7 +39,7 @@ void SubObject3D::render(ShaderProgram* shader)
   }
 
   // Render bounding box
-  if (this->bounds != nullptr) this->bounds->render(shader);
+  if (this->bounds != nullptr && this->bounds_enabled) this->bounds->render(shader);
 }
 
 

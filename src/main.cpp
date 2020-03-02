@@ -473,8 +473,8 @@ int main(int argc, char* argv[])
 #endif
 
       Obj3D* screen = scene.getObj3D("obj/screen.obj");
-      screen->getPart(0)->setColor(1.0, 1.0, 1.0, 0.8); // Enclosure
-      screen->getPart(1)->setColor(0.2, 0.2, 0.3, 0.8); // Enclosure
+      screen->getPart(0)->setColor(1.0, 1.0, 1.0, 1.0); // Display
+      screen->getPart(1)->setColor(0.2, 0.2, 0.3, 1.0); // Enclosure
 
       scene.addProp(screen);
       scene.addProp(screen);

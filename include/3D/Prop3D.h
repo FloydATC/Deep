@@ -48,6 +48,10 @@ class Prop3D : public Entity3D
     std::vector<Vector3> xy_plane;
     bool xy_plane_visible();
 
+    void showBounds();
+    void hideBounds();
+
+
   protected:
 
   private:
@@ -57,6 +61,8 @@ class Prop3D : public Entity3D
 
     GLuint texture;
     bool texture_set;
+
+    bool bounds_enabled;
 
     Vector3 scale;
     Matrix4 scale_matrix;

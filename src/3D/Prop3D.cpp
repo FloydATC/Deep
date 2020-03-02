@@ -16,6 +16,7 @@ Prop3D::Prop3D()
   this->xy_plane.resize(4); // 4 x Vector2
   this->texture = 0;
   this->texture_set = false;
+  this->bounds_enabled = false;
 #ifdef DEBUG_TRACE_PROP
   std::cout << "Prop3D" << this << " created" << std::endl;
 #endif
@@ -60,6 +61,7 @@ void Prop3D::render(Camera3D* camera) {
   //std::cout << "Prop3D" << this << "::render() model matrix:" << std::endl;
   //std::cout << this->matrix << std::endl;
 
+  this->mesh->bounds_enabled = this->bounds_enabled;
   this->mesh->render(this->shader); // Render Mesh3D
 
   recalculate_xy_plane(camera);
@@ -140,6 +142,24 @@ void Prop3D::setTexture(GLuint texture)
   this->texture = texture;
   this->texture_set = true;
 }
+
+void Prop3D::showBounds()
+{
+#ifdef DEBUG_TRACE_PROP
+  std::cout << "Prop3D" << this << "::showBounds()" << std::endl;
+#endif
+  this->bounds_enabled = true;
+}
+
+void Prop3D::hideBounds()
+{
+#ifdef DEBUG_TRACE_PROP
+  std::cout << "Prop3D" << this << "::hideBounds()" << std::endl;
+#endif
+  this->bounds_enabled = false;
+}
+
+
 
 
 

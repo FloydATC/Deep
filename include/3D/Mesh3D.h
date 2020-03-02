@@ -25,6 +25,7 @@ class Mesh3D
 
     void setBounds(Mesh3D* box);
     Mesh3D* getBounds();
+    bool bounds_enabled;
 
     bool isEnabled();
     void show();
