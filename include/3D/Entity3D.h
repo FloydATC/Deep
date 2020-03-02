@@ -26,6 +26,7 @@ class Entity3D
     // Rotation
     void setDirection(float pitch, float yaw, float roll);
     void setDirection(Vector3 direction);
+    void setTargetDirection(Vector3 target);
     Vector3 getDirection();
     void setPitch(float degrees);
     void addPitch(float degrees);

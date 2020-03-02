@@ -2436,7 +2436,7 @@
 	"3D/Entity3D.h"
 	"ShaderProgram.h"
 
-1583140092 source:c:\users\floyd\documents\cpp\deep\src\3d\prop3d.cpp
+1583144479 source:c:\users\floyd\documents\cpp\deep\src\3d\prop3d.cpp
 	"3D/Prop3D.h"
 	"Matrices.h"
 	"Scene3D.h"
@@ -2496,14 +2496,14 @@
 	<math.h>
 	"Vectors.h"
 
-1583095848 source:c:\users\floyd\documents\cpp\deep\src\3d\entity3d.cpp
+1583144714 source:c:\users\floyd\documents\cpp\deep\src\3d\entity3d.cpp
 	"Entity3D.h"
 	<iostream>
 
 1583095848 c:\users\floyd\documents\cpp\deep\include\3d\entity3d.h
 	"Matrices.h"
 
-1583093276 source:c:\users\floyd\documents\cpp\deep\src\3d\ray3d.cpp
+1583142958 source:c:\users\floyd\documents\cpp\deep\src\3d\ray3d.cpp
 	"Ray3D.h"
 	<iostream>
 

@@ -51,7 +51,7 @@ void Ray3D::finalize()
 #endif
   float vertices[6] = {
     0.0, 0.0, 0.0,
-    0.0, 0.0, 10.0
+    0.0, 0.0, 100.0
   };
   set_v(vertices, 2);
   this->finalized = true;

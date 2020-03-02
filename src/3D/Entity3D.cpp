@@ -98,7 +98,19 @@ void Entity3D::setDirection(Vector3 direction)
   this->roll = 0;
   this->need_recalc = true;
 #ifdef DEBUG_TRACE_ENTITY
-  std::cout << "Entity3D" << this << "::setDirection() vector=" << direction << " pitch=" << pitch << " yaw=" << yaw << std::endl;
+  std::cout << "Entity3D" << this << "::setDirection() direction=" << direction << " pitch=" << pitch << " yaw=" << yaw << std::endl;
+#endif
+}
+
+void Entity3D::setTargetDirection(Vector3 target)
+{
+  Vector3 direction = target - this->position;
+  this->pitch = asin(-direction.y) * RAD2DEG;
+  this->yaw = atan2(direction.x, direction.z) * RAD2DEG;
+  this->roll = 0;
+  this->need_recalc = true;
+#ifdef DEBUG_TRACE_ENTITY
+  std::cout << "Entity3D" << this << "::setTargetDirection() position=" << this->position << " target=" << target << " direction=" << direction << " pitch=" << pitch << " yaw=" << yaw << std::endl;
 #endif
 }
 
