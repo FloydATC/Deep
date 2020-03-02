@@ -29,8 +29,7 @@
 #include "3D/Scene3D.h"
 #include "ShaderProgram.h"
 #include "UTF8hack.h"
-#include "3D/Plane3D.h" // for debugging only
-#include "3D/Ray3D.h" // for debugging only
+#include "3D/Plane3D.h"
 #include "hexdump.h" // For debugging only
 
 
@@ -56,18 +55,6 @@ double now() {
 
 
 
-// check OpenGL errors
-/*
-void check_gl(std::string when)
-{
-  GLenum err;
-  while ((err = glGetError()) != GL_NO_ERROR) {
-    std::cerr << "OpenGL error " << when << ": " << gluErrorString(err) << "(" << err << ")" << std::endl;
-    //running = false;
-  }
-}
-
-*/
 
 /*
 GLuint load_texture()
@@ -113,19 +100,6 @@ GLuint load_texture()
 
 
 
-/*
-
-void prepare_scene()
-{
-  //std::cout << "prepare_scene()" << std::endl;
-  glClearColor(0.25f, 0.25f, 0.30f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-  glEnable(GL_CULL_FACE);
-  glEnable(GL_DEPTH_TEST);
-  check_gl("prepare scene");
-}
-
-*/
 
 
 void process_keydown(Message* msg, std::vector<Machine*> vms, GameState* gamestate)
@@ -213,15 +187,17 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
   // WARNING! This temporary code assumes a 1:1 relationship between Obj3Ds and VMs
   Vector2 mouse = Vector2(msg->motion.x, msg->motion.y);
   Vector2 display = scene->getCamera()->getDimensions();
-//  for (int i=0; i<scene->getPropCount(); i++) {
-  for (int i=0; i<1; i++) {
+  //  for (int i=0; i<scene->getPropCount(); i++) {
+  for (int i=0; i<4; i++) {
     //std::cout << "VM " << i << std::endl;
     Prop3D* p = scene->getProp(i);
-    //if (!p->xy_plane_visible()) continue;
-    //if (!p->mouse_intersects(mouse, display)) continue;
+    if (!p->xy_plane_visible()) continue;
+    if (!p->mouse_intersects(mouse, display)) continue;
+    gamestate->current_vm = i;
 
     Vector2 v = p->relative_mouse_pos(mouse, scene->getCamera(), scene);
     // v 0,0 is center of screen so we must calibrate to VM's screen
+    // Maybe we should do this inside Machine.cpp, I'm not 100% sure.
     //std::cout << "  raw mouse position " << v.x << "," << v.y << std::endl;
     v.x = (v.x + 0.38) * 320 / 0.76;
     v.y = ((v.y * -1) + 0.3) * 200 / 0.6;
@@ -483,10 +459,8 @@ int main(int argc, char* argv[])
       ortho_shader->setUniformDebugFlag("is_debug");
       ortho_shader->setUniformTextureFlag("use_texture");
 
-      Overlay2D* ui = new Overlay2D();
-      ui->setShader(ortho_shader);
-
-
+      //Overlay2D* ui = new Overlay2D();
+      //ui->setShader(ortho_shader);
 
       std::vector<Machine*> vms;
 #ifndef DEBUG_NO_VIRTUAL_MACHINES
@@ -502,29 +476,10 @@ int main(int argc, char* argv[])
       screen->getPart(0)->setColor(1.0, 1.0, 1.0, 0.8); // Enclosure
       screen->getPart(1)->setColor(0.2, 0.2, 0.3, 0.8); // Enclosure
 
-      Obj3D* cube = scene.getObj3D("obj/cube.obj");
-
-      Ray3D* green_ray = new Ray3D();
-      green_ray->setColor(0.0, 1.0, 0.0, 1.0);
-      cube->addPart(green_ray);
-
-      Ray3D* magenta_ray = new Ray3D();
-      magenta_ray->setColor(1.0, 0.0, 1.0, 1.0);
-
       scene.addProp(screen);
       scene.addProp(screen);
       scene.addProp(screen);
       scene.addProp(screen);
-
-      // Debug visualization
-      scene.addProp(cube); // white cube
-      scene.getProp(4)->setScale(0.1);
-
-      scene.addProp(cube); // white cube
-      scene.getProp(5)->setScale(0.1);
-
-      scene.addProp(magenta_ray);
-      scene.getProp(6);
 
       scene.getProp(0)->setPosition(Vector3(-0.60,  0.50, -0.5));
       scene.getProp(1)->setPosition(Vector3( 0.60,  0.50, -0.5));
@@ -538,8 +493,8 @@ int main(int argc, char* argv[])
 
       Plane3D* plane = new Plane3D();
       scene.addProp(plane);
-      scene.getProp(7)->setPosition(Vector3(0.0, -1.0, 0.0));
-      scene.getProp(7)->setDirection(Vector3(0.0, 1.0, 0.0));
+      scene.getProp(4)->setPosition(Vector3(0.0, -1.0, 0.0));
+      scene.getProp(4)->setDirection(Vector3(0.0, 1.0, 0.0));
 
 
       scene.setShader(scene_shader); // Set same shader on all Props
@@ -575,10 +530,11 @@ int main(int argc, char* argv[])
 
         scene.render();
 
-        ui->setDimensions(scene.getWidth(), scene.getHeight());
-        ui->pre_render();
+        //ui->setDimensions(scene.getWidth(), scene.getHeight());
+        //ui->pre_render();
 
         // For debugging, visualize the xy_plane of each Prop3D
+        /*
         for (int i=0; i<4; i++) {
           Prop3D* p = scene.getProp(i);
           if (p->xy_plane_visible())
@@ -589,8 +545,9 @@ int main(int argc, char* argv[])
               Vector2(p->xy_plane[3].x, p->xy_plane[3].y)
             );
         }
+        */
 
-        ui->post_render();
+        //ui->post_render();
 
         SDL_GL_SwapWindow(window);
       }
@@ -600,7 +557,7 @@ int main(int argc, char* argv[])
         delete vm;
       }
 
-      delete ui;
+      //delete ui;
 
 
       TTF_CloseFont(font);
