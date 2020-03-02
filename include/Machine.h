@@ -16,6 +16,8 @@ namespace FunC {
 #include "IO/IOHandle.h"
 #include "Message.h"
 #include "ShaderProgram.h"
+#include "Vectors.h"
+
 
 /*
 
@@ -36,6 +38,8 @@ class Machine
     Machine(ShaderProgram* shader, Fontcache fontcache);
     ~Machine();
 
+    void handle_msg_quit(Message* msg);
+    void handle_msg_mousemotion(Message* msg);
     void push(Message* msg);
     bool execute_code(std::string code);
     bool execute_file(std::string fname, std::string arguments);
@@ -57,6 +61,10 @@ class Machine
     static bool func_str       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_getkey    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_rand      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_mouse_x   (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_mouse_y   (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_mouse_relx(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_mouse_rely(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
 
     // Display functions
     static bool func_print     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
@@ -115,6 +123,9 @@ class Machine
 
   private:
     bool fc_break = false; // Ctrl+C detected
+
+    Vector2 mouse_position_abs;
+    Vector2 mouse_position_rel;
 
     FunC::VM* vm = nullptr;
 

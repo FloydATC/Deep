@@ -221,16 +221,17 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
     //if (!p->mouse_intersects(mouse, display)) continue;
 
     Vector2 v = p->relative_mouse_pos(mouse, scene->getCamera(), scene);
-
-    /*
-    if (v.x > 0 && v.x < 1 && v.y > 0 && v.y < 1) {
+    // v 0,0 is center of screen so we must calibrate to VM's screen
+    //std::cout << "  raw mouse position " << v.x << "," << v.y << std::endl;
+    v.x = (v.x + 0.38) * 320 / 0.76;
+    v.y = ((v.y * -1) + 0.3) * 200 / 0.6;
+    if (v.x >= 0 && v.x < 320 && v.y >= 0 && v.y < 200) {
       Message* relative = new Message(Message::Type::MouseMotion);
-      relative->motion.x = v.x;
-      relative->motion.y = v.y;
-      std::cout << "  mouse position " << v.x << "," << v.y << std::endl;
+      relative->motion.x = int(v.x);
+      relative->motion.y = int(v.y);
+      //std::cout << "  mouse position " << relative->motion.x << "," << relative->motion.y << std::endl;
       vms[i]->push(relative);
     }
-    */
 
   }
 

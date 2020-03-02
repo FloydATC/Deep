@@ -136,8 +136,14 @@ void Machine::set_callbacks()
   FunC::defineNative(vm, "reset",     (FunC::NativeFn) func_reset);
   FunC::defineNative(vm, "str",       (FunC::NativeFn) func_str); // Return argument(s) as string
   FunC::defineNative(vm, "getkey",    (FunC::NativeFn) func_getkey); // Read keyboard input
+  FunC::defineNative(vm, "rand",      (FunC::NativeFn) func_rand); // Get random double between 0.0 and 1.0
+  // TODO: mouse functions should be replaced with a single built-in object instance with properties
+  FunC::defineNative(vm, "mouse_x",   (FunC::NativeFn) func_mouse_x); // Read mouse position x
+  FunC::defineNative(vm, "mouse_y",   (FunC::NativeFn) func_mouse_y); // Read mouse position y
+  FunC::defineNative(vm, "mouse_relx",(FunC::NativeFn) func_mouse_relx); // Read mouse position relative x
+  FunC::defineNative(vm, "mouse_rely",(FunC::NativeFn) func_mouse_rely); // Read mouse position relative y
 
-  // Display functions
+  // Display functions -- TODO: Should be methods and properties of a single built-in object instance
   FunC::defineNative(vm, "print",     (FunC::NativeFn) func_print); // Print arguments
   FunC::defineNative(vm, "cls",       (FunC::NativeFn) func_cls); // Clear screen or parts of it
   FunC::defineNative(vm, "cursor",    (FunC::NativeFn) func_cursor); // 0=Disable or 1=Enable cursor
@@ -154,6 +160,7 @@ void Machine::set_callbacks()
   FunC::defineNative(vm, "col",       (FunC::NativeFn) func_col); // Get cursor column
   FunC::defineNative(vm, "rows",      (FunC::NativeFn) func_rows); // Get number of screen rows
   FunC::defineNative(vm, "cols",      (FunC::NativeFn) func_cols); // Get number of screen columns
+  // TODO: drawing primitives should be methods of a built-in gl object instance
   FunC::defineNative(vm, "rect",      (FunC::NativeFn) func_rect); // Draw empty rectangle
   FunC::defineNative(vm, "area",      (FunC::NativeFn) func_area); // Draw filled rectangle
   FunC::defineNative(vm, "poly",      (FunC::NativeFn) func_poly); // Draw filled polygon
@@ -161,13 +168,13 @@ void Machine::set_callbacks()
   FunC::defineNative(vm, "circle",    (FunC::NativeFn) func_circle); // Draw empty circle
   FunC::defineNative(vm, "disc",      (FunC::NativeFn) func_disc); // Draw filled circle
   FunC::defineNative(vm, "point",     (FunC::NativeFn) func_point); // Draw point (a single pixel)
-  FunC::defineNative(vm, "rand",      (FunC::NativeFn) func_rand); // Get random double between 0.0 and 1.0
 
   // Disk I/O functions
   FunC::defineNative(vm, "open",      (FunC::NativeFn) func_open); // Open a file
   FunC::defineNative(vm, "eof",       (FunC::NativeFn) func_eof); // Get end-of-file detection status for file
   FunC::defineNative(vm, "opendir",   (FunC::NativeFn) func_opendir); // Open a directory
   FunC::defineNative(vm, "readdir",   (FunC::NativeFn) func_readdir); // Read from an open directory
+  // TODO: stat info should be properties of a built-in object instance returned from a single stat() function
   FunC::defineNative(vm, "file_owner",(FunC::NativeFn) func_file_owner); // Return UID for named file
   FunC::defineNative(vm, "file_group",(FunC::NativeFn) func_file_group); // Return UID for named file
   FunC::defineNative(vm, "file_type" ,(FunC::NativeFn) func_file_type); // Return textual type of named file ("file", "directory",...)
@@ -405,10 +412,30 @@ void Machine::flush_msg_queue()
   }
 }
 
+
+void Machine::handle_msg_quit(Message* msg)
+{
+  this->fc_break = true;
+  delete msg;
+}
+
+void Machine::handle_msg_mousemotion(Message* msg)
+{
+  Vector2 curr = Vector2(msg->motion.x, msg->motion.y);
+  Vector2 relative = curr - this->mouse_position_abs;
+  this->mouse_position_abs = curr;  // Current position
+  this->mouse_position_rel += relative; // Motion since last read
+  delete msg;
+}
+
 void Machine::push(Message* msg)
 {
-  if (msg->type == Message::Type::Break) { fc_break = true; }
-  m_queue.push(msg);
+  // Some message types are handled in "hardware"
+  switch (msg->type) {
+    case Message::Type::Break: handle_msg_quit(msg); break;
+    case Message::Type::MouseMotion: handle_msg_mousemotion(msg); break;
+    default: m_queue.push(msg); // Handled in "software"
+  }
 }
 
 
@@ -607,6 +634,37 @@ bool Machine::func_getkey(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Valu
   return true;
 }
 
+
+
+// Return the current absolute mouse position X coordinate
+bool Machine::func_mouse_x(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  *result = FunC::to_numberValue(running->mouse_position_abs.x);
+  return true;
+}
+
+// Return the current absolute mouse position Y coordinate
+bool Machine::func_mouse_y(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  *result = FunC::to_numberValue(running->mouse_position_abs.y);
+  return true;
+}
+
+// Return and reset the relative mouse movement X coordinate since last read
+bool Machine::func_mouse_relx(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  *result = FunC::to_numberValue(running->mouse_position_rel.x);
+  running->mouse_position_rel.x = 0;
+  return true;
+}
+
+// Return and reset the relative mouse movement Y coordinate since last read
+bool Machine::func_mouse_rely(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  *result = FunC::to_numberValue(running->mouse_position_rel.y);
+  running->mouse_position_rel.y = 0;
+  return true;
+}
 
 
 

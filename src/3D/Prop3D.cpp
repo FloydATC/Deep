@@ -224,7 +224,7 @@ bool Prop3D::mouse_intersects(Vector2 mouse, Vector2 display)
 
 Vector2 Prop3D::relative_mouse_pos(Vector2 mouse, Camera3D* camera, void* scene)
 {                                                                // ^^^^^^^^^^^^^^ DEBUGGING
-  std::cout << "Prop3D" << this << "::relative_mouse_pos" << std::endl;
+  //std::cout << "Prop3D" << this << "::relative_mouse_pos" << std::endl;
   // Return the mouse position relative to the xy_plane of this object
   // Upper left corner  = -0.5, 0.5
   // Center             =  0.0, 0.0
@@ -245,15 +245,7 @@ Vector2 Prop3D::relative_mouse_pos(Vector2 mouse, Camera3D* camera, void* scene)
   mouse_eye = Vector4(mouse_eye.x, mouse_eye.y, -1.0, 0.0); // eye space
   Vector3 ray_world = (view_matrix.invert() * mouse_eye).xyz();
   ray_world = ray_world.normalize(); // direction in world space
-  std::cout << "  ray_world = " << ray_world << std::endl;
-
-  // Visualize ray_world
-  Prop3D* white_cube1 = ((Scene3D*)scene)->getProp(4);
-  Prop3D* white_cube2 = ((Scene3D*)scene)->getProp(5);
-  Prop3D* magenta_ray = ((Scene3D*)scene)->getProp(6);
-  white_cube1->setPosition(camera->getPosition());
-  white_cube1->setDirection(ray_world);
-
+  //std::cout << "  ray_world = " << ray_world << std::endl;
 
 
   Vector3 planeP = this->getPosition();
@@ -264,24 +256,18 @@ Vector2 Prop3D::relative_mouse_pos(Vector2 mouse, Camera3D* camera, void* scene)
 
   // https://stackoverflow.com/questions/23975555/how-to-do-ray-plane-intersection
   float denom = planeN.dot(rayD);
-  std::cout << "  denom = " << denom << " abs(denom) = " << fabs(denom) << std::endl;
+  //std::cout << "  denom = " << denom << " abs(denom) = " << fabs(denom) << std::endl;
   if (fabs(denom) < epsilon) return Vector2(-1,-1); // No intersection, ray is paralell
   float t = (planeP - rayP).dot(planeN) / denom;
   Vector3 point_world = rayP + t * rayD;
+  //std::cout << "  point_world = " << point_world << std::endl;
 
-  std::cout << "  point_world = " << point_world << std::endl;
-  white_cube2->setPosition(point_world);
-  white_cube2->setTargetDirection(camera->getPosition());
-
-  Vector3 ray_origin = Vector3(0,0,1); // camera->getPosition();
-  magenta_ray->setPosition(ray_origin);
-  magenta_ray->setTargetDirection(white_cube2->getPosition());
-
+  // Finally, transform the coordinates to this object's local coordinate system
+  // If we did everything right, Z should be very close to zero
   Vector3 point_object = model_matrix.invert() * point_world;
-  std::cout << "  point_object = " << point_object << std::endl;
+  //std::cout << "  point_object = " << point_object << std::endl;
 
-
-  return Vector2(rand(), rand()); // Might as well do this
+  return point_object.xy();
 }
 
 
