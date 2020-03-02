@@ -226,80 +226,59 @@ Vector2 Prop3D::relative_mouse_pos(Vector2 mouse, Camera3D* camera, void* scene)
 {                                                                // ^^^^^^^^^^^^^^ DEBUGGING
   std::cout << "Prop3D" << this << "::relative_mouse_pos" << std::endl;
   // Return the mouse position relative to the xy_plane of this object
-  // Upper left corner = 0,0
-  // Lower right corner = 1,1
+  // Upper left corner  = -0.5, 0.5
+  // Center             =  0.0, 0.0
+  // Lower right corner =  0.5,-0.5
 
-  std::cout << "  object position = WS " << this->position << std::endl;
-  std::cout << "  camera position = WS " << camera->getPosition() << std::endl;
-
-  // Using a matrix library by Song Ho Ahn, I have added a .get() method to copy
-  // the internal float array to a double array as required by gluUnProject()
-  // Internally, that class treats the matrices as column major
-  GLint viewport[4] = { 0, 0, camera->getWidth(), camera->getHeight() };
-  GLdouble modelview[16];
-  Matrix4 mv = camera->getViewMatrix() * this->matrix;
-  mv.get(modelview);
-  GLdouble projection[16];
-  Matrix4 p = camera->getPerspectiveMatrix();
-  p.get(projection);
-  // My camera class lets me access projection and position/rotation matrices separately
-  // These get recalculated whenever the camera moves
-
-  // Read depth buffer at mouse coordinates
-  GLint winX = mouse.x;
-  GLint winY = viewport[3] - mouse.y;
-  GLint winZ;
-  glReadPixels(winX, winY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
-  //std::cout << "  gluUnProject winX=" << winX << " winY=" << winY << " winZ=" << winZ << std::endl;
-  // winZ clearly "sees" the depth map correctly when I hover the mouse over objects in the scene
-
-  GLdouble posX, posY, posZ;
-  gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
-  //std::cout << "  gluUnProject posX=" << posX << " posY=" << posY << " posZ=" << posZ << std::endl;
-  // posZ moves in opposite direction and posX/posY are in the e-12 range; something is clearly wrong
-
-
+  // We need copies of the following matrices
   Matrix4 projection_matrix = camera->getPerspectiveMatrix();
   Matrix4 view_matrix = camera->getViewMatrix();
+  Matrix4 model_matrix = this->matrix;
 
   // http://antongerdelan.net/opengl/raycasting.html
   float x = (2.0f * mouse.x) / camera->getWidth() - 1.0f;
   float y = 1.0f - (2.0f * mouse.y) / camera->getHeight();
   float z = 1.0f;
-  Vector3 ray_nds = Vector3(x, y, z);
-  std::cout << "  ray_nds  = " << ray_nds << std::endl;
-  Vector4 ray_clip = Vector4(ray_nds.x, ray_nds.y, -1.0, 1.0);
-  std::cout << "  ray_clip = " << ray_clip << std::endl;
-  Vector4 ray_eye = projection_matrix.invert() * ray_clip;
-  ray_eye = Vector4(ray_eye.x, ray_eye.y, -1.0, 0.0);
-  std::cout << "  ray_eye  = " << ray_eye << std::endl;
-  Vector3 ray_wor = (view_matrix.invert() * ray_eye).xyz();
-  ray_wor = ray_wor.normalize();
-  std::cout << "  ray_wor  = " << ray_wor << std::endl;
+  Vector3 mouse_nds = Vector3(x, y, z); // normalized device space
+  Vector4 mouse_clip = Vector4(mouse_nds.x, mouse_nds.y, -1.0, 1.0); // homogeneous clip space
+  Vector4 mouse_eye = projection_matrix.invert() * mouse_clip;
+  mouse_eye = Vector4(mouse_eye.x, mouse_eye.y, -1.0, 0.0); // eye space
+  Vector3 ray_world = (view_matrix.invert() * mouse_eye).xyz();
+  ray_world = ray_world.normalize(); // direction in world space
+  std::cout << "  ray_world = " << ray_world << std::endl;
 
-  //((Scene3D*)scene)->getProp(5)->setPosition(mouse_worldspace.xyz()); // DEBUGGING
-
-  Vector3 mouse_worldspace = Vector3(posX, posY, posZ);
-
-  Prop3D* white_cube = ((Scene3D*)scene)->getProp(4);
-  Prop3D* magenta_ray = ((Scene3D*)scene)->getProp(5);
-  white_cube->setPosition(camera->getPosition()); // DEBUGGING
-  white_cube->setDirection(ray_wor);
+  // Visualize ray_world
+  Prop3D* white_cube1 = ((Scene3D*)scene)->getProp(4);
+  Prop3D* white_cube2 = ((Scene3D*)scene)->getProp(5);
+  Prop3D* magenta_ray = ((Scene3D*)scene)->getProp(6);
+  white_cube1->setPosition(camera->getPosition());
+  white_cube1->setDirection(ray_world);
 
 
-  // origin of camera in worldspace
+
+  Vector3 planeP = this->getPosition();
+  Vector3 planeN = this->getDirection();
+  Vector3 rayP = camera->getPosition();
+  Vector3 rayD = ray_world;
+  float epsilon = 0.00001;
+
+  // https://stackoverflow.com/questions/23975555/how-to-do-ray-plane-intersection
+  float denom = planeN.dot(rayD);
+  std::cout << "  denom = " << denom << " abs(denom) = " << fabs(denom) << std::endl;
+  if (fabs(denom) < epsilon) return Vector2(-1,-1); // No intersection, ray is paralell
+  float t = (planeP - rayP).dot(planeN) / denom;
+  Vector3 point_world = rayP + t * rayD;
+
+  std::cout << "  point_world = " << point_world << std::endl;
+  white_cube2->setPosition(point_world);
+  white_cube2->setTargetDirection(camera->getPosition());
+
   Vector3 ray_origin = Vector3(0,0,1); // camera->getPosition();
-  //std::cout << "  magenta_ray:" << std::endl;
   magenta_ray->setPosition(ray_origin);
-  magenta_ray->setTargetDirection(white_cube->getPosition());
+  magenta_ray->setTargetDirection(white_cube2->getPosition());
 
-
-  // unit vector from p through mouse pos in worldspace
-  Vector3 ray_world = Vector3(mouse_worldspace - ray_origin).normalize();
-
-
-
-
+  Vector3 point_object = model_matrix.invert() * point_world;
+  std::cout << "  point_object = " << point_object << std::endl;
 
 
   return Vector2(rand(), rand()); // Might as well do this

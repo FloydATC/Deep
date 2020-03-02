@@ -1714,7 +1714,7 @@
 
 1158692810 c:\users\floyd\documents\cpp\deep\src\vertex.h
 
-1583096043 source:c:\users\floyd\documents\cpp\deep\src\main.cpp
+1583148626 source:c:\users\floyd\documents\cpp\deep\src\main.cpp
 	<iostream>
 	<fstream>
 	<iomanip>
@@ -2349,7 +2349,7 @@
 	"3D/Mesh3D.h"
 	"ShaderProgram.h"
 
-1583096315 source:c:\users\floyd\documents\cpp\deep\src\3d\camera3d.cpp
+1583151853 source:c:\users\floyd\documents\cpp\deep\src\3d\camera3d.cpp
 	"3D/Camera3D.h"
 	<iostream>
 
@@ -2436,7 +2436,7 @@
 	"3D/Entity3D.h"
 	"ShaderProgram.h"
 
-1583144479 source:c:\users\floyd\documents\cpp\deep\src\3d\prop3d.cpp
+1583151647 source:c:\users\floyd\documents\cpp\deep\src\3d\prop3d.cpp
 	"3D/Prop3D.h"
 	"Matrices.h"
 	"Scene3D.h"
@@ -2496,7 +2496,7 @@
 	<math.h>
 	"Vectors.h"
 
-1583144714 source:c:\users\floyd\documents\cpp\deep\src\3d\entity3d.cpp
+1583152018 source:c:\users\floyd\documents\cpp\deep\src\3d\entity3d.cpp
 	"Entity3D.h"
 	<iostream>
 

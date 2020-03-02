@@ -79,6 +79,7 @@
 		<Unit filename="include/3D/Obj3D.h" />
 		<Unit filename="include/3D/Obj3DLoader.h" />
 		<Unit filename="include/3D/Obj3DScanner.h" />
+		<Unit filename="include/3D/Plane3D.h" />
 		<Unit filename="include/3D/Prop3D.h" />
 		<Unit filename="include/3D/Ray3D.h" />
 		<Unit filename="include/3D/Scene3D.h" />
@@ -115,6 +116,7 @@
 		<Unit filename="src/3D/Obj3D.cpp" />
 		<Unit filename="src/3D/Obj3DLoader.cpp" />
 		<Unit filename="src/3D/Obj3DScanner.cpp" />
+		<Unit filename="src/3D/Plane3D.cpp" />
 		<Unit filename="src/3D/Prop3D.cpp" />
 		<Unit filename="src/3D/Ray3D.cpp" />
 		<Unit filename="src/3D/Scene3D.cpp" />

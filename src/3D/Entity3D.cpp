@@ -116,7 +116,7 @@ void Entity3D::setTargetDirection(Vector3 target)
 
 Vector3 Entity3D::getDirection()
 {
-  return Vector3(0.0, 0.0, -1.0) * getRotationMatrix(); // Objects face the camera by default
+  return getRotationMatrix() * Vector3(0.0, 0.0, 1.0); // Objects face the camera by default
 }
 
 void Entity3D::setPitch(float degrees)

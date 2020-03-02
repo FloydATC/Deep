@@ -33,7 +33,7 @@ Matrix4 Camera3D::getPerspectiveMatrix()
 
 Matrix4 Camera3D::getRotationMatrix()
 {
-  // Camera rotation must be applied in reverse order and in opposite directions
+  // Camera rotation must be applied in reverse order
   if (this->need_recalc == false) return this->rotation_matrix;
   this->rotation_matrix = Matrix4()
     .rotate(-this->roll, Vector3(0.0f, 0.0f, 1.0f))

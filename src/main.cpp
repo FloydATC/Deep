@@ -516,11 +516,14 @@ int main(int argc, char* argv[])
       scene.addProp(screen);
 
       // Debug visualization
-      scene.addProp(cube);
+      scene.addProp(cube); // white cube
       scene.getProp(4)->setScale(0.1);
 
+      scene.addProp(cube); // white cube
+      scene.getProp(5)->setScale(0.1);
+
       scene.addProp(magenta_ray);
-      scene.getProp(5);
+      scene.getProp(6);
 
       scene.getProp(0)->setPosition(Vector3(-0.60,  0.50, -0.5));
       scene.getProp(1)->setPosition(Vector3( 0.60,  0.50, -0.5));
@@ -534,8 +537,8 @@ int main(int argc, char* argv[])
 
       Plane3D* plane = new Plane3D();
       scene.addProp(plane);
-      scene.getProp(6)->setPosition(Vector3(0.0, -1.0, 0.0));
-      scene.getProp(6)->setDirection(Vector3(0.0, 1.0, 0.0));
+      scene.getProp(7)->setPosition(Vector3(0.0, -1.0, 0.0));
+      scene.getProp(7)->setDirection(Vector3(0.0, 1.0, 0.0));
 
 
       scene.setShader(scene_shader); // Set same shader on all Props
