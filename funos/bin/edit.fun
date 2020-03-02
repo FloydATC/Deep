@@ -9,15 +9,9 @@ var scrC = 0;
 var mode = "INSERT";
 
 
-var lines = []; // Empty document
-var line;
+var lines = [""]; // Empty document
+var line=lines[0];
 
-var fh = open("funos/lorem.txt", "r");
-debug("fh="+str(fh));
-while (line = readln(fh)) lines.push(line);
-close(fh);
-
-line = lines[0];
 
 
 
@@ -38,7 +32,7 @@ cls();
 fun titlebar(title) {
   cursor(0);
   //debug("titlebar()");
-  if (title="") { title="(no name)"; }
+  if (title == "") { title="(untitled)"; }
   bg(15); // light gray
   fg(6); // blue
   cls(0,0,9552); // double horizontal line
@@ -506,6 +500,37 @@ fun handle_string(string) {
   check_cursor_pos();
 }
 
+fun load_file(filename) {
+  var fh = open(filename, "r");
+  if (error(fh)) {
+    debug("FAILED to open '"+filename+"' for READ: "+error(fh).base(10));
+    return;
+  }
+  lines = [];
+  while (!eof(fh)) {
+    line = readln(fh);
+    line = line.rtrim("\r\n");
+    lines.push(line);
+  }
+  close(fh);
+  if (lines.length == 0) lines = [""]; // File is empty
+  line = lines[0];
+  titlebar(filename);
+  redraw_screen();
+}
+
+fun save_file(filename) {
+  var fh = open(filename, "w");
+  if (error(fh)) {
+    debug("FAILED to open '"+filename+"' for WRITE: "+error(fh).base(10));
+    return;
+  }
+  for (var i=0; i<lines.length; i++) {
+    writeln(fh, lines[i]);
+  }
+  close(fh);
+  line = lines[0];
+}
 
 var running = true;
 titlebar("untitled");
@@ -548,6 +573,10 @@ while (running==true) {
       case "[Return]":     handle_return();    break;
       case "[Backspace]":  handle_backspace(); break;
       case "[Delete]":     handle_delete();    break;
+
+      // -- File
+      case "[Ctrl L]":     load_file("funos/lorem.txt");      break;
+      case "[Ctrl S]":     save_file("funos/lorem.bak");      break;
 
       // -- Application
       case "[Ctrl C]":     running = false;    break;
