@@ -186,16 +186,14 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
   // Detect Obj3D mouse intersection
   // WARNING! This temporary code assumes a 1:1 relationship between Obj3Ds and VMs
   Vector2 mouse = Vector2(msg->motion.x, msg->motion.y);
-  Vector2 display = scene->getCamera()->getDimensions();
-  //  for (int i=0; i<scene->getPropCount(); i++) {
   for (int i=0; i<4; i++) {
     //std::cout << "VM " << i << std::endl;
     Prop3D* p = scene->getProp(i);
     if (!p->xy_plane_visible()) continue;
-    if (!p->mouse_intersects(mouse, display)) continue;
+    if (!p->mouse_intersects(mouse)) continue;
     gamestate->current_vm = i;
 
-    Vector2 v = p->relative_mouse_pos(mouse, scene->getCamera(), scene);
+    Vector2 v = p->relative_mouse_pos(mouse, scene->getCamera());
     // v 0,0 is center of screen so we must calibrate to VM's screen
     // Maybe we should do this inside Machine.cpp, I'm not 100% sure.
     //std::cout << "  raw mouse position " << v.x << "," << v.y << std::endl;

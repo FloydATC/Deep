@@ -35,8 +35,8 @@ class Prop3D : public Entity3D
     void setScale(Vector3 scale);
     Matrix4 getScaleMatrix();
 
-    bool mouse_intersects(Vector2 mouse, Vector2 display);
-    Vector2 relative_mouse_pos(Vector2 mouse, Camera3D* camera, void* scene);
+    bool mouse_intersects(Vector2 mouse);
+    Vector2 relative_mouse_pos(Vector2 mouse, Camera3D* camera);
 
     void setShader(ShaderProgram* shader);
 
@@ -68,7 +68,7 @@ class Prop3D : public Entity3D
     Matrix4 scale_matrix;
 
     void recalculate_matrix();
-    Vector3 project(Vector3 v3, Camera3D* camera);
+    //Vector3 project(Vector3 v3, Camera3D* camera);
     void recalculate_xy_plane(Camera3D* camera);
 
     //float color[4] = { 1.0, 1.0, 1.0, 1.0 };

@@ -1,6 +1,7 @@
 #include "3D/Prop3D.h"
 
 #include "Matrices.h"
+#include "3D/Math3D.h"
 
 #include "Scene3D.h" // debugging
 
@@ -167,7 +168,7 @@ void Prop3D::hideBounds()
 ////// Experimental code follows -- beware of dragons //////
 
 
-
+/*
 Vector3 Prop3D::project(Vector3 v3, Camera3D* camera)
 {
   // This function is used to project (transform) each of the four xy_plane corners
@@ -182,7 +183,7 @@ Vector3 Prop3D::project(Vector3 v3, Camera3D* camera)
   int h2 = camera->getHeight() / 2;
   return Vector3(w2+(v4.x*w2/v4.w), h2+(v4.y*-h2/v4.w), v4.z/v4.w); // flip Y so 0,0 is upper left corner
 }
-
+*/
 
 void Prop3D::recalculate_xy_plane(Camera3D* camera)
 {
@@ -190,11 +191,16 @@ void Prop3D::recalculate_xy_plane(Camera3D* camera)
   // as we then have both the camera and model matrix available.
   // The Obj3D size must be (roughly) 1.0 and it must be (roughly) centered at 0,0,0
 
+  Vector2 display = camera->getDimensions();
+  Matrix4 projection = camera->getPerspectiveMatrix();
+  Matrix4 view = camera->getViewMatrix();
+
   // Calculate 4 corners of Obj3D XY plane
-  xy_plane[0] = project(Vector3(-0.5, 0.5, 0.0), camera);
-  xy_plane[1] = project(Vector3( 0.5, 0.5, 0.0), camera);
-  xy_plane[2] = project(Vector3(-0.5,-0.5, 0.0), camera);
-  xy_plane[3] = project(Vector3( 0.5,-0.5, 0.0), camera);
+  // NOTE: The corners are listed in clockwise order!
+  xy_plane[0] = projected_vector(Vector3(-0.5, 0.5, 0.0), display, projection, view, this->matrix);
+  xy_plane[1] = projected_vector(Vector3( 0.5, 0.5, 0.0), display, projection, view, this->matrix);
+  xy_plane[2] = projected_vector(Vector3( 0.5,-0.5, 0.0), display, projection, view, this->matrix);
+  xy_plane[3] = projected_vector(Vector3(-0.5,-0.5, 0.0), display, projection, view, this->matrix);
 }
 
 
@@ -212,78 +218,44 @@ bool Prop3D::xy_plane_visible()
 
 
 
-bool Prop3D::mouse_intersects(Vector2 mouse, Vector2 display)
+bool Prop3D::mouse_intersects(Vector2 mouse)
 {
-  // Return true if mouse is within xy_plane
-  // Determine this by calculating the dot product of the four polygons described by
-  // each line of the quad and the mouse position;
-  // The sign of the cross product z component indicates if the point lies inside or outside
-
-  // We need 3-component vectors to calculate cross products
-  Vector3 m3 = Vector3(mouse.x, mouse.y, 0.0);
-  Vector3 p0 = Vector3(xy_plane[0].x, xy_plane[0].y, 0.0);
-  Vector3 p1 = Vector3(xy_plane[1].x, xy_plane[1].y, 0.0);
-  Vector3 p2 = Vector3(xy_plane[2].x, xy_plane[2].y, 0.0);
-  Vector3 p3 = Vector3(xy_plane[3].x, xy_plane[3].y, 0.0);
-
-  // Check each edge
-  if ((m3 - p0).cross(p0 - p1).z < 0) return false;
-  if ((m3 - p1).cross(p1 - p3).z < 0) return false;
-  if ((m3 - p3).cross(p3 - p2).z < 0) return false;
-  if ((m3 - p2).cross(p2 - p0).z < 0) return false;
-
-  //std::cout << "The mouse is inside the quadrilateral polygon" << std::endl;
-  // ...but where? Tune in for the next exciting episode in relative_mouse_pos()
-
-  return true;
+  return point_inside_convex_polygon(mouse, this->xy_plane);
 }
 
 
-
-
-
-Vector2 Prop3D::relative_mouse_pos(Vector2 mouse, Camera3D* camera, void* scene)
-{                                                                // ^^^^^^^^^^^^^^ DEBUGGING
+Vector2 Prop3D::relative_mouse_pos(Vector2 mouse, Camera3D* camera)
+{
   //std::cout << "Prop3D" << this << "::relative_mouse_pos" << std::endl;
   // Return the mouse position relative to the xy_plane of this object
   // Upper left corner  = -0.5, 0.5
   // Center             =  0.0, 0.0
   // Lower right corner =  0.5,-0.5
 
-  // We need copies of the following matrices
-  Matrix4 projection_matrix = camera->getPerspectiveMatrix();
-  Matrix4 view_matrix = camera->getViewMatrix();
-  Matrix4 model_matrix = this->matrix;
+  // Calculate the direction of an imaginary ray from the "eye" through the mouse pointer
+  Vector3 ray_world = unprojected_vector(
+    mouse,
+    camera->getDimensions(),
+    camera->getPerspectiveMatrix(),
+    camera->getViewMatrix()
+  );
 
-  // http://antongerdelan.net/opengl/raycasting.html
-  float x = (2.0f * mouse.x) / camera->getWidth() - 1.0f;
-  float y = 1.0f - (2.0f * mouse.y) / camera->getHeight();
-  float z = 1.0f;
-  Vector3 mouse_nds = Vector3(x, y, z); // normalized device space
-  Vector4 mouse_clip = Vector4(mouse_nds.x, mouse_nds.y, -1.0, 1.0); // homogeneous clip space
-  Vector4 mouse_eye = projection_matrix.invert() * mouse_clip;
-  mouse_eye = Vector4(mouse_eye.x, mouse_eye.y, -1.0, 0.0); // eye space
-  Vector3 ray_world = (view_matrix.invert() * mouse_eye).xyz();
-  ray_world = ray_world.normalize(); // direction in world space
-  //std::cout << "  ray_world = " << ray_world << std::endl;
-
-
-  Vector3 planeP = this->getPosition();
-  Vector3 planeN = this->getDirection();
-  Vector3 rayP = camera->getPosition();
-  Vector3 rayD = ray_world;
-  float epsilon = 0.00001;
-
-  // https://stackoverflow.com/questions/23975555/how-to-do-ray-plane-intersection
-  float denom = planeN.dot(rayD);
-  //std::cout << "  denom = " << denom << " abs(denom) = " << fabs(denom) << std::endl;
-  if (fabs(denom) < epsilon) return Vector2(-1,-1); // No intersection, ray is paralell
-  float t = (planeP - rayP).dot(planeN) / denom;
-  Vector3 point_world = rayP + t * rayD;
-  //std::cout << "  point_world = " << point_world << std::endl;
+  // Calculate where the ray hits the xy_plane of this object
+  // Note: Checking against an imaginary plane fails to take into account
+  // the curvature of the display so the end result is not perfect.
+  // Reading from the depth buffer would be better, but getting that
+  // information through all the transforms is a major challenge.
+  // Also, the depth buffer's loss of precision at range could be a problem
+  Vector3 point_world = ray_plane_intersect(
+    camera->getPosition(),
+    ray_world,
+    this->getPosition(),
+    this->getDirection()
+  );
 
   // Finally, transform the coordinates to this object's local coordinate system
   // If we did everything right, Z should be very close to zero
+  Matrix4 model_matrix = this->matrix;
   Vector3 point_object = model_matrix.invert() * point_world;
   //std::cout << "  point_object = " << point_object << std::endl;
 
