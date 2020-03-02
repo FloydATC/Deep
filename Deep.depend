@@ -1664,19 +1664,19 @@
 1435247848 c:\mingw\x86_64-w64-mingw32\include\imm.h
 	<_mingw_unicode.h>
 
-1581968092 c:\users\floyd\documents\c\func\vm.h
+1582448675 c:\users\floyd\documents\c\func\vm.h
 	"compiler.h"
 	"object.h"
 	"table.h"
 	"value.h"
 
-1581887873 c:\users\floyd\documents\c\func\object.h
+1582559088 c:\users\floyd\documents\c\func\object.h
 	"chunk.h"
 	"common.h"
 	"table.h"
 	"value.h"
 
-1581763985 c:\users\floyd\documents\c\func\common.h
+1583133349 c:\users\floyd\documents\c\func\common.h
 	<stdbool.h>
 	<stddef.h>
 	<stdint.h>
@@ -1684,7 +1684,7 @@
 1581887757 c:\users\floyd\documents\c\func\value.h
 	"common.h"
 
-1581516097 c:\users\floyd\documents\c\func\chunk.h
+1582448675 c:\users\floyd\documents\c\func\chunk.h
 	"common.h"
 	"value.h"
 
@@ -1714,7 +1714,7 @@
 
 1158692810 c:\users\floyd\documents\cpp\deep\src\vertex.h
 
-1582281162 source:c:\users\floyd\documents\cpp\deep\src\main.cpp
+1583096043 source:c:\users\floyd\documents\cpp\deep\src\main.cpp
 	<iostream>
 	<fstream>
 	<iomanip>
@@ -1737,9 +1737,12 @@
 	"GameState.h"
 	"Machine.h"
 	"Message.h"
-	"Scene3D.h"
+	"2D/Overlay2D.h"
+	"3D/Scene3D.h"
 	"ShaderProgram.h"
 	"UTF8hack.h"
+	"3D/Plane3D.h"
+	"3D/Ray3D.h"
 	"hexdump.h"
 
 1561870398 c:\users\floyd\documents\cpp\sdl2_image-2.0.5\x86_64-w64-mingw32\include\sdl2\sdl_image.h
@@ -1817,7 +1820,7 @@
 	<cmath>
 	<iostream>
 
-1582277538 source:c:\users\floyd\documents\cpp\deep\src\machine.cpp
+1583059707 source:c:\users\floyd\documents\cpp\deep\src\machine.cpp
 	<iostream>
 	<fstream>
 	<functional>
@@ -1825,11 +1828,11 @@
 	<random>
 	<dirent.h>
 	<sys/stat.h>
-	"IODir.h"
-	"IOFile.h"
-	"IOHandle.h"
-	"IOStream.h"
-	"IOSocket.h"
+	"IO/IODir.h"
+	"IO/IOFile.h"
+	"IO/IOHandle.h"
+	"IO/IOStream.h"
+	"IO/IOSocket.h"
 	"Machine.h"
 	"Fontcache.h"
 	"UTF8hack.h"
@@ -1847,7 +1850,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1581936868 source:c:\users\floyd\documents\cpp\deep\src\display.cpp
+1583093276 source:c:\users\floyd\documents\cpp\deep\src\display.cpp
 	<chrono>
 	"Display.h"
 	"Fontcache.h"
@@ -1929,17 +1932,18 @@
 	<string.h>
 	"utf8.h"
 
-1581350214 c:\users\floyd\documents\cpp\deep\include\display.h
+1583059707 c:\users\floyd\documents\cpp\deep\include\display.h
 	"GFX.h"
 	"Matrices.h"
 	"Fontcache.h"
+	"ShaderProgram.h"
 
-1581513748 c:\users\floyd\documents\cpp\deep\include\matrices.h
+1583094628 c:\users\floyd\documents\cpp\deep\include\matrices.h
 	<iostream>
 	<iomanip>
 	"Vectors.h"
 
-1577714505 c:\users\floyd\documents\cpp\deep\include\vectors.h
+1583059707 c:\users\floyd\documents\cpp\deep\include\vectors.h
 	<cmath>
 	<iostream>
 
@@ -1953,28 +1957,30 @@
 1581453260 c:\users\floyd\documents\cpp\deep\include\utf8.h
 	<vector>
 
-1582202170 c:\users\floyd\documents\cpp\deep\include\machine.h
+1583059707 c:\users\floyd\documents\cpp\deep\include\machine.h
 	<vm.h>
-	"GFX.h"
+	<queue>
 	<SDL_ttf.h>
 	"Display.h"
-	"IOHandle.h"
+	"GFX.h"
+	"IO/IOHandle.h"
 	"Message.h"
-	<queue>
+	"ShaderProgram.h"
 
-1581419257 c:\users\floyd\documents\cpp\deep\include\message.h
+1583059707 c:\users\floyd\documents\cpp\deep\include\message.h
 	<string>
 	<SDL.h>
 
-1581512936 source:c:\users\floyd\documents\cpp\deep\src\obj3d.cpp
+1582719200 source:c:\users\floyd\documents\cpp\deep\src\obj3d.cpp
 	"Obj3D.h"
 	<iostream>
 
-1581444139 c:\users\floyd\documents\cpp\deep\include\obj3d.h
+1582719200 c:\users\floyd\documents\cpp\deep\include\obj3d.h
 	<vector>
 	<string>
 	"GFX.h"
 	<SDL.h>
+	"Box3D.h"
 
 1578842684 c:\users\floyd\documents\c\func\file.h
 
@@ -2015,13 +2021,14 @@
 	<iostream>
 	"IOFile.h"
 
-1581514588 source:c:\users\floyd\documents\cpp\deep\src\obj3dloader.cpp
+1582719200 source:c:\users\floyd\documents\cpp\deep\src\obj3dloader.cpp
 	"Obj3DLoader.h"
 	<iostream>
 	<sstream>
 	<string>
+	"Box3D.h"
 
-1581514664 c:\users\floyd\documents\cpp\deep\include\obj3dloader.h
+1582719200 c:\users\floyd\documents\cpp\deep\include\obj3dloader.h
 	<string>
 	"IOFile.h"
 	"Matrices.h"
@@ -2038,11 +2045,11 @@
 	<iostream>
 	<string>
 
-1582289784 source:c:\users\floyd\documents\cpp\deep\src\iosocket.cpp
+1582464906 source:c:\users\floyd\documents\cpp\deep\src\iosocket.cpp
 	"IOSocket.h"
 	<algorithm>
 
-1582289897 c:\users\floyd\documents\cpp\deep\include\iosocket.h
+1582464906 c:\users\floyd\documents\cpp\deep\include\iosocket.h
 	"IOHandle.h"
 	<ws2tcpip.h>
 
@@ -2063,30 +2070,32 @@
 1581967940 c:\users\floyd\documents\c\func\compiler.h
 	"object.h"
 
-1581407584 c:\users\floyd\documents\cpp\deep\include\gfx.h
+1583059707 c:\users\floyd\documents\cpp\deep\include\gfx.h
 	<GL/glew.h>
 	<SDL_opengl.h>
 
-1581511160 source:c:\users\floyd\documents\cpp\deep\src\shaderprogram.cpp
+1583093276 source:c:\users\floyd\documents\cpp\deep\src\shaderprogram.cpp
 	"ShaderProgram.h"
 	"Shader.h"
 
-1581511087 c:\users\floyd\documents\cpp\deep\include\shaderprogram.h
+1583093276 c:\users\floyd\documents\cpp\deep\include\shaderprogram.h
 	<iostream>
 	<string>
 	"GFX.h"
+	"Matrices.h"
 
 1581364679 c:\users\floyd\documents\cpp\deep\include\shader.h
 	<iostream>
 	<string>
 	"GFX.h"
 
-1581365427 source:c:\users\floyd\documents\cpp\deep\src\shader.cpp
+1583059707 source:c:\users\floyd\documents\cpp\deep\src\shader.cpp
 	"Shader.h"
-	"IOFile.h"
+	"IO/IOFile.h"
 
-1581511409 source:c:\users\floyd\documents\cpp\deep\src\prop3d.cpp
+1582735300 source:c:\users\floyd\documents\cpp\deep\src\prop3d.cpp
 	"Prop3D.h"
+	"Matrices.h"
 
 1581511087 c:\users\floyd\documents\cpp\deep\include\prop3d.h
 	"GFX.h"
@@ -2094,7 +2103,7 @@
 	"Obj3D.h"
 	"ShaderProgram.h"
 
-1581509173 source:c:\users\floyd\documents\cpp\deep\src\scene3d.cpp
+1582719200 source:c:\users\floyd\documents\cpp\deep\src\scene3d.cpp
 	"Scene3D.h"
 	"GFX.h"
 
@@ -2308,4 +2317,220 @@
 	<tacopie/network/io_service.hpp>
 	<tacopie/network/tcp_socket.hpp>
 	<tacopie/utils/typedefs.hpp>
+
+1582719200 c:\users\floyd\documents\cpp\deep\include\box3d.h
+	<vector>
+	"GFX.h"
+	"Matrices.h"
+
+1582731566 source:c:\users\floyd\documents\cpp\deep\src\box3d.cpp
+	"Box3D.h"
+	<initializer_list>
+
+1583059707 source:c:\users\floyd\documents\cpp\deep\src\2d\overlay2d.cpp
+	"2D/Overlay2D.h"
+	<iostream>
+
+1583059707 c:\users\floyd\documents\cpp\deep\include\2d\overlay2d.h
+	"2D/Polygon2D.h"
+	"2D/Shape2D.h"
+	"GFX.h"
+	"Matrices.h"
+	"ShaderProgram.h"
+
+1583059707 source:c:\users\floyd\documents\cpp\deep\src\3d\box3d.cpp
+	"3D/Box3D.h"
+	<initializer_list>
+
+1583059707 c:\users\floyd\documents\cpp\deep\include\3d\box3d.h
+	<vector>
+	"GFX.h"
+	"Matrices.h"
+	"3D/Mesh3D.h"
+	"ShaderProgram.h"
+
+1583096315 source:c:\users\floyd\documents\cpp\deep\src\3d\camera3d.cpp
+	"3D/Camera3D.h"
+	<iostream>
+
+1583096328 c:\users\floyd\documents\cpp\deep\include\3d\camera3d.h
+	"Matrices.h"
+	"3D/Entity3D.h"
+
+1583093276 source:c:\users\floyd\documents\cpp\deep\src\3d\obj3d.cpp
+	"3D/Obj3D.h"
+	<iostream>
+
+1583093276 c:\users\floyd\documents\cpp\deep\include\3d\obj3d.h
+	<vector>
+	<string>
+	"GFX.h"
+	<SDL.h>
+	"3D/Box3D.h"
+	"3D/Mesh3D.h"
+	"ShaderProgram.h"
+
+1583059707 source:c:\users\floyd\documents\cpp\deep\src\2d\shape2d.cpp
+	"2D/Shape2D.h"
+	<iostream>
+
+1583059707 c:\users\floyd\documents\cpp\deep\include\2d\shape2d.h
+	"GFX.h"
+	"ShaderProgram.h"
+
+1583059707 source:c:\users\floyd\documents\cpp\deep\src\3d\obj3dscanner.cpp
+	"3D/Obj3DScanner.h"
+	<iostream>
+	"IO/IOFile.h"
+
+1583059707 c:\users\floyd\documents\cpp\deep\include\3d\obj3dscanner.h
+	<string>
+
+1583059707 c:\users\floyd\documents\cpp\deep\include\io\iofile.h
+	<fstream>
+	<vector>
+	<string>
+	"IO/IOHandle.h"
+	"sys/stat.h"
+
+1583059707 c:\users\floyd\documents\cpp\deep\include\io\iohandle.h
+	<iostream>
+	<string>
+	<vector>
+
+1583059707 source:c:\users\floyd\documents\cpp\deep\src\3d\obj3dloader.cpp
+	"3D/Obj3DLoader.h"
+	<iostream>
+	<sstream>
+	<string>
+	"3D/Box3D.h"
+
+1583059707 c:\users\floyd\documents\cpp\deep\include\3d\obj3dloader.h
+	<string>
+	"IO/IOFile.h"
+	"Matrices.h"
+	"3D/Obj3D.h"
+	"3D/SubObject3D.h"
+	"3D/Obj3DScanner.h"
+
+1583093276 source:c:\users\floyd\documents\cpp\deep\src\3d\scene3d.cpp
+	"3D/Scene3D.h"
+	"GFX.h"
+
+1583093276 c:\users\floyd\documents\cpp\deep\include\3d\scene3d.h
+	<unordered_map>
+	<string>
+	"3D/Camera3D.h"
+	"3D/Obj3D.h"
+	"3D/Obj3DLoader.h"
+	"3D/Prop3D.h"
+	"Matrices.h"
+	"ShaderProgram.h"
+
+1583093276 c:\users\floyd\documents\cpp\deep\include\3d\prop3d.h
+	<vector>
+	"GFX.h"
+	"Matrices.h"
+	"3D/Obj3D.h"
+	"3D/Camera3D.h"
+	"3D/Entity3D.h"
+	"ShaderProgram.h"
+
+1583140092 source:c:\users\floyd\documents\cpp\deep\src\3d\prop3d.cpp
+	"3D/Prop3D.h"
+	"Matrices.h"
+	"Scene3D.h"
+
+1583059707 source:c:\users\floyd\documents\cpp\deep\src\io\iodir.cpp
+	"IO/IODir.h"
+	<dirent.h>
+	<iostream>
+
+1583059707 c:\users\floyd\documents\cpp\deep\include\io\iodir.h
+	<dirent.h>
+	<string>
+	"IO/IOHandle.h"
+
+1583059707 source:c:\users\floyd\documents\cpp\deep\src\io\iofile.cpp
+	"IO/IOFile.h"
+	<algorithm>
+	<fstream>
+	<ios>
+	<iostream>
+	<sstream>
+	<string>
+	<cstdio>
+	<errno.h>
+	<sys/types.h>
+	<sys/stat.h>
+
+1583059707 source:c:\users\floyd\documents\cpp\deep\src\io\iohandle.cpp
+	"IO/IOHandle.h"
+	<iostream>
+	<string>
+
+1583059707 source:c:\users\floyd\documents\cpp\deep\src\io\iosocket.cpp
+	"IO/IOSocket.h"
+	<algorithm>
+
+1583059707 c:\users\floyd\documents\cpp\deep\include\io\iosocket.h
+	"IO/IOHandle.h"
+	<ws2tcpip.h>
+
+1583059707 source:c:\users\floyd\documents\cpp\deep\src\io\iostream.cpp
+	"IO/IOStream.h"
+	<algorithm>
+	<iostream>
+	<string>
+
+1583059707 c:\users\floyd\documents\cpp\deep\include\io\iostream.h
+	"IO/IOHandle.h"
+
+1583059707 c:\users\floyd\documents\cpp\deep\include\2d\polygon2d.h
+	"2D/Shape2D.h"
+
+1583059707 source:c:\users\floyd\documents\cpp\deep\src\2d\polygon2d.cpp
+	"Polygon2D.h"
+
+1582837387 c:\users\floyd\documents\cpp\deep\include\2d\barycentric.h
+	<math.h>
+	"Vectors.h"
+
+1583095848 source:c:\users\floyd\documents\cpp\deep\src\3d\entity3d.cpp
+	"Entity3D.h"
+	<iostream>
+
+1583095848 c:\users\floyd\documents\cpp\deep\include\3d\entity3d.h
+	"Matrices.h"
+
+1583093276 source:c:\users\floyd\documents\cpp\deep\src\3d\ray3d.cpp
+	"Ray3D.h"
+	<iostream>
+
+1583093276 c:\users\floyd\documents\cpp\deep\include\3d\ray3d.h
+	"3D/Mesh3D.h"
+
+1583091395 c:\users\floyd\documents\cpp\deep\include\3d\mesh3d.h
+	<string>
+	"GFX.h"
+	"ShaderProgram.h"
+
+1583093276 source:c:\users\floyd\documents\cpp\deep\src\3d\mesh3d.cpp
+	"Mesh3D.h"
+	<iostream>
+
+1583059707 c:\users\floyd\documents\cpp\deep\include\3d\subobject3d.h
+	"3D/Mesh3D.h"
+	"3D/Box3D.h"
+	"ShaderProgram.h"
+
+1583059707 source:c:\users\floyd\documents\cpp\deep\src\3d\subobject3d.cpp
+	"SubObject3D.h"
+	<iostream>
+
+1583093276 source:c:\users\floyd\documents\cpp\deep\src\3d\plane3d.cpp
+	"Plane3D.h"
+
+1583093276 c:\users\floyd\documents\cpp\deep\include\3d\plane3d.h
+	<3D/Mesh3D.h>
 
