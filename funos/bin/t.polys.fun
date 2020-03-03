@@ -6,14 +6,19 @@ var y2;
 var x3;
 var y3;
 
-while (true) {
+var width = gl.width();
+var height = gl.height();
 
-  x1 = rand()*320;
-  y1 = rand()*200;
-  x2 = rand()*320;
-  y2 = rand()*200;
-  x3 = rand()*320;
-  y3 = rand()*200;
-  rgb(rand(), rand(), rand());
-  poly(x1, y1, x2, y2, x3, y3);
+while (getkey() != "[Escape]") {
+
+  x1 = rand() * width;
+  y1 = rand() * height;
+  x2 = rand() * width;
+  y2 = rand() * height;
+  x3 = rand() * width;
+  y3 = rand() * height;
+  gl.rgb(rand(), rand(), rand());
+  gl.poly(x1, y1, x2, y2, x3, y3);
 }
+screen.clear();
+

@@ -1,28 +1,31 @@
 
-var px1 = rand()*320;
-var py1 = rand()*200;
+var width = gl.width();
+var height = gl.height();
+
+var px1 = rand()*width;
+var py1 = rand()*height;
 var pr1 = rand()*100; 
 
 var cr1 = rand();
 var cg1 = rand();
 var cb1 = rand(); 
 
-var px2 = rand()*320;
-var py2 = rand()*200;
+var px2 = rand()*width;
+var py2 = rand()*height;
 var pr2 = rand()*100; 
 
 var cr2 = rand();
 var cg2 = rand();
 var cb2 = rand(); 
 
-while (true) {
+while (getkey()=="[Escape]") {
   for (var i=0; i<100; i++) {
-    rgb(
+    gl.rgb(
       (cr2*i/100) + (cr1*(100-i)/100), 
       (cg2*i/100) + (cg1*(100-i)/100), 
       (cb2*i/100) + (cb1*(100-i)/100)
     );
-    disc(
+    gl.disc(
       (px2*i/100) + (px1*(100-i)/100), 
       (py2*i/100) + (py1*(100-i)/100), 
       (pr2*i/100) + (pr1*(100-i)/100)
@@ -33,8 +36,8 @@ while (true) {
   px1 = px2;
   py1 = py2;
   pr1 = pr2;
-  px2 = rand()*320;
-  py2 = rand()*200;
+  px2 = rand()*width;
+  py2 = rand()*height;
   pr2 = rand()*100; 
 
   cr1 = cr2;
@@ -45,3 +48,4 @@ while (true) {
   cb2 = rand(); 
   sleep(1);
 }
+screen.clear();

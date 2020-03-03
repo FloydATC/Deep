@@ -2,10 +2,12 @@
 var x;
 var y;
 
-while (true) {
+while (getkey() != "[Escape]") {
 
-  x = rand()*320;
-  y = rand()*200;
-  rgb(rand(), rand(), rand());
-  point(x, y);
+  x = rand() * gl.width();
+  y = rand() * gl.height();
+  gl.rgb(rand(), rand(), rand());
+  gl.point(x, y);
 }
+screen.clear();
+

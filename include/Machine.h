@@ -30,6 +30,9 @@ namespace FunC {
 
 */
 
+typedef std::unordered_map<std::string,FunC::NativeFn> membermap;
+
+
 class Machine
 {
   public:
@@ -61,33 +64,37 @@ class Machine
     static bool func_str       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_getkey    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_rand      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_mouse     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_mouse_pos (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+
+
+    static bool func_print     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
 
     // Display functions
-    static bool func_print     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_cls       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_cursor    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_autoscroll(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_scr_up    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_scr_down  (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_scr_left  (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_scr_right (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_fg        (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_bg        (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_rgb       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_pos       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_row       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_col       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_rows      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_cols      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_scr_clear     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_scr_cursor    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_scr_autoscroll(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_scr_up        (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_scr_down      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_scr_left      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_scr_right     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_scr_fg        (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_scr_bg        (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_scr_pos       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_scr_row       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_scr_col       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_scr_rows      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_scr_cols      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
 
-    static bool func_rect      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_area      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_poly      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_line      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_circle    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_disc      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_point     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_gl_width     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_gl_height    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_gl_rgb       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_gl_rect      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_gl_area      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_gl_poly      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_gl_line      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_gl_circle    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_gl_disc      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_gl_point     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
 
     // Disk I/O functions
     static bool func_open      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
@@ -136,6 +143,7 @@ class Machine
     void initialize_vm();
     void shutdown_vm();
     void reset_vm();
+    void set_builtin_instance(std::string name, membermap functions);
     void set_callbacks();
 };
 

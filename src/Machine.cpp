@@ -126,10 +126,42 @@ void Machine::write_to_stdin(const std::string data)
   }
 }
 
+
+void Machine::set_builtin_instance(std::string name, membermap functions)
+{
+  std::vector<std::string> keys;
+  std::vector<const char*> keys_cstr;
+  keys.reserve(functions.size());
+  std::vector<FunC::Value> vals;
+  vals.reserve(functions.size());
+
+  for(auto key_value : functions) {
+    std::string key = key_value.first;
+    keys.push_back( key );
+    // Create native function object in VM
+    FunC::Value fn = to_nativeValue(vm, key.c_str(), (FunC::NativeFn) key_value.second );
+    vals.push_back(fn);
+  }
+
+  // Convert std::vector of field names to char** array of pointers
+  for (int i=0; i<(int)keys.size(); i++) keys_cstr.push_back(const_cast<char*>(keys[i].c_str()));
+
+  // Create instance of an empty class named "*" in VM
+  // The class has no methods and serves no purpose (yet)
+  // We just want the instance's ability to serve as a namespace.
+  FunC::Value instance = FunC::to_instanceValue(vm, keys_cstr.data(), vals.data(), keys.size());
+
+  // Assign it to a name in the global namespace
+  FunC::defineGlobal(vm, name.c_str(), instance);
+}
+
+
 // After the FunC VM has been initialized, add callbacks to native functions
 // so they become available for the script engine
 void Machine::set_callbacks()
 {
+  membermap members;
+
   // Callbacks to be usable by FunC script
   FunC::set_error_callback(vm, (FunC::ErrorCb) func_errorCallback);
 
@@ -139,33 +171,42 @@ void Machine::set_callbacks()
   FunC::defineNative(vm, "getkey",    (FunC::NativeFn) func_getkey); // Read keyboard input
   FunC::defineNative(vm, "rand",      (FunC::NativeFn) func_rand); // Get random double between 0.0 and 1.0
   // TODO: mouse function should be replaced with a built-in object instance with named properties
-  FunC::defineNative(vm, "mouse",     (FunC::NativeFn) func_mouse); // Read mouse position, return array
+  FunC::defineNative(vm, "mouse",     (FunC::NativeFn) func_mouse_pos); // Read mouse position, return array
 
-  // Display functions -- TODO: Should be methods and properties of a single built-in object instance
+  // This needs to be a top-level function
   FunC::defineNative(vm, "print",     (FunC::NativeFn) func_print); // Print arguments
-  FunC::defineNative(vm, "cls",       (FunC::NativeFn) func_cls); // Clear screen or parts of it
-  FunC::defineNative(vm, "cursor",    (FunC::NativeFn) func_cursor); // 0=Disable or 1=Enable cursor
-  FunC::defineNative(vm, "autoscroll",(FunC::NativeFn) func_autoscroll); // 0=Disable or 1=Enable scrolling
-  FunC::defineNative(vm, "scr_up",    (FunC::NativeFn) func_scr_up); // Scroll screen or parts of it
-  FunC::defineNative(vm, "scr_down",  (FunC::NativeFn) func_scr_down); // Scroll screen or parts of it
-  FunC::defineNative(vm, "scr_left",  (FunC::NativeFn) func_scr_left); // Scroll screen or parts of it
-  FunC::defineNative(vm, "scr_right", (FunC::NativeFn) func_scr_right); // Scroll screen or parts of it
-  FunC::defineNative(vm, "fg",        (FunC::NativeFn) func_fg); // Set foreground color preset
-  FunC::defineNative(vm, "bg",        (FunC::NativeFn) func_bg); // Set background color preset
-  FunC::defineNative(vm, "rgb",       (FunC::NativeFn) func_rgb); // Set RGB color for drawing primitives
-  FunC::defineNative(vm, "pos",       (FunC::NativeFn) func_pos); // Set cursor row/col position
-  FunC::defineNative(vm, "row",       (FunC::NativeFn) func_row); // Get cursor row
-  FunC::defineNative(vm, "col",       (FunC::NativeFn) func_col); // Get cursor column
-  FunC::defineNative(vm, "rows",      (FunC::NativeFn) func_rows); // Get number of screen rows
-  FunC::defineNative(vm, "cols",      (FunC::NativeFn) func_cols); // Get number of screen columns
-  // TODO: drawing primitives should be methods of a built-in gl object instance
-  FunC::defineNative(vm, "rect",      (FunC::NativeFn) func_rect); // Draw empty rectangle
-  FunC::defineNative(vm, "area",      (FunC::NativeFn) func_area); // Draw filled rectangle
-  FunC::defineNative(vm, "poly",      (FunC::NativeFn) func_poly); // Draw filled polygon
-  FunC::defineNative(vm, "line",      (FunC::NativeFn) func_line); // Draw line
-  FunC::defineNative(vm, "circle",    (FunC::NativeFn) func_circle); // Draw empty circle
-  FunC::defineNative(vm, "disc",      (FunC::NativeFn) func_disc); // Draw filled circle
-  FunC::defineNative(vm, "point",     (FunC::NativeFn) func_point); // Draw point (a single pixel)
+
+  // Screen related functions available under built-in instance 'screen'
+  members.clear();
+  members.insert({ "clear",     (FunC::NativeFn) func_scr_clear }); // Clear screen or parts of it
+  members.insert({ "cursor",    (FunC::NativeFn) func_scr_cursor }); // 0=Disable or 1=Enable cursor
+  members.insert({ "autoscroll",(FunC::NativeFn) func_scr_autoscroll }); // 0=Disable or 1=Enable scrolling
+  members.insert({ "up",        (FunC::NativeFn) func_scr_up }); // Scroll screen or parts of it
+  members.insert({ "down",      (FunC::NativeFn) func_scr_down }); // Scroll screen or parts of it
+  members.insert({ "left",      (FunC::NativeFn) func_scr_left }); // Scroll screen or parts of it
+  members.insert({ "right",     (FunC::NativeFn) func_scr_right }); // Scroll screen or parts of it
+  members.insert({ "fg",        (FunC::NativeFn) func_scr_fg }); // Set foreground color preset
+  members.insert({ "bg",        (FunC::NativeFn) func_scr_bg }); // Set background color preset
+  members.insert({ "pos",       (FunC::NativeFn) func_scr_pos }); // Set cursor row/col position
+  members.insert({ "row",       (FunC::NativeFn) func_scr_row }); // Get cursor row
+  members.insert({ "col",       (FunC::NativeFn) func_scr_col }); // Get cursor column
+  members.insert({ "rows",      (FunC::NativeFn) func_scr_rows }); // Get number of screen rows
+  members.insert({ "cols",      (FunC::NativeFn) func_scr_cols }); // Get number of screen columns
+  set_builtin_instance("screen", members);
+
+  // Drawing primitives available under built-in instance 'gl'
+  members.clear();
+  members.insert({ "width",     (FunC::NativeFn) func_gl_width }); // Return the display width in pixels
+  members.insert({ "height",    (FunC::NativeFn) func_gl_height }); // Return the display height in pixels
+  members.insert({ "rgb",       (FunC::NativeFn) func_gl_rgb }); // Set RGB color for drawing primitives
+  members.insert({ "rect",      (FunC::NativeFn) func_gl_rect }); // Draw empty rectangle
+  members.insert({ "area",      (FunC::NativeFn) func_gl_area }); // Draw filled rectangle
+  members.insert({ "poly",      (FunC::NativeFn) func_gl_poly }); // Draw filled polygon
+  members.insert({ "line",      (FunC::NativeFn) func_gl_line }); // Draw line
+  members.insert({ "circle",    (FunC::NativeFn) func_gl_circle }); // Draw empty circle
+  members.insert({ "disc",      (FunC::NativeFn) func_gl_disc }); // Draw filled circle
+  members.insert({ "point",     (FunC::NativeFn) func_gl_point }); // Draw point (a single pixel)
+  set_builtin_instance("gl", members);
 
   // Disk I/O functions
   FunC::defineNative(vm, "open",      (FunC::NativeFn) func_open); // Open a file
@@ -197,6 +238,7 @@ void Machine::set_callbacks()
   FunC::defineNative(vm, "error",     (FunC::NativeFn) func_error); // Get last error code for file (0=success)
 
 }
+
 
 bool Machine::execute_code(std::string code) {
   display.hide_cursor();
@@ -455,6 +497,10 @@ uint16_t Machine::add_iohandle(IOHandle* ptr)
 
 
 
+
+
+
+
 // STATIC callbacks depend on the static variable "current" instead of "this"
 // because FunC is written in C and doesn't have the foggest faintest idea what "this" is.
 // And it doesn't have to, because only one FunC VM will ever be running at any point in time
@@ -489,6 +535,23 @@ bool Machine::func_print(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value
 }
 
 
+// Return and reset the current mouse position as an array
+bool Machine::func_mouse_pos(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  double numbers[4];
+  numbers[0] = running->mouse_position_abs.x;
+  numbers[1] = running->mouse_position_abs.y;
+  numbers[2] = running->mouse_position_rel.x;
+  numbers[3] = running->mouse_position_rel.y;
+  *result = FunC::to_numberValueArray(running->vm, numbers, 4);
+  running->mouse_position_rel = Vector2(0, 0);
+  return true;
+}
+
+
+
+
+
 // Concatenate multiple arguments into a single string
 // Currently supports only numbers and strings, and you can't even control
 // how numbers are formatted. This function is likely to change in the future so YMMV
@@ -503,14 +566,14 @@ bool Machine::func_str(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* 
 }
 
 // Clear screen, or part of it as indicated as follows
-// Synopsis: cls();               // Clear entire screen (0 arguments)
-// Synopsis: cls(row);            // Clear only one row (1 argument)
-// Synopsis: cls(r1,r2);          // Clear rows r1 thru r2 (2 arguments)
-// Synopsis: cls(r1,r2,cp);       // Clear rows r1 thru r2 using the specified codepoint (3 arguments)
-// Synopsis: cls(r1,c1,r2,c2);    // Clear a rectangular area of the screen (4 arguments)
-// Synopsis: cls(r1,c1,r2,c2,cp); // ...using the specified codepoint (5 arguments)
+// Synopsis: screen.clear();      // Clear entire screen (0 arguments)
+// Synopsis: ...(row);            // Clear only one row (1 argument)
+// Synopsis: ...(r1,r2);          // Clear rows r1 thru r2 (2 arguments)
+// Synopsis: ...(r1,r2,cp);       // Clear rows r1 thru r2 using the specified codepoint (3 arguments)
+// Synopsis: ...(r1,c1,r2,c2);    // Clear a rectangular area of the screen (4 arguments)
+// Synopsis: ...(r1,c1,r2,c2,cp); // ...using the specified codepoint (5 arguments)
 // Obviously, where no codepoint is specified, the default is 32 (blank space)
-bool Machine::func_cls(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_scr_clear(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   int r1;
   int r2;
@@ -571,6 +634,15 @@ bool Machine::func_reset(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value
   return true;
 }
 
+
+// Return a random double between 0.0 and 1.0
+// Typical use is to multiply this number with the desired range
+// Synopsis: percent = rand()*100
+bool Machine::func_rand(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  *result = FunC::to_numberValue( rand_double(rand_eng) );
+  return true;
+}
 
 // Get the next single character (or unprintable key) from the VM event queue,
 // this means reading keyboard input from the user (if any)
@@ -633,20 +705,6 @@ bool Machine::func_getkey(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Valu
 }
 
 
-// Return and reset the current mouse position as an array
-bool Machine::func_mouse(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
-{
-  double numbers[4];
-  numbers[0] = running->mouse_position_abs.x;
-  numbers[1] = running->mouse_position_abs.y;
-  numbers[2] = running->mouse_position_rel.x;
-  numbers[3] = running->mouse_position_rel.y;
-  *result = FunC::to_numberValueArray(running->vm, numbers, 4);
-  running->mouse_position_rel = Vector2(0, 0);
-  return true;
-}
-
-
 
 // Hide or show blinking cursor
 // Synopsis: cursor(0) // Hide
@@ -654,7 +712,7 @@ bool Machine::func_mouse(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value
 // Note: Repeated calls "stack" so two calls to "hide"
 // must be followed by two calls to "show"
 // for the cursor to re-appear
-bool Machine::func_cursor(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_scr_cursor(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
   if (FunC::to_double(argv[0]) == 0) {
@@ -670,7 +728,7 @@ bool Machine::func_cursor(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Valu
 // If autoscrolling is disabled, the cursor instead wraps around to column 0
 // Synopsis: autoscroll(0) // Disable
 // Synopsis: autoscroll(1) // Enable
-bool Machine::func_autoscroll(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_scr_autoscroll(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   if (argc != 1) { *result = FunC::to_numberValue(-1); return false; }
   if (FunC::to_double(argv[0]) == 0) {
@@ -774,7 +832,7 @@ bool Machine::func_scr_right(FunC::VM* vm, int argc, FunC::Value argv[], FunC::V
 }
 
 // Set the current foreground (text) color to one of the 16 color presets (0-15)
-bool Machine::func_fg(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_scr_fg(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   if (argc == 1) {
     running->display.set_fgcolor((int) FunC::to_double(argv[0]));
@@ -785,7 +843,7 @@ bool Machine::func_fg(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* r
 
 
 // Set the current background (text) color to one of the 16 color presets (0-15)
-bool Machine::func_bg(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_scr_bg(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   if (argc == 1) {
     running->display.set_bgcolor((int) FunC::to_double(argv[0]));
@@ -794,24 +852,11 @@ bool Machine::func_bg(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* r
   return true;
 }
 
-// Set RGB color for drawing primitives
-bool Machine::func_rgb(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
-{
-  if (argc == 3) {
-    float r = (float) FunC::to_double(argv[0]);
-    float g = (float) FunC::to_double(argv[1]);
-    float b = (float) FunC::to_double(argv[2]);
-    running->display.set_rgbcolor(r, g, b);
-  }
-  *result = FunC::to_numberValue(running->display.fgcolor);
-  return true;
-}
-
 // Place the text cursor (and thereby control where the next print() text will appear
 // at the specified row and column
 // Synopsis: pos(row, column)
 // Note: The upper left cursor position is 0,0
-bool Machine::func_pos(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_scr_pos(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   if (argc != 2) { *result = FunC::to_numberValue(-1); return false; }
   int r = (int) FunC::to_double(argv[0]);
@@ -825,7 +870,7 @@ bool Machine::func_pos(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* 
 // Return the current row position of the text cursor
 // Synopsis: current = row()
 // Note: The top row is number 0
-bool Machine::func_row(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_scr_row(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   *result = FunC::to_numberValue(running->display.row);
   return true;
@@ -834,7 +879,7 @@ bool Machine::func_row(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* 
 // Return the current column position of the text cursor
 // Synopsis: current = col()
 // Note: The leftmost column is number 0
-bool Machine::func_col(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_scr_col(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   *result = FunC::to_numberValue(running->display.col);
   return true;
@@ -842,7 +887,7 @@ bool Machine::func_col(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* 
 
 // Return the number of visible rows on the screen
 // Synopsis: bottom = rows()-1;
-bool Machine::func_rows(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_scr_rows(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   *result = FunC::to_numberValue(running->display.rows);
   return true;
@@ -850,11 +895,42 @@ bool Machine::func_rows(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value*
 
 // Return the number of visible columns on the screen
 // Synopsis: right = cols()-1;
-bool Machine::func_cols(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_scr_cols(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   *result = FunC::to_numberValue(running->display.cols);
   return true;
 }
+
+
+// Return width of the display in pixels
+bool Machine::func_gl_width(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  *result = FunC::to_numberValue(running->display.width);
+  return true;
+}
+
+// Return height of the display in pixels
+bool Machine::func_gl_height(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  *result = FunC::to_numberValue(running->display.height);
+  return true;
+}
+
+
+// Set RGB color for drawing primitives
+bool Machine::func_gl_rgb(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+{
+  if (argc == 3) {
+    float r = (float) FunC::to_double(argv[0]);
+    float g = (float) FunC::to_double(argv[1]);
+    float b = (float) FunC::to_double(argv[2]);
+    running->display.set_rgbcolor(r, g, b);
+  }
+  *result = FunC::to_numberValue(running->display.fgcolor);
+  return true;
+}
+
+
 
 // Render a line rectangle using the current foreground color
 // starting at coordinates x,y with width w and height h
@@ -862,7 +938,7 @@ bool Machine::func_cols(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value*
 // Synopsis: rect(x,y,w,h);
 // Note: With 40x25 characters at 8x8 pixels, the display resolution is 320x200
 // Warning: By moronic design, OpenGL may OMIT the first and/or last pixel
-bool Machine::func_rect(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_gl_rect(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   // rect(x, y, w, h);
   if (argc != 4) { *result = FunC::to_numberValue(-1); return false; }
@@ -880,7 +956,7 @@ bool Machine::func_rect(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value*
 // Compare and contrast with rect()
 // Synopsis: area(x,y,w,h);
 // Note: With 40x25 characters at 8x8 pixels, the display resolution is 320x200
-bool Machine::func_area(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_gl_area(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   // area(x, y, w, h); // filled rect
   if (argc != 4) { *result = FunC::to_numberValue(-1); return false; }
@@ -898,7 +974,7 @@ bool Machine::func_area(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value*
 // between three points x1,y1 - x2,y2 - x3,y3
 // Synopsis: poly(x1,y1,x2,y2,x3,y3);
 // Note: With 40x25 characters at 8x8 pixels, the display resolution is 320x200
-bool Machine::func_poly(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_gl_poly(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   // poly(x1,y1,x2,y2,x3,y3); // filled polygon
   if (argc != 6) { *result = FunC::to_numberValue(-1); return false; }
@@ -918,7 +994,7 @@ bool Machine::func_poly(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value*
 // from coordinate x1,y1 to x2,y2
 // Synopsis: area(x1,y1,x2,y2);
 // Warning: By moronic design, OpenGL may OMIT the first and/or last pixel
-bool Machine::func_line(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_gl_line(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   // line(x1, y1, x2, y2);
   if (argc != 4) { *result = FunC::to_numberValue(-1); return false; }
@@ -936,7 +1012,7 @@ bool Machine::func_line(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value*
 // Render an empty circle using the current foreground color
 // centered at coordinate x,y and with radius r
 // Synopsis: circle(x,y,r);
-bool Machine::func_circle(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_gl_circle(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   // circle(x, y, r);
   if (argc != 3) { *result = FunC::to_numberValue(-1); return false; }
@@ -953,7 +1029,7 @@ bool Machine::func_circle(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Valu
 // Render an filled circle using the current foreground color
 // centered at coordinate x,y and with radius r
 // Synopsis: disc(x,y,r);
-bool Machine::func_disc(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_gl_disc(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   // disc(x, y, r);
   if (argc != 3) { *result = FunC::to_numberValue(-1); return false; }
@@ -974,7 +1050,7 @@ bool Machine::func_disc(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value*
 // Synopsis: point(x,y);
 // Note: This is obviously the least efficient way possible to draw something
 // but sometimes you just need that one pixel in the right spot, right?
-bool Machine::func_point(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+bool Machine::func_gl_point(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   // point(x, y);
   if (argc != 2) { *result = FunC::to_numberValue(-1); return false; }
@@ -987,14 +1063,6 @@ bool Machine::func_point(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value
 }
 
 
-// Return a random double between 0.0 and 1.0
-// Typical use is to multiply this number with the desired range
-// Synopsis: percent = rand()*100
-bool Machine::func_rand(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
-{
-  *result = FunC::to_numberValue( rand_double(rand_eng) );
-  return true;
-}
 
 
 // Open a file for reading or writing
