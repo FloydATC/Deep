@@ -420,8 +420,9 @@ int main(int argc, char* argv[])
 
         glDebugMessageCallback(OpenGL_debug_callback, NULL);
         glEnable(GL_DEBUG_OUTPUT);
-        std::vector<GLuint> ignored = {}; // Debug messages to suppress
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, ignored.size(), ignored.data(), true);
+
+        GLuint id = 131185; // Static draw buffer will use video memory. Yes? Where else would I want it?
+        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 1, &id, GL_FALSE);
       }
 
       TTF_Font* font = TTF_OpenFont("fonts/unscii-8-thin.ttf", 16);

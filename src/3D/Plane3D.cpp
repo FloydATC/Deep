@@ -34,6 +34,7 @@ void Plane3D::render(ShaderProgram* shader)
   shader->setColor(this->color);
   shader->setDebugFlag(true);
   shader->setTextureFlag(true);
+  glBindTexture(GL_TEXTURE_2D, 0); // debug + texture = use a shader generated texture
   glDrawArrays(GL_TRIANGLES, 0, 6);
   glEnable(GL_CULL_FACE);
   unbind_vao();

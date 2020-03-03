@@ -165,26 +165,6 @@ void Prop3D::hideBounds()
 
 
 
-////// Experimental code follows -- beware of dragons //////
-
-
-/*
-Vector3 Prop3D::project(Vector3 v3, Camera3D* camera)
-{
-  // This function is used to project (transform) each of the four xy_plane corners
-  // from world coordinates onto the screen. We will use this 2-dimensional plane
-  // to pinpoint mouse events relative to the 3D object.
-
-  // We need a Vector4 for the projection since the matrices are 4x4 and use perspective
-  Vector4 v4 =  camera->getMatrix() * this->matrix * Vector4(v3.x, v3.y, v3.z, 1.0);
-
-  // Return 2D display coordinates + depth component
-  int w2 = camera->getWidth() / 2;
-  int h2 = camera->getHeight() / 2;
-  return Vector3(w2+(v4.x*w2/v4.w), h2+(v4.y*-h2/v4.w), v4.z/v4.w); // flip Y so 0,0 is upper left corner
-}
-*/
-
 void Prop3D::recalculate_xy_plane(Camera3D* camera)
 {
   // This function is called right after we render the prop in 3D,
