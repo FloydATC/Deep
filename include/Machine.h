@@ -61,10 +61,7 @@ class Machine
     static bool func_str       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_getkey    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_rand      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_mouse_x   (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_mouse_y   (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_mouse_relx(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_mouse_rely(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_mouse     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
 
     // Display functions
     static bool func_print     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
@@ -83,6 +80,7 @@ class Machine
     static bool func_col       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_rows      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_cols      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+
     static bool func_rect      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_area      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
     static bool func_poly      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);

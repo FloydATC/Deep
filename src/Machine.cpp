@@ -92,6 +92,7 @@ void Machine::initialize_vm()
   if (running != nullptr) { return; }
   vm = FunC::initVM();
   set_callbacks();
+  this->mouse_position_rel = Vector2(0, 0);
   add_iohandle(new IOStream()); // "stdin"
   add_iohandle(new IOStream()); // "stdout"
   add_iohandle(new IOStream()); // "stderr"
@@ -137,11 +138,8 @@ void Machine::set_callbacks()
   FunC::defineNative(vm, "str",       (FunC::NativeFn) func_str); // Return argument(s) as string
   FunC::defineNative(vm, "getkey",    (FunC::NativeFn) func_getkey); // Read keyboard input
   FunC::defineNative(vm, "rand",      (FunC::NativeFn) func_rand); // Get random double between 0.0 and 1.0
-  // TODO: mouse functions should be replaced with a single built-in object instance with properties
-  FunC::defineNative(vm, "mouse_x",   (FunC::NativeFn) func_mouse_x); // Read mouse position x
-  FunC::defineNative(vm, "mouse_y",   (FunC::NativeFn) func_mouse_y); // Read mouse position y
-  FunC::defineNative(vm, "mouse_relx",(FunC::NativeFn) func_mouse_relx); // Read mouse position relative x
-  FunC::defineNative(vm, "mouse_rely",(FunC::NativeFn) func_mouse_rely); // Read mouse position relative y
+  // TODO: mouse function should be replaced with a built-in object instance with named properties
+  FunC::defineNative(vm, "mouse",     (FunC::NativeFn) func_mouse); // Read mouse position, return array
 
   // Display functions -- TODO: Should be methods and properties of a single built-in object instance
   FunC::defineNative(vm, "print",     (FunC::NativeFn) func_print); // Print arguments
@@ -635,34 +633,16 @@ bool Machine::func_getkey(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Valu
 }
 
 
-
-// Return the current absolute mouse position X coordinate
-bool Machine::func_mouse_x(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+// Return and reset the current mouse position as an array
+bool Machine::func_mouse(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
-  *result = FunC::to_numberValue(running->mouse_position_abs.x);
-  return true;
-}
-
-// Return the current absolute mouse position Y coordinate
-bool Machine::func_mouse_y(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
-{
-  *result = FunC::to_numberValue(running->mouse_position_abs.y);
-  return true;
-}
-
-// Return and reset the relative mouse movement X coordinate since last read
-bool Machine::func_mouse_relx(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
-{
-  *result = FunC::to_numberValue(running->mouse_position_rel.x);
-  running->mouse_position_rel.x = 0;
-  return true;
-}
-
-// Return and reset the relative mouse movement Y coordinate since last read
-bool Machine::func_mouse_rely(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
-{
-  *result = FunC::to_numberValue(running->mouse_position_rel.y);
-  running->mouse_position_rel.y = 0;
+  double numbers[4];
+  numbers[0] = running->mouse_position_abs.x;
+  numbers[1] = running->mouse_position_abs.y;
+  numbers[2] = running->mouse_position_rel.x;
+  numbers[3] = running->mouse_position_rel.y;
+  *result = FunC::to_numberValueArray(running->vm, numbers, 4);
+  running->mouse_position_rel = Vector2(0, 0);
   return true;
 }
 
