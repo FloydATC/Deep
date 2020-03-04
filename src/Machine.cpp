@@ -240,10 +240,10 @@ void Machine::set_callbacks()
 }
 
 
-bool Machine::execute_code(std::string code) {
+bool Machine::execute_code(std::string code, std::string filename) {
   display.hide_cursor();
   running = this;
-  fc_status = FunC::interpret(vm, code.c_str());
+  fc_status = FunC::interpret(vm, code.c_str(), filename.c_str());
   running = nullptr;
   check_fc_status();
   return (fc_status == FunC::INTERPRET_COMPILED);
@@ -257,7 +257,7 @@ bool Machine::execute_file(std::string fname, std::string arguments) {
   // TODO: Need error handling
 
   reset_vm(); // Always start with a clean slate when running a file
-  return execute_code(buf);
+  return execute_code(buf, fname);
 }
 
 bool Machine::execute_line(std::string line)
@@ -295,7 +295,7 @@ bool Machine::execute_line(std::string line)
     return execute_file(path+"/"+cmd+".fun", arguments);
   } else {
 
-    return execute_code(line);
+    return execute_code(line, "");
   }
 }
 
