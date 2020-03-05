@@ -45,7 +45,7 @@ class Machine
     void handle_msg_mousemotion(Message* msg);
     void push(Message* msg);
     bool execute_code(std::string code, std::string filename);
-    bool execute_file(std::string fname, std::string arguments);
+    bool execute_file(std::string fname);
     bool execute_line(std::string line);
     void write_to_stdin(const std::string data);
 

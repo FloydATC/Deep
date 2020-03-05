@@ -7,6 +7,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+#include "CmdLine.h"
 #include "IO/IODir.h"
 #include "IO/IOFile.h"
 #include "IO/IOHandle.h"
@@ -44,7 +45,7 @@ Machine::Machine(ShaderProgram* shader, Fontcache fontcache)
   std::cout << "Virtual Machine " << this << " initialized" << std::endl;
 
   // Run pre-designated FunC script
-  execute_file("funos/bin/init.fun", "");
+  execute_file("funos/bin/init.fun");
 }
 
 Machine::~Machine()
@@ -56,6 +57,7 @@ Machine::~Machine()
 }
 
 
+/*
 // Split cmd into two separate strings;
 // the first string should be the name of an executable
 // the second string should be any parameters passed as arguments to that executable
@@ -86,6 +88,7 @@ void split_cmd( const std::string& cmd, std::string* executable, std::string* pa
     }
   }
 }
+*/
 
 void Machine::initialize_vm()
 {
@@ -249,7 +252,7 @@ bool Machine::execute_code(std::string code, std::string filename) {
   return (fc_status == FunC::INTERPRET_COMPILED);
 }
 
-bool Machine::execute_file(std::string fname, std::string arguments) {
+bool Machine::execute_file(std::string fname) {
   IOFile* file = new IOFile();
   std::string buf = file->slurp(fname);
   delete file;
@@ -263,13 +266,21 @@ bool Machine::execute_file(std::string fname, std::string arguments) {
 bool Machine::execute_line(std::string line)
 {
   // Strip leading and trailing spaces
-  std::regex re("^\\s*(.*?)\\s*$");
-  line = regex_replace(line, re, "$1");
-  if (line=="") { return false; }
+//  std::regex re("^\\s*(.*?)\\s*$");
+//  line = regex_replace(line, re, "$1");
+//  if (line=="") { return false; }
 
-  std::string cmd;
-  std::string arguments;
-  split_cmd(line, &cmd, &arguments);
+//  std::string cmd;
+//  std::string arguments;
+//  split_cmd(line, &cmd, &arguments);
+
+  CmdLine parser = CmdLine();
+  parser.parse(line);
+  for (auto& arg : parser.args_vector()) {
+    std::cout << "[" << arg << "]" << std::endl;
+  }
+  std::string cmd = parser.args_vector()[0];
+
 
   // Try to execute as script
   std::string path = "funos/bin";
@@ -292,7 +303,10 @@ bool Machine::execute_line(std::string line)
   }
   if (is_file) {
     // cmd is a file, execute with arguments
-    return execute_file(path+"/"+cmd+".fun", arguments);
+
+    // create a global variable 'args' with parser.args_array() here
+
+    return execute_file(path+"/"+cmd+".fun");
   } else {
 
     return execute_code(line, "");
@@ -629,7 +643,7 @@ bool Machine::func_scr_clear(FunC::VM* vm, int argc, FunC::Value argv[], FunC::V
 bool Machine::func_reset(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   running->display.reset();
-  running->execute_file("funos/bin/init.fun", "");
+  running->execute_file("funos/bin/init.fun");
   *result = FunC::to_numberValue(1);
   return true;
 }
