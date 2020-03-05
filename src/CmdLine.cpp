@@ -89,11 +89,17 @@ bool CmdLine::eol(int offset)
   return this->current + offset >= (int)this->line.size();
 }
 
+bool CmdLine::is_trailing_utf8()
+{
+  return (this->line[this->current] & 192) == 128;
+}
+
 
 void CmdLine::advance()
 {
   if (eol(0)) return; // Can't advance beyond end of line
   this->current++;
+  while (!eol(0) && is_trailing_utf8()) this->current++; // Include trailing bytes of utf8 sequence
 #ifdef DEBUG_TRACE_CMDLINE
   std::cout << "CmdLine::advance() current=" << this->current << " char=" << this->line[this->current] << std::endl;
 #endif

@@ -30,6 +30,7 @@ class CmdLine
     bool escape_next;
 
     std::string unescape(std::string str);
+    bool is_trailing_utf8();
     bool eol(int offset);
     void advance();
     void skip_whitespace();
