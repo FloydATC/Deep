@@ -11,6 +11,7 @@ namespace FunC {
 
 #include <SDL_ttf.h>
 
+#include "CmdLine.h"
 #include "Display.h"
 #include "GFX.h"
 #include "IO/IOHandle.h"
@@ -45,7 +46,7 @@ class Machine
     void handle_msg_mousemotion(Message* msg);
     void push(Message* msg);
     bool execute_code(std::string code, std::string filename);
-    bool execute_file(std::string fname);
+    bool execute_file(std::string fname, CmdLine* parser);
     bool execute_line(std::string line);
     void write_to_stdin(const std::string data);
 

@@ -7,7 +7,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-#include "CmdLine.h"
+
 #include "IO/IODir.h"
 #include "IO/IOFile.h"
 #include "IO/IOHandle.h"
@@ -45,7 +45,9 @@ Machine::Machine(ShaderProgram* shader, Fontcache fontcache)
   std::cout << "Virtual Machine " << this << " initialized" << std::endl;
 
   // Run pre-designated FunC script
-  execute_file("funos/bin/init.fun");
+  CmdLine parser = CmdLine();
+  parser.parse("funos/bin/init.fun");
+  execute_file(parser.args_array()[0], &parser);
 }
 
 Machine::~Machine()
@@ -56,39 +58,6 @@ Machine::~Machine()
   std::cout << "Virtual Machine " << this << " destroyed" << std::endl;
 }
 
-
-/*
-// Split cmd into two separate strings;
-// the first string should be the name of an executable
-// the second string should be any parameters passed as arguments to that executable
-// Note that the executable may contain spaces, in which case the string is "quoted"
-void split_cmd( const std::string& cmd, std::string* executable, std::string* parameters )
-{
-  std::string c( cmd );
-  size_t exec_end;
-  if( c[ 0 ] == '\"' ) {
-    // The name is quoted; look for the end quotes
-    exec_end = c.find_first_of( '\"', 1 );
-    if( std::string::npos != exec_end ) {
-      *executable = c.substr( 1, exec_end - 1 );
-      *parameters = c.substr( exec_end + 1 );
-    } else {
-      *executable = c.substr( 1, exec_end );
-      std::string().swap( *parameters );
-    }
-  } else {
-    // The name is not quoted so look for a space
-    exec_end = c.find_first_of( ' ', 0 );
-    if( std::string::npos != exec_end ) {
-      *executable = c.substr( 0, exec_end );
-      *parameters = c.substr( exec_end + 1 );
-    } else {
-      *executable = c.substr( 0, exec_end );
-      std::string().swap( *parameters );
-    }
-  }
-}
-*/
 
 void Machine::initialize_vm()
 {
@@ -121,6 +90,8 @@ void Machine::reset_vm()
 }
 
 
+
+
 void Machine::write_to_stdin(const std::string data)
 {
   if (iohandles.size() >= 1 && !iohandles[0]->is_closed()) {
@@ -132,6 +103,10 @@ void Machine::write_to_stdin(const std::string data)
 
 void Machine::set_builtin_instance(std::string name, membermap functions)
 {
+  // The FunC API can create an "instance Value" using
+  // - a char** array for field names, and
+  // - a Value* array for values
+  // From the std::unordered map 'functions', construct those arrays
   std::vector<std::string> keys;
   std::vector<const char*> keys_cstr;
   keys.reserve(functions.size());
@@ -252,7 +227,7 @@ bool Machine::execute_code(std::string code, std::string filename) {
   return (fc_status == FunC::INTERPRET_COMPILED);
 }
 
-bool Machine::execute_file(std::string fname) {
+bool Machine::execute_file(std::string fname, CmdLine* parser) {
   IOFile* file = new IOFile();
   std::string buf = file->slurp(fname);
   delete file;
@@ -260,27 +235,21 @@ bool Machine::execute_file(std::string fname) {
   // TODO: Need error handling
 
   reset_vm(); // Always start with a clean slate when running a file
+
+  // Define global variable 'args' in VM
+  FunC::Value args = FunC::to_stringValueArray(this->vm, parser->args_array(), parser->args_length());
+  FunC::defineGlobal(this->vm, "args", args);
+
   return execute_code(buf, fname);
 }
 
 bool Machine::execute_line(std::string line)
 {
-  // Strip leading and trailing spaces
-//  std::regex re("^\\s*(.*?)\\s*$");
-//  line = regex_replace(line, re, "$1");
-//  if (line=="") { return false; }
-
-//  std::string cmd;
-//  std::string arguments;
-//  split_cmd(line, &cmd, &arguments);
-
   CmdLine parser = CmdLine();
   parser.parse(line);
-  for (auto& arg : parser.args_vector()) {
-    std::cout << "[" << arg << "]" << std::endl;
-  }
-  std::string cmd = parser.args_vector()[0];
-
+  std::vector<std::string> args = parser.args_vector();
+  if (args.size()==0) return true; // Empty line
+  std::string cmd = args[0];
 
   // Try to execute as script
   std::string path = "funos/bin";
@@ -302,13 +271,9 @@ bool Machine::execute_line(std::string line)
     closedir(dh);
   }
   if (is_file) {
-    // cmd is a file, execute with arguments
-
-    // create a global variable 'args' with parser.args_array() here
-
-    return execute_file(path+"/"+cmd+".fun");
+    // Read, compile and run the script
+    return execute_file(path+"/"+cmd+".fun", &parser);
   } else {
-
     return execute_code(line, "");
   }
 }
@@ -643,7 +608,9 @@ bool Machine::func_scr_clear(FunC::VM* vm, int argc, FunC::Value argv[], FunC::V
 bool Machine::func_reset(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
   running->display.reset();
-  running->execute_file("funos/bin/init.fun");
+  CmdLine parser = CmdLine();
+  parser.parse("funos/bin/init.fun");
+  running->execute_file(parser.args_array()[0], &parser);
   *result = FunC::to_numberValue(1);
   return true;
 }

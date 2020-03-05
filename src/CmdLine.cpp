@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-#define DEBUG_TRACE_CMDLINE
+//#define DEBUG_TRACE_CMDLINE
 
 CmdLine::CmdLine()
 {
