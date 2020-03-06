@@ -7,6 +7,10 @@ Overlay2D::Overlay2D()
   //ctor
   glGenVertexArrays(1, &this->vao);
   glGenBuffers(1, &this->vbo);
+#ifdef DEBUG_TRACE_OPENGL
+  glObjectLabel(GL_VERTEX_ARRAY, this->vao, -1, "Overlay2D VAO");
+  glObjectLabel(GL_BUFFER,       this->vbo, -1, "Overlay2D VBO");
+#endif
   //std::cout << "Overlay2D() " << this << " created" << std::endl;
 }
 

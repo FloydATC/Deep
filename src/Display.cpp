@@ -1,8 +1,11 @@
 #include <chrono>
 
+
 #include "Display.h"
+
 #include "Fontcache.h"
 #include "UTF8hack.h"
+
 
 
 Display::Display()
@@ -15,12 +18,14 @@ Display::Display(ShaderProgram* shader, Fontcache font)
 {
   //ctor
   prepare_vao();
-  this->textureID = prepare_texture(width+b*2, height+b*2);
-  prepare_framebuffer(textureID);
+  prepare_vbo();
+  prepare_texture(width+b*2, height+b*2);
+  prepare_fbo();
   this->shader = shader;
   //this->shaderID = shaderID;
   this->font = font;
   this->m_ortho = Matrix4().Ortho(-0.5f, width-0.5f, -0.0f, height-0.0f, -1.0f, 1.0f);
+
 
   //glUseProgram(shaderID);
   //this->attr_vertex = glGetAttribLocation(shaderID, "vertex");
@@ -33,29 +38,22 @@ Display::Display(ShaderProgram* shader, Fontcache font)
 Display::~Display()
 {
   //dtor
-
 }
 
 
+GLuint Display::textureId()
+{
+  return this->texture;
+}
 
 void Display::draw_untextured_vbo(GLsizeiptr arrsize, const void* arr, GLenum type, GLsizei typesize, GLenum mode, GLsizei vertices)
 {
   this->shader->setColor(this->color);
   this->shader->setTextureFlag(false);
-  //glUniform4fv(uniform_color, 1, this->color);
-  GLuint vertexBufferID;
-  glGenBuffers(1, &vertexBufferID);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
   glBufferData(GL_ARRAY_BUFFER, arrsize, arr, GL_STREAM_DRAW); // Buffer will be used only once
-  this->shader->enableAttributeV();
   this->shader->disableAttributeVT();
-  //glEnableVertexAttribArray(attr_vertex);
-  //glDisableVertexAttribArray(attr_uv);
   this->shader->setAttribPointerV(2, type, typesize, 2, 0);
-  //glVertexAttribPointer(attr_vertex, 2, type, GL_FALSE, 2*typesize, (char*) NULL+0*typesize);
   glDrawArrays(mode, 0, vertices);
-  glDeleteBuffers(1, &vertexBufferID);
-  glEnableVertexAttribArray(0);
 }
 
 
@@ -288,32 +286,19 @@ void Display::draw_surface(int row, int col, float r, float g, float b, GLuint s
   };
   //   x   y   u  v
 
-  glUseProgram(this->shader->id());
-  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, src_texture);
   GLfloat color[] = { r, g, b, 1.0 };
-  //glUniform4fv(uniform_color, 1, color);
   this->shader->setColor(color); // Specific color for this call
   this->shader->setTextureFlag(true);
-
-  GLuint vertexBufferID;
-  glGenBuffers(1, &vertexBufferID);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+  bind_vbo();
   glBufferData(GL_ARRAY_BUFFER, sizeof(rect), rect, GL_STATIC_DRAW);
-  this->shader->enableAttributeV();
   this->shader->enableAttributeVT();
-  //glEnableVertexAttribArray(attr_vertex);
-  //glEnableVertexAttribArray(attr_uv);
   this->shader->setAttribPointerV(2, GL_FLOAT, sizeof(GLfloat), 4, 0);
   this->shader->setAttribPointerVT(2, GL_FLOAT, sizeof(GLfloat), 4, 2);
-  //glVertexAttribPointer(attr_vertex, 2, GL_FLOAT, GL_TRUE, 4*sizeof(GLfloat), (char*) NULL+0*sizeof(GLfloat));
-  //glVertexAttribPointer(attr_uv, 2, GL_FLOAT, GL_TRUE, 4*sizeof(GLfloat), (char*) NULL+2*sizeof(GLfloat));
   glDrawArrays(GL_TRIANGLES, 0, 6);
-  glDeleteBuffers(1, &vertexBufferID);
-  //glEnableVertexAttribArray(0);
   color[3] = 1.0;
+  this->shader->setTextureFlag(false);
   this->shader->setColor(this->color); // Restore "current" color
-  //glUniform4fv(uniform_color, 1, color);
 }
 
 
@@ -409,15 +394,31 @@ void Display::set_rgbcolor(float r, float g, float b)
 void Display::prepare_vao()
 {
   glGenVertexArrays(1, &this->vao);
+#ifdef DEBUG_TRACE_OPENGL
+  glObjectLabel(GL_VERTEX_ARRAY, this->vao, -1, "Display VAO");
+#endif
   this->bind_vao();
   return;
 }
 
-GLuint Display::prepare_texture(GLsizei width, GLsizei height)
+void Display::prepare_vbo()
 {
-  GLuint textureID;
-  glGenTextures(1, &textureID);
-  glBindTexture(GL_TEXTURE_2D, textureID);
+  glGenBuffers(1, &this->vbo);
+  this->bind_vbo();
+#ifdef DEBUG_TRACE_OPENGL
+  glObjectLabel(GL_BUFFER, this->vbo, -1, "Display VBO");
+#endif
+  return;
+}
+
+void Display::prepare_texture(GLsizei width, GLsizei height)
+{
+  //GLuint textureID;
+  glGenTextures(1, &this->texture);
+#ifdef DEBUG_TRACE_OPENGL
+  glObjectLabel(GL_TEXTURE, this->texture, -1, "Display texture");
+#endif
+  glBindTexture(GL_TEXTURE_2D, this->texture);
   GLfloat bordercolor[4] = { 0.30, 0.25, 0.35, 1.0 };
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0); // 0 = clear
   //glGenerateMipmap(GL_TEXTURE_2D);
@@ -426,18 +427,21 @@ GLuint Display::prepare_texture(GLsizei width, GLsizei height)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
   glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bordercolor);
-  return textureID;
+  //return textureID;
 }
 
-void Display::prepare_framebuffer(GLuint textureID)
+void Display::prepare_fbo()
 {
   // Create framebuffer
   glGenFramebuffers(1, &this->fbo);
+#ifdef DEBUG_TRACE_OPENGL
+  glObjectLabel(GL_FRAMEBUFFER, this->fbo, -1, "Display FBO");
+#endif
   bind_fbo();
 
   // Set "textureID" as our colour attachement #0
-  glBindTexture(GL_TEXTURE_2D, textureID);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureID, 0);
+  glBindTexture(GL_TEXTURE_2D, this->texture);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->texture, 0);
 
   // Set the list of draw buffers. (???)
   GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0}; // (???)
@@ -461,6 +465,12 @@ void Display::unbind_vao()
 }
 
 
+void Display::bind_vbo()
+{
+  glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+}
+
+
 
 void Display::bind_fbo()
 {
@@ -474,17 +484,22 @@ void Display::unbind_fbo()
 
 bool Display::pre_render()
 {
+#ifdef DEBUG_TRACE_OPENGL
+  glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_OTHER, 1001,
+                     GL_DEBUG_SEVERITY_NOTIFICATION, -1, "Display::pre_render()");
+#endif
   glViewport(b,b,width,height); // b,b = LOWER LEFT corner. width,height is the actual drawing area.
   bind_vao();
   bind_fbo();
 
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureID, 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->texture, 0);
 
   glDisable(GL_CULL_FACE);
   glDisable(GL_DEPTH_TEST);
 
   glUseProgram(this->shader->id());
   this->shader->setDebugFlag(false);
+  glActiveTexture(GL_TEXTURE0);
 
   //glUniformMatrix4fv(uniform_ortho, 1, GL_FALSE, m_ortho.get());
   //glEnableVertexAttribArray(attr_vertex);
@@ -503,11 +518,15 @@ bool Display::pre_render()
 
 bool Display::post_render()
 {
-  update_cursor();
+  //update_cursor();
 
   //glDisableVertexAttribArray(0);
   unbind_fbo();
   unbind_vao();
+#ifdef DEBUG_TRACE_OPENGL
+  glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_OTHER, 1002,
+                     GL_DEBUG_SEVERITY_NOTIFICATION, -1, "Display::post_render()");
+#endif
   return true;
 }
 

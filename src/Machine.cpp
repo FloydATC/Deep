@@ -395,8 +395,8 @@ void Machine::check_fc_status()
 
 FunC::InterpretResult Machine::run()
 {
-  display.pre_render(); // bind OpenGL texture/framebuffer
 
+  display.pre_render(); // bind OpenGL texture/framebuffer
   if (fc_status == FunC::INTERPRET_COMPILED || fc_status == FunC::INTERPRET_RUNNING) {
     if (fc_break==true) {
       // User pressed ctrl+c

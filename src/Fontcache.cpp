@@ -88,6 +88,9 @@ GLuint Fontcache::glyph(int codepoint)
     height = rgba_surface->h;
 
     glGenTextures(1, &textureID);
+#ifdef DEBUG_TRACE_OPENGL
+    glObjectLabel(GL_TEXTURE, textureID, -1, std::string("Fontcache cp " + std::to_string(codepoint)).c_str());
+#endif
     glBindTexture(GL_TEXTURE_2D, textureID);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

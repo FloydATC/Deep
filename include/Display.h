@@ -1,9 +1,7 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-
 #include "GFX.h"
-
 #include "Matrices.h"
 #include "Fontcache.h"
 #include "ShaderProgram.h"
@@ -19,7 +17,7 @@ class Display
     bool pre_render();
     bool post_render();
     void reset();
-    GLuint prepare_texture(GLsizei width, GLsizei height);
+    GLuint textureId();
 
     // Flip vertical axis when drawing
     inline int tx(int x) { return x; }
@@ -79,7 +77,6 @@ class Display
     int col = 0;
     bool cursor = true;
 
-    GLuint textureID;
     //GLuint shaderID;
 
   protected:
@@ -87,13 +84,16 @@ class Display
 
   private:
     void prepare_vao();
-    void prepare_framebuffer(GLuint textureID);
+    void prepare_vbo();
+    void prepare_fbo();
+    void prepare_texture(GLsizei width, GLsizei height);
     void invert_cursor();
     void update_cursor();
     void enable_cursor();
     void disable_cursor();
     void bind_vao();
     void unbind_vao();
+    void bind_vbo();
     void bind_fbo();
     void unbind_fbo();
     static double now();
@@ -121,7 +121,9 @@ class Display
     //GLuint uniform_ortho;
     //GLuint uniform_color;
     GLuint vao; // Vertex Array Object
+    GLuint vbo; // Vertex Buffer Object
     GLuint fbo; // Framebuffer Object
+    GLuint texture;
 
     bool initialized = false;
     int ccmem[25][40];

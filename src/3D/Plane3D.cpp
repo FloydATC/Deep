@@ -2,11 +2,18 @@
 
 //#define DEBUG_TRACE_PLANE
 
+
 Plane3D::Plane3D()
 {
   //ctor
   this->finalized = false;
   this->name = "Plane3D";
+#ifdef DEBUG_TRACE_OPENGL
+  glObjectLabel(GL_VERTEX_ARRAY, this->vao, -1, "Plane3D VAO");
+  glObjectLabel(GL_BUFFER, this->vbo_v, -1, "Plane3D VBO v");
+  glObjectLabel(GL_BUFFER, this->vbo_vt, -1, "Plane3D VBO vt");
+  glObjectLabel(GL_BUFFER, this->vbo_vn, -1, "Plane3D VBO vn");
+#endif
 #ifdef DEBUG_TRACE_PLANE
   std::cout << "Plane3D" << this << " created" << std::endl;
 #endif
@@ -24,7 +31,7 @@ Plane3D::~Plane3D()
 void Plane3D::render(ShaderProgram* shader)
 {
 #ifdef DEBUG_TRACE_PLANE
-  std::cout << "Plane3D" << this << "::render()" << std::endl;
+  std::cout << "Plane3D" << this << "::render() vao=" << this->vao << " vbo_t=" << this->vbo_v << " vbo_vt=" << this->vbo_vt << std::endl;
 #endif
   bind_vao();
   glEnable(GL_DEPTH_TEST);
@@ -58,7 +65,10 @@ void Plane3D::finalize()
    -10.0, 10.0, 0.0  // upper left
   };
   set_v(vertices_v, 6);
-  float vertices_vt[18] = {
+#ifdef DEBUG_TRACE_PLANE
+  std::cout << "Plane3D" << this << "::finalize() " << sizeof(vertices_v) << " bytes -> vbo_v " << this->vbo_v << std::endl;
+#endif
+  float vertices_vt[12] = {
    -1.0, 1.0, // upper left
     1.0, 1.0, // upper right
     1.0,-1.0, // lower right
@@ -67,6 +77,9 @@ void Plane3D::finalize()
    -1.0, 1.0  // upper left
   };
   set_vt(vertices_vt, 6);
+#ifdef DEBUG_TRACE_PLANE
+  std::cout << "Plane3D" << this << "::finalize() " << sizeof(vertices_vt) << " bytes -> vbo_vt " << this->vbo_vt << std::endl;
+#endif
   this->finalized = true;
 }
 

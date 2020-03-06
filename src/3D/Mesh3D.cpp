@@ -73,6 +73,12 @@ void Mesh3D::initialize(ShaderProgram* shader)
     shader->enableAttributeVN();
     shader->setAttribPointerVN(3, GL_FLOAT, sizeof(GLfloat), 3, 0);
   }
+#ifdef DEBUG_TRACE_OPENGL
+  glObjectLabel(GL_VERTEX_ARRAY, this->vao,    -1, std::string(this->name + " VAO").c_str());
+  glObjectLabel(GL_BUFFER,       this->vbo_v,  -1, std::string(this->name + " VBO v").c_str());
+  glObjectLabel(GL_BUFFER,       this->vbo_vt, -1, std::string(this->name + " VBO vt").c_str());
+  glObjectLabel(GL_BUFFER,       this->vbo_vn, -1, std::string(this->name + " VBO vn").c_str());
+#endif
   this->initialized = true;
 }
 
@@ -81,7 +87,7 @@ void Mesh3D::set_v(float* v, int num_vertices)
 {
   bind_vbo(this->vbo_v);
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::set_v()" << std::endl;
+  std::cout << "Mesh3D" << this << "::set_v() vbo=" << this->vbo_v << std::endl;
 #endif
   glBufferData(GL_ARRAY_BUFFER, 3*num_vertices*sizeof(float), v, GL_STATIC_DRAW);
   this->count_v = num_vertices;
@@ -91,7 +97,7 @@ void Mesh3D::set_vt(float* vt, int num_vertices)
 {
   bind_vbo(this->vbo_vt);
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::set_vt()" << std::endl;
+  std::cout << "Mesh3D" << this << "::set_vt() vbo=" << this->vbo_vt << std::endl;
 #endif
   glBufferData(GL_ARRAY_BUFFER, 2*num_vertices*sizeof(float), vt, GL_STATIC_DRAW);
   this->count_vt = num_vertices;
@@ -101,7 +107,7 @@ void Mesh3D::set_vn(float* vn, int num_vertices)
 {
   bind_vbo(this->vbo_vn);
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::set_vn()" << std::endl;
+  std::cout << "Mesh3D" << this << "::set_vn() vbo=" << this->vbo_vt << std::endl;
 #endif
   glBufferData(GL_ARRAY_BUFFER, 3*num_vertices*sizeof(float), vn, GL_STATIC_DRAW);
   this->count_vn = num_vertices;
@@ -127,7 +133,6 @@ void Mesh3D::unbind_vao()
 
 void Mesh3D::bind_vbo(GLuint vbo)
 {
-  bind_vao();
 #ifdef DEBUG_TRACE_MESH
   std::cout << "Mesh3D" << this << "::bind_vbo() " << vbo << std::endl;
 #endif

@@ -356,7 +356,7 @@ void OpenGL_debug_callback( GLenum source, GLenum type, GLuint id, GLenum severi
 }
 
 
-
+//#define DEBUG_NO_VIRTUAL_MACHINES
 int main(int argc, char* argv[])
 {
   (void)(argc);
@@ -504,7 +504,7 @@ int main(int argc, char* argv[])
       // Bind VM textures to props (NOT to the underlying, shared mesh objects)
       for (int i=0; i<(int)vms.size(); i++) {
         std::cout << "main() applying VM texture " << i << std::endl;
-        scene.getProp(i)->setTexture(vms[i]->display.textureID);
+        scene.getProp(i)->setTexture(vms[i]->display.textureId());
       }
 #endif
 
@@ -525,7 +525,6 @@ int main(int argc, char* argv[])
         for (auto& vm: vms) {
           vm->run();
         }
-
 
         scene.render();
 
