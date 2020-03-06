@@ -31,8 +31,8 @@ void main() {
     if (use_texture > 0) {
       float c =
         checkerboard(v_uv.x, v_uv.y, 1) * 0.3 +
-        checkerboard(v_uv.x, v_uv.y, 0.1) * 0.2 +
-        checkerboard(v_uv.x, v_uv.y, 0.01) * 0.1 +
+        checkerboard(v_uv.x, v_uv.y, 1/8.0) * 0.2 +
+        checkerboard(v_uv.x, v_uv.y, 1/64.0) * 0.1 +
         0.1;
 	    col = vec4(vec3(c/2.0 + 0.3), 1);
     } else {
