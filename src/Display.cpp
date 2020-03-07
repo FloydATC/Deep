@@ -24,7 +24,7 @@ Display::Display(ShaderProgram* shader, Fontcache font)
   this->shader = shader;
   //this->shaderID = shaderID;
   this->font = font;
-  this->m_ortho = Matrix4().Ortho(-0.5f, width-0.5f, -0.0f, height-0.0f, -1.0f, 1.0f);
+  this->m_ortho = Matrix4().Ortho(-0.5f, width-0.5f, 0.5f, height+0.5f, -0.0f, 1.0f);
 
 
   //glUseProgram(shaderID);
@@ -50,6 +50,7 @@ void Display::draw_untextured_vbo(GLsizeiptr arrsize, const void* arr, GLenum ty
 {
   this->shader->setColor(this->color);
   this->shader->setTextureFlag(false);
+  bind_vbo();
   glBufferData(GL_ARRAY_BUFFER, arrsize, arr, GL_STREAM_DRAW); // Buffer will be used only once
   this->shader->disableAttributeVT();
   this->shader->setAttribPointerV(2, type, typesize, 2, 0);
@@ -265,7 +266,7 @@ void Display::draw_surface(int row, int col, float r, float g, float b, GLuint s
   glBlendEquation(GL_FUNC_ADD);
 
   float x1 = tx(col*8);
-  float y1 = ty((row+1)*8);
+  float y1 = ty((row+1)*8)+1;
   float x2 = x1+8.0;
   float y2 = y1+8.0;
 
