@@ -18,7 +18,7 @@ var cr2 = rand();
 var cg2 = rand();
 var cb2 = rand(); 
 
-while (getkey()=="[Escape]") {
+while (getkey() != "[Escape]") {
   for (var i=0; i<100; i++) {
     gl.rgb(
       (cr2*i/100) + (cr1*(100-i)/100), 
@@ -49,3 +49,4 @@ while (getkey()=="[Escape]") {
   sleep(1);
 }
 screen.clear();
+
