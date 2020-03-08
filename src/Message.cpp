@@ -19,16 +19,14 @@ Message::~Message()
 
 std::ostream& operator <<(std::ostream& stream, const Message* msg) {
   switch (msg->type) {
-  case Message::Type::Break:
+    case Message::Type::Break:
       stream << "<Message::Type::Break>"; break;
     case Message::Type::KeyDown:
       stream << "<Message::Type::KeyDown name=\"" << SDL_GetKeyName(msg->key.sym) << "\" scancode=" << msg->key.scancode << ">"; break;
     case Message::Type::KeyUp:
       stream << "<Message::Type::KeyDown name=\"" << SDL_GetKeyName(msg->key.sym) << "\" scancode=" << msg->key.scancode << ">"; break;
-    case Message::Type::MouseButtonDown:
-      stream << "<Message::Type::MouseButtonDown>"; break;
-    case Message::Type::MouseButtonUp:
-      stream << "<Message::Type::MouseButtonUp>"; break;
+    case Message::Type::MouseButton:
+      stream << "<Message::Type::MouseButton button=" << msg->button.number << " state=" << (msg->button.pressed ? "Down" : "Up") << ">"; break;
     case Message::Type::MouseMotion:
       stream << "<Message::Type::MouseMotion>"; break;
     case Message::Type::MouseWheel:
