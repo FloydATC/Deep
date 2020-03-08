@@ -1,4 +1,11 @@
 
+// Check arguments
+if (args.length < 2) {
+  print("Please specify filename\n");
+  exit;
+}
+
+
 // Initialize
 var bgc = 6; // blue
 var fgc = 3; // cyan
@@ -13,8 +20,26 @@ var lines = [""]; // Empty document
 var line=lines[0];
 
 
+// Aliases because I'm too lazy to update the code after API change.
+// Some sort of 'use' keyword might be handy, although...
+// c++ has one, and using it is generally considered bad practice.
+// Hm.
+var fg = screen.fg;
+var bg = screen.bg;
+var scr_up = screen.up;
+var scr_down = screen.down;
+var scr_left = screen.left;
+var scr_right = screen.right;
+var cls = screen.clear;
+var cursor = screen.cursor;
+var pos = screen.pos;
+var col = screen.col;
+var row = screen.row;
+var cols = screen.cols;
+var rows = screen.rows;
 
 
+// Now that the language has arrays, it really needs a 'foreach' keyword...
 fun foreach_list(list, fn) {
   var i = 0;
   while (i<list.length) {
@@ -165,29 +190,26 @@ fun editor_scroll_right() {
 }
 
 fun redraw_screen() {
-  //debug("redraw_screen()");
   cursor(0);
   if (scrR>docL+1) { scrR = docL+1; }
-  ////debug(str("redraw_screen() docL=",docL," docC=",docC," scrR=",scrR," scrC=",scrC));
   lines[docL] = line;
   bg(bgc);
   fg(fgc);
   cls(1,0,22,38);
-  fun print_line(line, i) {
-    var first = docL-scrR+1;
-    if (i >= first and i <= first+21) {
-      var fc = docC-scrC;
-      pos(i+1-first, 0);
-      if (fc<line.chars) print(line.substr(fc, 39));
-    }
-  }
   hscrollbar();
   vscrollbar();
-  var first_line = docL-scrR-1;
+  var first_line = 1+docL-scrR;
   var last_line = first_line + 21;
+  var fc = docC-scrC;
+  
   bg(bgc);
   fg(fgc);
-  foreach_list(lines, print_line);
+  for (var i=first_line; i<last_line+1; i++) {
+    if (i==lines.length) break;
+    pos(i+1-first_line, 0);
+    print(lines[i].substr(fc));
+  }
+  //foreach_list(lines, print_line);
   pos(scrR, scrC);
   cursor(1);
 }
@@ -532,11 +554,16 @@ fun save_file(filename) {
   line = lines[0];
 }
 
+
+
+var filename = args[1];
 var running = true;
 titlebar("untitled");
 redraw_screen();
 statusbar("INSERT");
 cursor(1);
+
+load_file(args[1]);
 
 // Main loop
 while (running==true) {
@@ -575,8 +602,8 @@ while (running==true) {
       case "[Delete]":     handle_delete();    break;
 
       // -- File
-      case "[Ctrl L]":     load_file("funos/lorem.txt");      break;
-      case "[Ctrl S]":     save_file("funos/lorem.bak");      break;
+      case "[Ctrl L]":     load_file(args[1]);      break;
+      case "[Ctrl S]":     save_file(args[1]);      break;
 
       // -- Application
       case "[Ctrl C]":     running = false;    break;

@@ -1,9 +1,9 @@
 
 
-#include <funos\inc\List.fun>
+#include "funos\inc\List.fun"
 
 //print("List is ", List, "\n");
 
 var list = List();
-print("list is ", list, "\n");
+print("list is ", list.type, "\n");
 

@@ -1,16 +1,24 @@
 
-autoscroll(0);
-var running = true;
-while (running == true) {
-  fg(rand()*16);
-  bg(rand()*16);
-  pos(rand()*rows(), rand()*cols());
+screen.autoscroll(0);
+
+while (getkey() != "[Escape]") {
+
+  screen.fg(rand()*16);
+  screen.bg(rand()*16);
+  screen.pos(
+    rand() * screen.rows(), 
+    rand() * screen.cols()
+  );
   var cp = rand()*(255-32);
-  print(chr(32+cp));
-  if (getc() != "") { running = false; }
+  print((32+cp).char);
+
 }
-autoscroll(1);
-bg(0);
-fg(3);
-cls();
+screen.autoscroll(1);
+screen.bg(0);
+screen.fg(3);
+screen.clear();
+
+
+
+
 
