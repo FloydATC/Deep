@@ -15,11 +15,17 @@ class Message
       TextInput        = 0x02,
       Break            = 0x03, // Ctrl+C
       MouseMotion      = 0x10,
-      MouseButtonDown  = 0x11,
-      MouseButtonUp    = 0x12,
-      MouseWheel       = 0x13,
+      MouseButton      = 0x11,
+      MouseWheel       = 0x12,
       KeyDown          = 0x21,
       KeyUp            = 0x22,
+    };
+
+    struct MouseButton {
+      int x;
+      int y;
+      int number;
+      bool pressed;
     };
 
     struct MouseMotion {
@@ -52,6 +58,7 @@ class Message
 
 
     Type type;
+    struct MouseButton button;
     struct MouseMotion motion;
     struct MouseWheel wheel;
     struct Screen screen;

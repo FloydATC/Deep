@@ -16,6 +16,7 @@ namespace FunC {
 #include "GFX.h"
 #include "IO/IOHandle.h"
 #include "Message.h"
+#include "Dev/Mouse.h"
 #include "ShaderProgram.h"
 #include "Vectors.h"
 
@@ -31,7 +32,8 @@ namespace FunC {
 
 */
 
-typedef std::unordered_map<std::string,FunC::NativeFn> membermap;
+typedef std::unordered_map<std::string,FunC::NativeFn> MemberMap;
+typedef std::unordered_map<std::string,FunC::Value> ValueMap;
 
 
 class Machine
@@ -42,8 +44,6 @@ class Machine
     Machine(ShaderProgram* shader, Fontcache fontcache);
     ~Machine();
 
-    void handle_msg_quit(Message* msg);
-    void handle_msg_mousemotion(Message* msg);
     void push(Message* msg);
     bool execute_code(std::string code, std::string filename);
     bool execute_file(std::string fname, CmdLine* parser);
@@ -61,14 +61,14 @@ class Machine
     static void func_errorCallback(const char* errormsg);
 
     // Utility functions (temporary workarounds for language shortcomings)
-    static bool func_reset     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_str       (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_getkey    (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_rand      (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
-    static bool func_mouse_pos (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_reset         (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_str           (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_getkey        (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_rand          (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_mouse         (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
 
 
-    static bool func_print     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
+    static bool func_print         (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
 
     // Display functions
     static bool func_scr_clear     (FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result);
@@ -130,8 +130,9 @@ class Machine
   private:
     bool fc_break = false; // Ctrl+C detected
 
-    Vector2 mouse_position_abs;
-    Vector2 mouse_position_rel;
+    Mouse* mouse;
+    //Vector2 mouse_position_abs;
+    //Vector2 mouse_position_rel;
 
     FunC::VM* vm = nullptr;
 
@@ -144,8 +145,13 @@ class Machine
     void initialize_vm();
     void shutdown_vm();
     void reset_vm();
-    void set_builtin_instance(std::string name, membermap functions);
+    FunC::Value make_builtin_instance(ValueMap values);
+    void set_builtin_instance(std::string name, MemberMap functions);
     void set_callbacks();
+    void handle_msg_quit(Message* msg);
+    void handle_msg_mousemotion(Message* msg);
+    void handle_msg_mousebutton(Message* msg);
+
 };
 
 #endif // MACHINE_H

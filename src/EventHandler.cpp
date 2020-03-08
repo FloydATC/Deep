@@ -63,15 +63,21 @@ void EventHandler::handle_mousemotion(SDL_Event event)
 
 void EventHandler::handle_mousebuttondown(SDL_Event event)
 {
-  Message* msg = new Message(Message::Type::MouseButtonDown);
-  std::cerr << "main() SDL_MOUSEBUTTONDOWN handling incomplete" << std::endl;
+  Message* msg = new Message(Message::Type::MouseButton);
+  msg->button.number = event.button.button;
+  msg->button.pressed = true;
+  msg->button.x = event.button.x;
+  msg->button.y = event.button.y;
   send_message(msg);
 }
 
 void EventHandler::handle_mousebuttonup(SDL_Event event)
 {
-  Message* msg = new Message(Message::Type::MouseButtonUp);
-  std::cerr << "main() SDL_MOUSEBUTTONUP handling incomplete" << std::endl;
+  Message* msg = new Message(Message::Type::MouseButton);
+  msg->button.number = event.button.button;
+  msg->button.pressed = false;
+  msg->button.x = event.button.x;
+  msg->button.y = event.button.y;
   send_message(msg);
 }
 

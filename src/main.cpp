@@ -222,6 +222,11 @@ void process_mousewheel(Message* msg, Scene3D* scene)
   delete msg;
 }
 
+void process_mousebutton(Message* msg, std::vector<Machine*> vms, GameState* gamestate)
+{
+  vms[gamestate->current_vm]->push(msg);
+}
+
 void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, GameState* gamestate)
 {
 
@@ -251,13 +256,8 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
       process_mousemotion(msg, vms, scene, gamestate);
       break;
     }
-    case Message::Type::MouseButtonDown:
-      std::cout << "processMsg() MouseButtonDown message" << std::endl;
-      delete msg;
-      break;
-    case Message::Type::MouseButtonUp:
-      std::cout << "processMsg() MouseButtonUp message" << std::endl;
-      delete msg;
+    case Message::Type::MouseButton:
+      process_mousebutton(msg, vms, gamestate);
       break;
     case Message::Type::MouseWheel:
       process_mousewheel(msg, scene);

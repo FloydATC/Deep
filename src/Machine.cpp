@@ -39,6 +39,7 @@ std::uniform_real_distribution<double> rand_double(0.0, 1.0);
 Machine::Machine(ShaderProgram* shader, Fontcache fontcache)
 {
   //ctor
+  this->mouse = new Mouse();
   initialize_vm();
 
   this->display = Display(shader, fontcache);
@@ -54,7 +55,6 @@ Machine::~Machine()
 {
   //dtor
   shutdown_vm();
-
   std::cout << "Virtual Machine " << this << " destroyed" << std::endl;
 }
 
@@ -64,7 +64,7 @@ void Machine::initialize_vm()
   if (running != nullptr) { return; }
   vm = FunC::initVM();
   set_callbacks();
-  this->mouse_position_rel = Vector2(0, 0);
+  this->mouse->reset();
   add_iohandle(new IOStream()); // "stdin"
   add_iohandle(new IOStream()); // "stdout"
   add_iohandle(new IOStream()); // "stderr"
@@ -101,24 +101,25 @@ void Machine::write_to_stdin(const std::string data)
 }
 
 
-void Machine::set_builtin_instance(std::string name, membermap functions)
+FunC::Value Machine::make_builtin_instance(ValueMap values)
 {
   // The FunC API can create an "instance Value" using
   // - a char** array for field names, and
   // - a Value* array for values
-  // From the std::unordered map 'functions', construct those arrays
+  // From the std::unordered map 'values', construct those arrays
+
   std::vector<std::string> keys;
   std::vector<const char*> keys_cstr;
-  keys.reserve(functions.size());
+  keys.reserve(values.size());
   std::vector<FunC::Value> vals;
-  vals.reserve(functions.size());
+  vals.reserve(values.size());
 
-  for(auto key_value : functions) {
+  for(auto key_value : values) {
     std::string key = key_value.first;
-    keys.push_back( key );
-    // Create native function object in VM
-    FunC::Value fn = to_nativeValue(vm, key.c_str(), (FunC::NativeFn) key_value.second );
-    vals.push_back(fn);
+    keys.push_back(key);
+    keys_cstr.push_back( keys[keys.size()-1].c_str() );
+    FunC::Value value = key_value.second;
+    vals.push_back( value );
   }
 
   // Convert std::vector of field names to char** array of pointers
@@ -127,7 +128,23 @@ void Machine::set_builtin_instance(std::string name, membermap functions)
   // Create instance of an empty class named "*" in VM
   // The class has no methods and serves no purpose (yet)
   // We just want the instance's ability to serve as a namespace.
-  FunC::Value instance = FunC::to_instanceValue(vm, keys_cstr.data(), vals.data(), keys.size());
+  return FunC::to_instanceValue(vm, keys_cstr.data(), vals.data(), keys.size());
+
+}
+
+
+void Machine::set_builtin_instance(std::string name, MemberMap functions)
+{
+  ValueMap values;
+
+  for(auto key_value : functions) {
+    std::string key = key_value.first;
+    // Create native function object in VM
+    FunC::Value fn = to_nativeValue(vm, key.c_str(), (FunC::NativeFn) key_value.second );
+    values.insert({ key, fn });
+  }
+
+  FunC::Value instance = make_builtin_instance(values);
 
   // Assign it to a name in the global namespace
   FunC::defineGlobal(vm, name.c_str(), instance);
@@ -138,7 +155,7 @@ void Machine::set_builtin_instance(std::string name, membermap functions)
 // so they become available for the script engine
 void Machine::set_callbacks()
 {
-  membermap members;
+  MemberMap members;
 
   // Callbacks to be usable by FunC script
   FunC::set_error_callback(vm, (FunC::ErrorCb) func_errorCallback);
@@ -149,7 +166,7 @@ void Machine::set_callbacks()
   FunC::defineNative(vm, "getkey",    (FunC::NativeFn) func_getkey); // Read keyboard input
   FunC::defineNative(vm, "rand",      (FunC::NativeFn) func_rand); // Get random double between 0.0 and 1.0
   // TODO: mouse function should be replaced with a built-in object instance with named properties
-  FunC::defineNative(vm, "mouse",     (FunC::NativeFn) func_mouse_pos); // Read mouse position, return array
+  FunC::defineNative(vm, "mouse",     (FunC::NativeFn) func_mouse); // Read mouse events, return instance (or null)
 
   // This needs to be a top-level function
   FunC::defineNative(vm, "print",     (FunC::NativeFn) func_print); // Print arguments
@@ -395,7 +412,7 @@ void Machine::check_fc_status()
 
 FunC::InterpretResult Machine::run()
 {
-
+  mouse->check();
   display.pre_render(); // bind OpenGL texture/framebuffer
   if (fc_status == FunC::INTERPRET_COMPILED || fc_status == FunC::INTERPRET_RUNNING) {
     if (fc_break==true) {
@@ -440,10 +457,17 @@ void Machine::handle_msg_quit(Message* msg)
 
 void Machine::handle_msg_mousemotion(Message* msg)
 {
-  Vector2 curr = Vector2(msg->motion.x, msg->motion.y);
-  Vector2 relative = curr - this->mouse_position_abs;
-  this->mouse_position_abs = curr;  // Current position
-  this->mouse_position_rel += relative; // Motion since last read
+  this->mouse->motion(Vector2(msg->motion.x, msg->motion.y));
+  delete msg;
+}
+
+void Machine::handle_msg_mousebutton(Message* msg)
+{
+  if (msg->button.pressed) {
+    this->mouse->button_down(msg->button.number, Vector2(msg->button.x, msg->button.y));
+  } else {
+    this->mouse->button_up(msg->button.number, Vector2(msg->button.x, msg->button.y));
+  }
   delete msg;
 }
 
@@ -453,6 +477,7 @@ void Machine::push(Message* msg)
   switch (msg->type) {
     case Message::Type::Break: handle_msg_quit(msg); break;
     case Message::Type::MouseMotion: handle_msg_mousemotion(msg); break;
+    case Message::Type::MouseButton: handle_msg_mousebutton(msg); break;
     default: m_queue.push(msg); // Handled in "software"
   }
 }
@@ -514,16 +539,27 @@ bool Machine::func_print(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value
 }
 
 
-// Return and reset the current mouse position as an array
-bool Machine::func_mouse_pos(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
+// Return a mouse event instance from the mouse event queue (or NULL value if none)
+bool Machine::func_mouse(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value* result)
 {
-  double numbers[4];
-  numbers[0] = running->mouse_position_abs.x;
-  numbers[1] = running->mouse_position_abs.y;
-  numbers[2] = running->mouse_position_rel.x;
-  numbers[3] = running->mouse_position_rel.y;
-  *result = FunC::to_numberValueArray(running->vm, numbers, 4);
-  running->mouse_position_rel = Vector2(0, 0);
+  MouseEvent* event = running->mouse->get_event();
+  if (event == nullptr) {
+    *result = FunC::nullValue();
+  } else {
+    ValueMap values;
+    values.insert({
+      "mouse",
+      FunC::to_stringValue(running->vm, event->type_as_string().c_str())
+    });
+    if (event->button > 0) values.insert({ "button", FunC::to_numberValue(event->button) });
+    if (event->clicks > 0) values.insert({ "clicks", FunC::to_numberValue(event->clicks) });
+    values.insert({ "x", FunC::to_numberValue(event->absolute.x) });
+    values.insert({ "y", FunC::to_numberValue(event->absolute.y) });
+    values.insert({ "relx", FunC::to_numberValue(event->relative.x) });
+    values.insert({ "rely", FunC::to_numberValue(event->relative.y) });
+    delete event;
+    *result = running->make_builtin_instance(values);
+  }
   return true;
 }
 
