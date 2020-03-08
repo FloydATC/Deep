@@ -3,6 +3,7 @@
 
 #include "Display.h"
 
+#include "DateTime.h"
 #include "Fontcache.h"
 #include "UTF8hack.h"
 
@@ -338,7 +339,7 @@ void Display::show_cursor()
   //std::cout << "row=" << row << " col=" << col << " ccmem=" << ccmem[row][col] << std::endl;
   draw_surface(row, col, rgb[fgcolor][0], rgb[fgcolor][1], rgb[fgcolor][2], font.glyph(0x2588));
   draw_surface(row, col, rgb[bgcolor][0], rgb[bgcolor][1], rgb[bgcolor][2], font.glyph(ccmem[row][col]));
-  cursor_last = now();
+  cursor_last = unixtime_now();
   cursor_state = Cursorstate::Normal;
   //std::cout << "normal_cursor() done" << std::endl;
 }
@@ -350,7 +351,7 @@ void Display::invert_cursor()
   int bgcolor = bgmem[row][col];
   draw_surface(row, col, rgb[bgcolor][0], rgb[bgcolor][1], rgb[bgcolor][2], font.glyph(0x2588));
   draw_surface(row, col, rgb[fgcolor][0], rgb[fgcolor][1], rgb[fgcolor][2], font.glyph(ccmem[row][col]));
-  cursor_last = now();
+  cursor_last = unixtime_now();
   cursor_state = Cursorstate::Inverse;
 }
 
@@ -358,7 +359,7 @@ void Display::update_cursor()
 {
   if (cursor_state == Cursorstate::Disabled) { return; }
   if (cursor_state == Cursorstate::Hidden) { return; }
-  if (now() > cursor_last + cursor_interval) {
+  if (unixtime_now() > cursor_last + cursor_interval) {
     if (cursor_state == Cursorstate::Inverse) {
       show_cursor();
     } else {
@@ -829,10 +830,3 @@ void Display::pos(int r, int c)
 }
 
 
-// STATIC
-double Display::now() {
-  auto time = std::chrono::system_clock::now().time_since_epoch();
-  std::chrono::seconds seconds = std::chrono::duration_cast< std::chrono::seconds >(time);
-  std::chrono::milliseconds ms = std::chrono::duration_cast< std::chrono::milliseconds >(time);
-  return (double) seconds.count() + ((double) (ms.count() % 1000)/1000.0);
-}

@@ -96,7 +96,6 @@ class Display
     void bind_vbo();
     void bind_fbo();
     void unbind_fbo();
-    static double now();
 
     double cursor_interval = 0.5;
     double cursor_last = 0.0;
