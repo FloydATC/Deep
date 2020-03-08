@@ -46,14 +46,6 @@
 // http://lazyfoo.net/SDL_tutorials/lesson33/index.php
 
 
-double now() {
-  auto time = std::chrono::system_clock::now().time_since_epoch();
-  std::chrono::seconds seconds = std::chrono::duration_cast< std::chrono::seconds >(time);
-  std::chrono::milliseconds ms = std::chrono::duration_cast< std::chrono::milliseconds >(time);
-  return (double) seconds.count() + ((double) (ms.count() % 1000)/1000.0);
-}
-
-
 
 
 /*
