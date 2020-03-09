@@ -297,4 +297,10 @@ std::string IOFile::slurp(std::string filename)
 }
 
 
+std::string IOFile::get_path(const std::string filename)
+{
+  std::size_t slash = filename.find_last_of("/\\");
+  if (slash == std::string::npos) return "";
+  return filename.substr(0, slash+1);
+}
 

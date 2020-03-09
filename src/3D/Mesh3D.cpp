@@ -22,6 +22,7 @@ Mesh3D::Mesh3D()
   this->bounds = nullptr;
   this->bounds_enabled = false;
   this->debug = false;
+  this->material = nullptr;
 #ifdef DEBUG_TRACE_MESH
   std::cout << "Mesh3D" << this << " created" << std::endl;
 #endif
@@ -34,6 +35,7 @@ Mesh3D::~Mesh3D()
   glDeleteBuffers(1, &this->vbo_vt);
   glDeleteBuffers(1, &this->vbo_vn);
   glDeleteVertexArrays(1, &this->vao);
+  if (this->material != nullptr) delete this->material;
 #ifdef DEBUG_TRACE_MESH
   std::cout << "Mesh3D" << this << " destroyed" << std::endl;
 #endif
@@ -170,13 +172,27 @@ void Mesh3D::setBounds(Mesh3D* box)
 #ifdef DEBUG_TRACE_MESH
   std::cout << "Mesh3D" << this << "::setBounds() name=" << this->name << " bounds set" << std::endl;
 #endif
-  if (bounds != nullptr) delete bounds;
+  if (this->bounds != nullptr) delete this->bounds;
   this->bounds = box;
+}
+
+void Mesh3D::setMaterial(Material* material)
+{
+#ifdef DEBUG_TRACE_MESH
+  std::cout << "Mesh3D" << this << "::setMaterial() name=" << this->name << " material set" << std::endl;
+#endif
+  if (this->material != nullptr) delete this->material;
+  this->material = material;
 }
 
 Mesh3D* Mesh3D::getBounds()
 {
   return this->bounds;
+}
+
+Material* Mesh3D::getMaterial()
+{
+  return this->material;
 }
 
 bool Mesh3D::isEnabled()

@@ -6,14 +6,22 @@
 
 #include "3D/Box3D.h"
 
+//#define DEBUG_TRACE_OBJLOADER
+
 Obj3DLoader::Obj3DLoader()
 {
   //ctor
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << " created" << std::endl;
+#endif
 }
 
 Obj3DLoader::~Obj3DLoader()
 {
   //dtor
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << " destroyed" << std::endl;
+#endif
 }
 
 void Obj3DLoader::reset()
@@ -23,6 +31,7 @@ void Obj3DLoader::reset()
   this->indexed_vn.clear();
   this->linear_points.clear();
   this->subobject_mesh.clear();
+  this->subobject_material.clear();
   this->subobject_start.clear();
   this->subobject_length.clear();
   this->box = nullptr;
@@ -30,20 +39,27 @@ void Obj3DLoader::reset()
 
 Obj3D* Obj3DLoader::load(std::string filename)
 {
-  std::cout << "Obj3DLoader::load() filename=" << filename << std::endl;
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << "::load() filename=" << filename << std::endl;
+#endif
   reset();
   int errors = 0;
-  this->scanner = new Obj3DScanner();
-  scanner->load(filename);
+  this->scanner = new FileScanner();
+  if (scanner->load(filename) == false) {
+    delete this->scanner;
+    std::cerr << "Obj3DLoader::load() error reading " << filename << std::endl;
+    return nullptr;
+  }
   this->filename = filename;
   this->object = new Obj3D();
 
 
   //std::cout << "Obj3DLoader::load() begin parse loop" << std::endl;
   while (!scanner->is_eof()) {
+    scanner->skip_whitespace(true);
     if (scanner->is_alpha()) { get_keyword(); continue; }
 
-    //throw std::runtime_error ("Error parsing "+filename);
+    std::cerr << "Obj3DLoader" << this << "::load() unexpected character code " << (int)this->scanner->what() << " at " << this->scanner->where() << std::endl;
     errors++;
     scanner->advance();
   }
@@ -61,6 +77,7 @@ Obj3D* Obj3DLoader::load(std::string filename)
   // Now copy the array data for each sub object using the offsets and lengths
   for (unsigned int i=0; i<subobject_mesh.size(); i++) {
     SubObject3D* mesh = this->subobject_mesh[i];
+    mesh->setMaterial(this->subobject_material[i]);
     int offset = this->subobject_start[i];
     int length = this->subobject_length[i];
     mesh->set_v(v_array+offset*3, length);
@@ -113,7 +130,9 @@ float* Obj3DLoader::make_vn_array()
 void Obj3DLoader::get_keyword()
 {
   std::string keyword = scanner->get_keyword();
-  //std::cout << "Obj3DLoader::get_keyword() got keyword=" << keyword << std::endl;
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << "::get_keyword() got keyword=" << keyword << std::endl;
+#endif
   if (keyword == "mtllib") { get_mtllib(); return; } // material definition *IGNORED*
   if (keyword == "usemtl") { get_usemtl(); return; } // material reference *IGNORED*
   if (keyword == "f") { get_f(); return; } // face (triangle or quad)
@@ -130,20 +149,42 @@ void Obj3DLoader::get_keyword()
 
 void Obj3DLoader::get_mtllib()
 {
-  // Define material - Ignore for now
-  while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
-  scanner->consume('\n');
+  // Get name of material library file
+  std::string fname = scanner->get_filename();
+  std::string path = IOFile::get_path(this->filename);
+  this->mtllib_fname = path + fname;
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << "::get_mtllib() filename=" << this->mtllib_fname << std::endl;
+#endif
+  //// Define material - Ignore for now
+  //while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
+  scanner->consume_eol();
 }
 
 void Obj3DLoader::get_usemtl()
 {
-  // Use material - Ignore for now
-  while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
-  scanner->consume('\n');
+  // Get material name
+  std::string mtllib_name = scanner->get_string();
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << "::get_usemtl() material name=" << mtllib_name << std::endl;
+#endif
+
+  // Load material
+  MtlLoader* mtlloader = new MtlLoader();
+  Material* material = mtlloader->load(this->mtllib_fname, mtllib_name);
+  delete mtlloader;
+
+  // Store material so we can link it to the mesh object later
+  subobject_material.push_back(material);
+
+  scanner->consume_eol();
 }
 
 void Obj3DLoader::get_f()
 {
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << "::get_f() " << scanner->where() << std::endl;
+#endif
   // f 2563/2575/2561 2565/2576/2561 2566/2577/2561 2564/2578/2561
   std::vector<Point> face;
   while (scanner->is_numeric()) {
@@ -180,22 +221,28 @@ void Obj3DLoader::get_f()
     default:
       std::cout << "Obj3DLoader::get_f() invalid face with " << face.size() << " points" << std::endl;
   }
-  scanner->consume('\n');
+  scanner->consume_eol();
 }
 
 void Obj3DLoader::get_l()
 {
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << "::get_l() " << scanner->where() << std::endl;
+#endif
   // Line element - Ignore for now
   while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
-  scanner->consume('\n');
+  scanner->consume_eol();
 }
 
 void Obj3DLoader::get_o()
 {
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << "::get_o() " << scanner->where() << std::endl;
+#endif
   // Get subobject name
   std::string name = scanner->get_keyword();
   while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
-  scanner->consume('\n');
+  scanner->consume_eol();
   // Prefix name with subobject number
   name = std::to_string(this->subobject_mesh.size()).append(":").append(name);
 
@@ -220,43 +267,58 @@ void Obj3DLoader::get_o()
 
 void Obj3DLoader::get_s()
 {
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << "::get_s() " << scanner->where() << std::endl;
+#endif
   // Ignore for now
   while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
-  scanner->consume('\n');
+  scanner->consume_eol();
 }
 
 void Obj3DLoader::get_v()
 {
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << "::get_v() " << scanner->where() << std::endl;
+#endif
   float x = scanner->get_float();
   float y = scanner->get_float();
   float z = scanner->get_float();
   indexed_v.push_back(Vector3(x, y, z));
   this->box->extend(Vector3(x, y, z));
-  scanner->consume('\n');
+  scanner->consume_eol();
 }
 
 void Obj3DLoader::get_vt()
 {
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << "::get_vt() " << scanner->where() << std::endl;
+#endif
   float u = scanner->get_float();
   float v = scanner->get_float();
   indexed_vt.push_back(Vector2(u, v));
-  scanner->consume('\n');
+  scanner->consume_eol();
 }
 
 void Obj3DLoader::get_vn()
 {
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << "::get_vn() " << scanner->where() << std::endl;
+#endif
   float x = scanner->get_float();
   float y = scanner->get_float();
   float z = scanner->get_float();
   indexed_vn.push_back(Vector3(x, y, z));
-  scanner->consume('\n');
+  scanner->consume_eol();
 }
 
 void Obj3DLoader::get_vp()
 {
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << "::get_vp() " << scanner->where() << std::endl;
+#endif
   // Vertex parameter - Ignore for now
   while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
-  scanner->consume('\n');
+  scanner->consume_eol();
 }
 
 

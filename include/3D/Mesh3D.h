@@ -5,7 +5,7 @@
 
 #include "GFX.h"
 #include "ShaderProgram.h"
-
+#include "Material.h"
 
 class Mesh3D
 {
@@ -23,6 +23,8 @@ class Mesh3D
     void setColor(float* color);
     void setColor(float r, float g, float b, float a);
 
+    void setMaterial(Material* material);
+    Material* getMaterial();
     void setBounds(Mesh3D* box);
     Mesh3D* getBounds();
     bool bounds_enabled;
@@ -40,6 +42,7 @@ class Mesh3D
     void initialize(ShaderProgram* shader);
 
     friend class Obj3DLoader;
+    Material* material;
     void set_v(float* v, int num_vertices);
     void set_vt(float* v, int num_vertices);
     void set_vn(float* v, int num_vertices);

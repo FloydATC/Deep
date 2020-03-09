@@ -37,6 +37,7 @@ class IOFile : public IOHandle
     std::string filename;
 
     static std::string slurp(std::string filename);
+    static std::string get_path(const std::string filename);
 
   protected:
 

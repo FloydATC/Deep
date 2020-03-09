@@ -7,7 +7,10 @@
 #include "Matrices.h"
 #include "3D/Obj3D.h"
 #include "3D/SubObject3D.h"
-#include "3D/Obj3DScanner.h"
+#include "FileScanner.h"
+#include "MtlLoader.h"
+#include "Material.h"
+#include "IO/IOFile.h"
 
 typedef struct {
   Vector3 v;
@@ -28,8 +31,9 @@ class Obj3DLoader
 
   private:
     Obj3D* object;
-    Obj3DScanner* scanner;
+    FileScanner* scanner;
     std::string filename;
+    std::string mtllib_fname;
 
     std::vector<Vector3> indexed_v;
     std::vector<Vector2> indexed_vt;
@@ -39,6 +43,7 @@ class Obj3DLoader
     std::vector<int> subobject_start;
     std::vector<int> subobject_length;
     std::vector<SubObject3D*> subobject_mesh;
+    std::vector<Material*> subobject_material;
     Box3D* box;
 
     void reset();

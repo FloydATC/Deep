@@ -1,19 +1,20 @@
-#ifndef OBJ3DSCANNER_H
-#define OBJ3DSCANNER_H
+#ifndef FILESCANNER_H
+#define FILESCANNER_H
 
 #include <string>
 
-class Obj3DScanner
+class FileScanner
 {
   public:
-    Obj3DScanner();
-    ~Obj3DScanner();
+    FileScanner();
+    virtual ~FileScanner();
 
-    void load(std::string filename);
+    bool load(std::string filename);
     void initialize();
     void advance();
     void consume(char c);
-    void skip_whitespace();
+    void consume_eol();
+    void skip_whitespace(bool incl_newline=false);
 
     bool is_eof();
     bool is_eol();
@@ -21,11 +22,17 @@ class Obj3DScanner
     bool is_numeric();
     bool is_delimiter();
     bool is_whitespace();
+    bool is_dot();
+    bool is_path_sep();
 
     std::string get_keyword();
+    std::string get_filename();
     std::string get_string();
     float get_float();
     int get_integer();
+
+    char what();
+    std::string where();
 
   protected:
 
@@ -33,8 +40,10 @@ class Obj3DScanner
 
     int pos;
     int lineno;
+    int charno;
     std::string filename;
     std::string source;
+
 };
 
-#endif // OBJ3DSCANNER_H
+#endif // FILESCANNER_H
