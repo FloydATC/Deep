@@ -10,6 +10,7 @@
 #include "3D/Prop3D.h"
 #include "Matrices.h"
 #include "ShaderProgram.h"
+#include "Texture.h"
 
 /*
 
@@ -34,6 +35,9 @@ class Scene3D
     void setShader(ShaderProgram* shader);
 
     Obj3D* getObj3D(const std::string filename);
+
+    Texture* getTexture(const std::string filename);
+
     Prop3D* addProp(Mesh3D* mesh);
     Prop3D* getProp(int index);
     int getPropCount();
@@ -46,6 +50,7 @@ class Scene3D
 
     std::unordered_map<std::string, ShaderProgram*> shaderProgram;
     std::unordered_map<std::string, Obj3D*> obj3d;
+    std::unordered_map<std::string, Texture*> texture;
     std::vector<Prop3D*> prop3d;
     Camera3D* cam;
 };

@@ -30,7 +30,12 @@ Scene3D::~Scene3D()
     delete obj.second; // first=key, second=value
   }
 
-  // Destroy all Obj3D objects in std::unordered_map
+  // Destroy all Texture objects in std::unordered_map
+  for( const auto& tex : texture ) {
+    delete tex.second; // first=key, second=value
+  }
+
+  // Destroy all ShaderProgram objects in std::unordered_map
   for( const auto& shader : shaderProgram ) {
     delete shader.second; // first=key, second=value
   }
