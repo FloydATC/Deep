@@ -25,6 +25,8 @@ class MtlLoader
     std::string filename;
     std::string materialname;
 
+    void initialize();
+
     void get_keyword();
     void get_newmtl();
     void get_Ns();
@@ -37,6 +39,7 @@ class MtlLoader
     void get_illum();
     void get_map_Kd();
 
+    void ignore();
 };
 
 #endif // MTLLOADER_H

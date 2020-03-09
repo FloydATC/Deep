@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "Vectors.h"
+
 #define DEBUG_TRACE_LOADER
 
 MtlLoader::MtlLoader()
@@ -116,10 +118,15 @@ void MtlLoader::get_Ka()
 #ifdef DEBUG_TRACE_LOADER
   std::cout << "MtlLoader::get_Ka() " << scanner->where() << std::endl;
 #endif
-  // Ignore for now
-  while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
-  scanner->consume_eol();
-
+  if (this->current) {
+    this->material->color_ambient = Vector3(
+      scanner->get_float(),
+      scanner->get_float(),
+      scanner->get_float()
+    );
+  } else {
+    ignore();
+  }
 }
 
 void MtlLoader::get_Kd()
@@ -127,10 +134,15 @@ void MtlLoader::get_Kd()
 #ifdef DEBUG_TRACE_LOADER
   std::cout << "MtlLoader::get_Kd() " << scanner->where() << std::endl;
 #endif
-  // Ignore for now
-  while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
-  scanner->consume_eol();
-
+  if (this->current) {
+    this->material->color_diffuse = Vector3(
+      scanner->get_float(),
+      scanner->get_float(),
+      scanner->get_float()
+    );
+  } else {
+    ignore();
+  }
 }
 
 void MtlLoader::get_Ks()
@@ -138,10 +150,15 @@ void MtlLoader::get_Ks()
 #ifdef DEBUG_TRACE_LOADER
   std::cout << "MtlLoader::get_Ks() " << scanner->where() << std::endl;
 #endif
-  // Ignore for now
-  while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
-  scanner->consume_eol();
-
+  if (this->current) {
+    this->material->color_specular = Vector3(
+      scanner->get_float(),
+      scanner->get_float(),
+      scanner->get_float()
+    );
+  } else {
+    ignore();
+  }
 }
 
 void MtlLoader::get_Ke()
@@ -149,10 +166,15 @@ void MtlLoader::get_Ke()
 #ifdef DEBUG_TRACE_LOADER
   std::cout << "MtlLoader::get_Ke() " << scanner->where() << std::endl;
 #endif
-  // Ignore for now
-  while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
-  scanner->consume_eol();
-
+  if (this->current) {
+    this->material->color_emissive = Vector3(
+      scanner->get_float(),
+      scanner->get_float(),
+      scanner->get_float()
+    );
+  } else {
+    ignore();
+  }
 }
 
 void MtlLoader::get_Ni()
@@ -160,10 +182,8 @@ void MtlLoader::get_Ni()
 #ifdef DEBUG_TRACE_LOADER
   std::cout << "MtlLoader::get_Ni() " << scanner->where() << std::endl;
 #endif
-  // Ignore for now
-  while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
-  scanner->consume_eol();
 
+  ignore();
 }
 
 void MtlLoader::get_d()
@@ -171,10 +191,8 @@ void MtlLoader::get_d()
 #ifdef DEBUG_TRACE_LOADER
   std::cout << "MtlLoader::get_d() " << scanner->where() << std::endl;
 #endif
-  // Ignore for now
-  while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
-  scanner->consume_eol();
 
+  ignore();
 }
 
 void MtlLoader::get_illum()
@@ -182,10 +200,8 @@ void MtlLoader::get_illum()
 #ifdef DEBUG_TRACE_LOADER
   std::cout << "MtlLoader::get_illum() " << scanner->where() << std::endl;
 #endif
-  // Ignore for now
-  while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
-  scanner->consume_eol();
 
+  ignore();
 }
 
 void MtlLoader::get_map_Kd()
@@ -193,9 +209,14 @@ void MtlLoader::get_map_Kd()
 #ifdef DEBUG_TRACE_LOADER
   std::cout << "MtlLoader::get_map_Kd() " << scanner->where() << std::endl;
 #endif
-  // Ignore for now
-  while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
-  scanner->consume_eol();
 
+  ignore();
 }
 
+
+void MtlLoader::ignore()
+{
+  // Skip over the remainder of current line
+  while (!scanner->is_eof() && !scanner->is_eol()) scanner->advance();
+  scanner->consume_eol();
+}
