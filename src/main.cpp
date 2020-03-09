@@ -22,7 +22,6 @@
 
 #include "EventHandler.h"
 #include "GameState.h"
-//#include "IOFile.h"
 #include "Machine.h"
 #include "Message.h"
 #include "2D/Overlay2D.h"
@@ -31,6 +30,7 @@
 #include "UTF8hack.h"
 #include "3D/Plane3D.h"
 #include "hexdump.h" // For debugging only
+#include "Texture.h"
 
 
 //std::thread gamethread;
@@ -446,6 +446,10 @@ int main(int argc, char* argv[])
       scene.getProp(4)->setPosition(Vector3(0.0, -1.0, 0.0));
       scene.getProp(4)->setDirection(Vector3(0.0, 1.0, 0.0));
 
+      Obj3D* cube = scene.getObj3D("obj/cube.obj");
+      scene.addProp(cube);
+      Texture* test = scene.getTexture("textures/test256.png");
+      scene.getProp(5)->setTexture(test);
 
       scene.setShader(scene_shader); // Set same shader on all Props
 
