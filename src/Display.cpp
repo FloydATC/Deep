@@ -520,7 +520,7 @@ bool Display::pre_render()
 
 bool Display::post_render()
 {
-  //update_cursor();
+  update_cursor();
 
   //glDisableVertexAttribArray(0);
   unbind_fbo();
