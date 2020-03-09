@@ -9,6 +9,7 @@
 #include "3D/Camera3D.h"
 #include "3D/Entity3D.h"
 #include "ShaderProgram.h"
+#include "Texture.h"
 /*
 
   A Prop3D object represents a unique instance of an Mesh3D mesh in a Scene3D,
@@ -43,6 +44,7 @@ class Prop3D : public Entity3D
     // Texture can be set on invididual Props,
     // and/or on the underlying shared mesh objects
     void setTexture(GLuint texture);
+    void setTexture(Texture* texture);
 
     // Make private once values have been verified
     std::vector<Vector3> xy_plane;

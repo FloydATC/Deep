@@ -109,6 +109,16 @@ Obj3D* Scene3D::getObj3D(const std::string filename)
 }
 
 
+Texture* Scene3D::getTexture(const std::string filename)
+{
+  if (texture.count(filename) > 0) return texture.at(filename);
+  Texture* tex = new Texture();
+  tex->load(filename);
+  texture.insert({filename, tex});
+  return tex;
+}
+
+
 Prop3D* Scene3D::addProp(Mesh3D* mesh)
 {
 #ifdef DEBUG_TRACE_SCENE

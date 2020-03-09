@@ -144,6 +144,13 @@ void Prop3D::setTexture(GLuint texture)
   this->texture_set = true;
 }
 
+
+void Prop3D::setTexture(Texture* texture)
+{
+  setTexture(texture->id());
+}
+
+
 void Prop3D::showBounds()
 {
 #ifdef DEBUG_TRACE_PROP
