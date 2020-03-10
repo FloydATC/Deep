@@ -24,16 +24,29 @@ Ray3D::~Ray3D()
 
 
 
-void Ray3D::render(ShaderProgram* shader)
+void Ray3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader)
 {
 #ifdef DEBUG_TRACE_RAY
   std::cout << "Ray3D" << this << "::render()" << std::endl;
 #endif
+  // Resolve material + shader
+  Material* use_material = my_material(material);
+  ShaderProgram* use_shader = my_shader(shader);
+  if (use_material == nullptr) std::cerr << this << " has no material" << std::endl;
+  if (use_shader == nullptr) std::cerr << this << " has no shader" << std::endl;
+  if (use_material == nullptr || use_shader == nullptr) return;
+
+  // Set uniform values
+  glUseProgram(use_shader->id());
+  use_shader->setProjectionMatrix(proj);
+  use_shader->setViewMatrix(view);
+  use_shader->setModelMatrix(model);
+  use_shader->setColors(use_material);
+
   bind_vao();
   glEnable(GL_DEPTH_TEST);
   if (this->finalized == false) finalize();
   if (this->initialized == false) initialize(shader);
-  shader->setColor(this->color);
   shader->setDebugFlag(false);
   shader->setTextureFlag(false);
   glLineWidth(1.0);

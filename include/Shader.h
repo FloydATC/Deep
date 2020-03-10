@@ -14,6 +14,7 @@ class Shader
     std::string type();
     GLuint id();
     void compile();
+    std::string getFilename();
 
     GLint success;
     std::string error;

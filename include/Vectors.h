@@ -67,6 +67,7 @@ struct Vector2
 struct Vector3
 {
     union {
+      float data[3];
       struct { float x, y, z; };
       struct { float r, g, b; };
       Vector2 xy;
@@ -120,6 +121,7 @@ struct Vector3
 struct Vector4
 {
     union {
+      float data[4];
       struct { float x, y, z, w; };
       struct { float r, g, b, a; };
       Vector2 xy;

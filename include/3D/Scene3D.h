@@ -11,6 +11,7 @@
 #include "Matrices.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
+#include "Material.h"
 
 /*
 
@@ -36,6 +37,8 @@ class Scene3D
 
     Obj3D* getObj3D(const std::string filename);
 
+    Material* getMaterial();
+
     Texture* getTexture(const std::string filename);
 
     Prop3D* addProp(Mesh3D* mesh);
@@ -52,6 +55,7 @@ class Scene3D
     std::unordered_map<std::string, Obj3D*> obj3d;
     std::unordered_map<std::string, Texture*> texture;
     std::vector<Prop3D*> prop3d;
+    std::vector<Material*> materials;
     Camera3D* cam;
 };
 

@@ -1,6 +1,8 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
+#include <string>
+
 #include "GFX.h"
 #include "Texture.h"
 #include "Vectors.h"
@@ -11,24 +13,44 @@ class Material
     Material();
     ~Material();
 
-    Vector3 color_ambient;
-    Vector3 color_diffuse;
-    Vector3 color_specular;
-    Vector3 color_emissive;
-    float specular_exponent;
-    float optical_density; // Light refraction 0.001 .. 10.0
-    float opacity; // 0..1, 1.0 = solid, 0.0 = transparent
-    int illumination_mode; // See below
+    void setName(std::string name);
+    void setFilename(std::string filename);
 
-    GLuint texture_ambient;
-    GLuint texture_diffuse;
-    GLuint texture_bump;
+    Vector4 getAmbientColor();
+    Vector4 getDiffuseColor();
+    Vector4 getSpecularColor();
+    Vector4 getEmissiveColor();
+
+    void setAmbientColor(float r, float g, float b);
+    void setDiffuseColor(float r, float g, float b);
+    void setSpecularColor(float r, float g, float b);
+    void setEmissiveColor(float r, float g, float b);
+
+    std::string name = "(no name)";
+    std::string file = "(no file)";
 
   protected:
 
   private:
     void initialize();
+
+    Vector4 color_a;
+    Vector4 color_d;
+    Vector4 color_s;
+    Vector4 color_e;
+
+    float specular_exponent;
+    float optical_density;  // Light refraction 0.001 .. 10.0
+    float opacity;          // 0..1, 1.0 = solid, 0.0 = transparent
+    int illumination_mode;  // See below
+
+    GLuint texture_ambient;
+    GLuint texture_diffuse;
+    GLuint texture_bump;
+
 };
+
+std::ostream& operator <<(std::ostream& stream, const Material* material);
 
 #endif // MATERIAL_H
 

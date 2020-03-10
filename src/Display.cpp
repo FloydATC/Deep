@@ -49,7 +49,7 @@ GLuint Display::textureId()
 
 void Display::draw_untextured_vbo(GLsizeiptr arrsize, const void* arr, GLenum type, GLsizei typesize, GLenum mode, GLsizei vertices)
 {
-  this->shader->setColor(this->color);
+  this->shader->setEmissiveColor(Vector4(this->color[0], this->color[1], this->color[2], this->color[3]));
   this->shader->setTextureFlag(false);
   bind_vbo();
   glBufferData(GL_ARRAY_BUFFER, arrsize, arr, GL_STREAM_DRAW); // Buffer will be used only once
@@ -289,8 +289,7 @@ void Display::draw_surface(int row, int col, float r, float g, float b, GLuint s
   //   x   y   u  v
 
   glBindTexture(GL_TEXTURE_2D, src_texture);
-  GLfloat color[] = { r, g, b, 1.0 };
-  this->shader->setColor(color); // Specific color for this call
+  this->shader->setEmissiveColor(Vector4(r, g, b, 1.0)); // Specific color for this call
   this->shader->setTextureFlag(true);
   bind_vbo();
   glBufferData(GL_ARRAY_BUFFER, sizeof(rect), rect, GL_STATIC_DRAW);
@@ -300,7 +299,7 @@ void Display::draw_surface(int row, int col, float r, float g, float b, GLuint s
   glDrawArrays(GL_TRIANGLES, 0, 6);
   color[3] = 1.0;
   this->shader->setTextureFlag(false);
-  this->shader->setColor(this->color); // Restore "current" color
+  this->shader->setEmissiveColor(this->color); // Restore "current" color
 }
 
 
@@ -382,15 +381,11 @@ void Display::disable_cursor()
 
 void Display::set_rgbcolor(float r, float g, float b)
 {
-  float alpha = 1.0;
-  if (texture_enabled) { alpha = 0.0; }
-  // The fragment shader uses texture sampling (for font rendering etc) if alpha==0.0
-  color[0] = clampf(r, 0.0, 1.0);
-  color[1] = clampf(g, 0.0, 1.0);
-  color[2] = clampf(b, 0.0, 1.0);
-  color[3] = alpha;
-  this->shader->setColor(color);
-  //glUniform4fv(uniform_color, 1, color);
+  this->color.r = clampf(r, 0.0, 1.0);
+  this->color.g = clampf(g, 0.0, 1.0);
+  this->color.b = clampf(b, 0.0, 1.0);
+  this->color.a = 1.0;
+  this->shader->setEmissiveColor(this->color);
 }
 
 void Display::prepare_vao()
@@ -505,7 +500,9 @@ bool Display::pre_render()
 
   //glUniformMatrix4fv(uniform_ortho, 1, GL_FALSE, m_ortho.get());
   //glEnableVertexAttribArray(attr_vertex);
-  this->shader->setModelMatrix(this->m_ortho);
+  this->shader->setProjectionMatrix(this->m_ortho);
+  this->shader->setViewMatrix(Matrix4());
+  this->shader->setModelMatrix(Matrix4());
   this->shader->enableAttributeV();
 
   if (initialized == false) {

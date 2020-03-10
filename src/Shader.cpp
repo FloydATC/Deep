@@ -58,3 +58,7 @@ void Shader::fetchError()
   this->error.append("\n");
 }
 
+std::string Shader::getFilename()
+{
+  return this->filename;
+}

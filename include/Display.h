@@ -71,7 +71,7 @@ class Display
 
     int fgcolor = 14; // Text foreground
     int bgcolor = 6;  // Text background
-    GLfloat color[4] = { 1.0, 1.0, 1.0, 1.0 };
+    Vector4 color = Vector4( 1.0, 1.0, 1.0, 1.0 );
 
     int row = 0;
     int col = 0;

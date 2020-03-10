@@ -256,6 +256,7 @@ void Obj3DLoader::get_o()
 
 
   SubObject3D* mesh = new SubObject3D();
+  mesh->setFilename(this->filename);
   mesh->setName(name);
   mesh->setBounds(this->box);
 

@@ -12,6 +12,9 @@ Prop3D::Prop3D()
   //ctor
   this->mesh = nullptr;
   this->shader = nullptr;
+  this->material = nullptr;
+  this->default_material.setFilename("");
+  this->default_material.setName("default");
   this->scale = Vector3(1.0, 1.0, 1.0);
   this->scale_matrix = Matrix4();
   this->xy_plane.resize(4); // 4 x Vector2
@@ -35,38 +38,21 @@ Prop3D::~Prop3D()
 void Prop3D::render(Camera3D* camera) {
   if (this->need_recalc) this->recalculate_matrix();
 #ifdef DEBUG_TRACE_PROP
-  std::cout << "Prop3D" << this << "::render() called for object '" << this->mesh->getName() << "'" << std::endl;
+  std::cout << "Prop3D" << this << "::render() mesh=" << this->mesh << std::endl;
 #endif
 
-  if (this->shader == nullptr) {
-    std::cerr << "Prop3D" << this  << "::render() no shader!" << std::endl;
-    return;
-  }
-
-  glUseProgram(this->shader->id());
-
-  // Textures can be attached to underlying Mesh3D objects or to individual Prop3D objects
-  if (this->texture_set) {
-    //std::cout << "Prop3D" << this << "::render() bind texture " << this->texture << std::endl;
-    shader->setTextureFlag(true);
-    glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
-    glBindTexture(GL_TEXTURE_2D, this->texture);
-  } else {
-    //std::cout << "Prop3D" << this << "::render() has no texture set" << std::endl;
-    shader->setTextureFlag(false);
-    glBindTexture(GL_TEXTURE_2D, 0);
-  }
-
-  this->shader->setCameraMatrix(camera->getMatrix());
-  this->shader->setModelMatrix(this->matrix);
-  //std::cout << "Prop3D" << this << "::render() model matrix:" << std::endl;
-  //std::cout << this->matrix << std::endl;
-
   this->mesh->bounds_enabled = this->bounds_enabled;
-  this->mesh->render(this->shader); // Render Mesh3D
+  if (this->texture_set) this->mesh->setTexture(this->texture);
+
+  this->mesh->render(
+    camera->getPerspectiveMatrix(),
+    camera->getViewMatrix(),
+    this->getMatrix(),
+    (this->material == nullptr ? &this->default_material : this->material), // Mesh can override this
+    this->shader // Mesh can override this
+  );
 
   recalculate_xy_plane(camera);
-  //std::cout << "Prop3D" << this << "::render() done" << std::endl;
 }
 
 

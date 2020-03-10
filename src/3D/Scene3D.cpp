@@ -25,6 +25,11 @@ Scene3D::~Scene3D()
     delete prop;
   }
 
+  // Destroy all Material objects in std::vector
+  for (const auto& material : materials) {
+    delete material;
+  }
+
   // Destroy all Obj3D objects in std::unordered_map
   for( const auto& obj : obj3d ) {
     delete obj.second; // first=key, second=value
@@ -91,6 +96,12 @@ int Scene3D::getHeight()
 }
 
 
+Material* Scene3D::getMaterial()
+{
+  Material* material = new Material();
+  materials.push_back(material);
+  return material;
+}
 
 ShaderProgram* Scene3D::getShader(const std::string vs_filename, const std::string fs_filename)
 {

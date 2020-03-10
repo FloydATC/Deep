@@ -4,6 +4,8 @@
 
 //#define DEBUG_TRACE_MESH
 
+int Mesh3D::mesh_serial_no = 0;
+
 Mesh3D::Mesh3D()
 {
   //ctor
@@ -14,7 +16,9 @@ Mesh3D::Mesh3D()
   this->count_v = -1;
   this->count_vt = -1;
   this->count_vn = -1;
-  this->name = "(untitled)";
+  this->name = "(no name)";
+  this->file = "(no file)";
+  this->serial = ++mesh_serial_no;
   this->initialized = false; // False until shader attributes has been set
   this->texture = 0;
   this->texture_set = false;
@@ -23,8 +27,9 @@ Mesh3D::Mesh3D()
   this->bounds_enabled = false;
   this->debug = false;
   this->material = nullptr;
+  this->shader = nullptr;
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << " created" << std::endl;
+  std::cout << "Mesh3D created: " << this << std::endl;
 #endif
 }
 
@@ -36,8 +41,10 @@ Mesh3D::~Mesh3D()
   glDeleteBuffers(1, &this->vbo_vn);
   glDeleteVertexArrays(1, &this->vao);
   if (this->material != nullptr) delete this->material;
+  if (this->bounds != nullptr) delete this->bounds;
+  // Note: shader is owned by Scene3D; do not delete
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << " destroyed" << std::endl;
+  std::cout << "Mesh3D destroyed: " << this << std::endl;
 #endif
 }
 
@@ -48,28 +55,28 @@ Mesh3D::~Mesh3D()
 void Mesh3D::initialize(ShaderProgram* shader)
 {
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::initialize() vao=" << this->vao << " name=" << this->name << std::endl;
+  std::cout << "Mesh3D::initialize() mesh=" << this << " vao=" << this->vao << " name=" << this->name << std::endl;
 #endif
   bind_vao();
-  if (this->count_v  > 0) {
+  if (this->count_v  > 0 && shader->hasAttributeV()) {
 #ifdef DEBUG_TRACE_MESH
-    std::cout << "Mesh3D" << this << "::initialize() enable V" << std::endl;
+    std::cout << "Mesh3D::initialize() enable V" << std::endl;
 #endif
     bind_vbo(this->vbo_v);
     shader->enableAttributeV();
     shader->setAttribPointerV(3, GL_FLOAT, sizeof(GLfloat), 3, 0);
   }
-  if (this->count_vt  > 0) {
+  if (this->count_vt  > 0 && shader->hasAttributeVT()) {
 #ifdef DEBUG_TRACE_MESH
-    std::cout << "Mesh3D" << this << "::initialize() enable VT" << std::endl;
+    std::cout << "Mesh3D::initialize() enable VT" << std::endl;
 #endif
     bind_vbo(this->vbo_vt);
     shader->enableAttributeVT();
     shader->setAttribPointerVT(2, GL_FLOAT, sizeof(GLfloat), 2, 0);
   }
-  if (this->count_vn  > 0) {
+  if (this->count_vn  > 0 && shader->hasAttributeVN()) {
 #ifdef DEBUG_TRACE_MESH
-    std::cout << "Mesh3D" << this << "::initialize() enable VN" << std::endl;
+    std::cout << "Mesh3D::initialize() enable VN" << std::endl;
 #endif
     bind_vbo(this->vbo_vn);
     shader->enableAttributeVN();
@@ -89,7 +96,7 @@ void Mesh3D::set_v(float* v, int num_vertices)
 {
   bind_vbo(this->vbo_v);
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::set_v() vbo=" << this->vbo_v << std::endl;
+  std::cout << "Mesh3D::set_v() mesh=" << this << " vbo=" << this->vbo_v << std::endl;
 #endif
   glBufferData(GL_ARRAY_BUFFER, 3*num_vertices*sizeof(float), v, GL_STATIC_DRAW);
   this->count_v = num_vertices;
@@ -99,7 +106,7 @@ void Mesh3D::set_vt(float* vt, int num_vertices)
 {
   bind_vbo(this->vbo_vt);
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::set_vt() vbo=" << this->vbo_vt << std::endl;
+  std::cout << "Mesh3D::set_vt() mesh=" << this << " vbo=" << this->vbo_vt << std::endl;
 #endif
   glBufferData(GL_ARRAY_BUFFER, 2*num_vertices*sizeof(float), vt, GL_STATIC_DRAW);
   this->count_vt = num_vertices;
@@ -109,7 +116,7 @@ void Mesh3D::set_vn(float* vn, int num_vertices)
 {
   bind_vbo(this->vbo_vn);
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::set_vn() vbo=" << this->vbo_vt << std::endl;
+  std::cout << "Mesh3D::set_vn() mesh=" << this << " vbo=" << this->vbo_vt << std::endl;
 #endif
   glBufferData(GL_ARRAY_BUFFER, 3*num_vertices*sizeof(float), vn, GL_STATIC_DRAW);
   this->count_vn = num_vertices;
@@ -119,7 +126,7 @@ void Mesh3D::set_vn(float* vn, int num_vertices)
 void Mesh3D::bind_vao()
 {
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::bind_vao()" << std::endl;
+  std::cout << "Mesh3D::bind_vao() mesh=" << this << std::endl;
 #endif
   glBindVertexArray(this->vao);
 }
@@ -127,7 +134,7 @@ void Mesh3D::bind_vao()
 void Mesh3D::unbind_vao()
 {
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::unbind_vao()" << std::endl;
+  std::cout << "Mesh3D::unbind_vao() mesh=" << this << std::endl;
 #endif
   glBindVertexArray(0);
 }
@@ -136,7 +143,7 @@ void Mesh3D::unbind_vao()
 void Mesh3D::bind_vbo(GLuint vbo)
 {
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::bind_vbo() " << vbo << std::endl;
+  std::cout << "Mesh3D::bind_vbo() mesh=" << this << " vbo=" << vbo << std::endl;
 #endif
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   //std::cout << "Mesh3D VBO bound" << std::endl;
@@ -147,9 +154,6 @@ void Mesh3D::bind_vbo(GLuint vbo)
 void Mesh3D::setName(std::string name)
 {
   this->name = name;
-#ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << " named " << name << std::endl;
-#endif
 }
 
 
@@ -158,10 +162,35 @@ std::string Mesh3D::getName()
   return this->name;
 }
 
+void Mesh3D::setFilename(std::string filename)
+{
+  this->file = filename;
+}
+
+
+std::string Mesh3D::getFilename()
+{
+  return this->file;
+}
+
+// Use material assigned to this Mesh3D if set, otherwise use default
+Material* Mesh3D::my_material(Material* standard)
+{
+  return (this->material != nullptr ? this->material : standard);
+}
+
+
+// Use shader assigned to this Mesh3D if set, otherwise use default
+ShaderProgram* Mesh3D::my_shader(ShaderProgram* standard)
+{
+  return (this->shader != nullptr ? this->shader : standard);
+}
+
+
 void Mesh3D::setTexture(GLuint texture)
 {
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::setTexture() name=" << this->name << " texture=" << texture << " enabled" << std::endl;
+  std::cout << "Mesh3D::setTexture() mesh=" << this << " name=" << this->name << " texture=" << texture << " enabled" << std::endl;
 #endif
   this->texture = texture;
   this->texture_set = true;
@@ -170,7 +199,7 @@ void Mesh3D::setTexture(GLuint texture)
 void Mesh3D::setBounds(Mesh3D* box)
 {
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::setBounds() name=" << this->name << " bounds set" << std::endl;
+  std::cout << "Mesh3D::setBounds() mesh=" << this << " bounds set" << std::endl;
 #endif
   if (this->bounds != nullptr) delete this->bounds;
   this->bounds = box;
@@ -179,10 +208,19 @@ void Mesh3D::setBounds(Mesh3D* box)
 void Mesh3D::setMaterial(Material* material)
 {
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::setMaterial() name=" << this->name << " material set" << std::endl;
+  std::cout << "Mesh3D::setMaterial() mesh=" << this << " material=" << material << std::endl;
 #endif
   if (this->material != nullptr) delete this->material;
   this->material = material;
+}
+
+void Mesh3D::setShader(ShaderProgram* shader)
+{
+#ifdef DEBUG_TRACE_MESH
+  std::cout << "Mesh3D::setShader() mesh=" << this << " shader=" << shader << std::endl;
+#endif
+  // Note: shaders are owned by the Scene3D; do not delete
+  this->shader = shader;
 }
 
 Mesh3D* Mesh3D::getBounds()
@@ -195,6 +233,13 @@ Material* Mesh3D::getMaterial()
   return this->material;
 }
 
+ShaderProgram* Mesh3D::getShader()
+{
+  return this->shader;
+}
+
+
+
 bool Mesh3D::isEnabled()
 {
   return this->render_enabled;
@@ -203,7 +248,7 @@ bool Mesh3D::isEnabled()
 void Mesh3D::show()
 {
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::show() name=" << this->name << " render enabled" << std::endl;
+  std::cout << "Mesh3D::show() mesh=" << this << " name=" << this->name << " render enabled" << std::endl;
 #endif
   this->render_enabled = true;
 }
@@ -211,34 +256,22 @@ void Mesh3D::show()
 void Mesh3D::hide()
 {
 #ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::hide() name=" << this->name << " render disabled" << std::endl;
+  std::cout << "Mesh3D::hide() mesh=" << this << " name=" << this->name << " render disabled" << std::endl;
 #endif
   this->render_enabled = false;
 }
 
 
-void Mesh3D::setColor(float* color)
-{
-#ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::setColor()" << std::endl;
-#endif
-  this->color[0] = color[0];
-  this->color[1] = color[1];
-  this->color[2] = color[2];
-  this->color[3] = color[3];
+
+
+std::ostream& operator <<(std::ostream& stream, const Mesh3D* mesh) {
+  if (mesh == nullptr) {
+    stream << "<no mesh>";
+    return stream;
+  } else {
+    stream << "<Mesh3D #" << mesh->serial << " " << mesh->file << ":" << mesh->name << ">";
+    return stream;
+  }
 }
-
-
-void Mesh3D::setColor(float r, float g, float b, float a)
-{
-#ifdef DEBUG_TRACE_MESH
-  std::cout << "Mesh3D" << this << "::setColor()" << std::endl;
-#endif
-  this->color[0] = r;
-  this->color[1] = g;
-  this->color[2] = b;
-  this->color[3] = a;
-}
-
 
 

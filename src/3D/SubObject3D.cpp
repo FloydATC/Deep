@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+//#define DEBUG_TRACE_SUBOBJ
+
 SubObject3D::SubObject3D()
 {
   //ctor
@@ -16,22 +18,38 @@ SubObject3D::~SubObject3D()
 
 
 
-void SubObject3D::render(ShaderProgram* shader)
+void SubObject3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader)
 {
-  // Render mesh
-  //std::cout << "SubObject3D::render() name=" << this->name << " vertices=" << this->count_v << std::endl;
-  if (this->count_v > 0) {
+  // Resolve material + shader
+  Material* use_material = my_material(material);
+  ShaderProgram* use_shader = my_shader(shader);
+  if (use_material == nullptr) std::cerr << this << " has no material" << std::endl;
+  if (use_shader == nullptr) std::cerr << this << " has no shader" << std::endl;
+#ifdef DEBUG_TRACE_SUBOBJ
+  std::cout << "SubObject3D::render() mesh=" << this << " material=" << use_material << " shader=" << use_shader << std::endl;
+#endif
+
+  if (this->count_v > 0 && use_shader != nullptr && use_material != nullptr) {
+#ifdef DEBUG_TRACE_SUBOBJ
+  std::cout << "SubObject3D::render() vertices:" << this->count_v << " textured:" << (this->texture_set ? "Yes" : "No") << std::endl;
+#endif
+
+    // Set uniform values
+    glUseProgram(use_shader->id());
+    use_shader->setProjectionMatrix(proj);
+    use_shader->setViewMatrix(view);
+    use_shader->setModelMatrix(model);
+    use_shader->setColors(use_material);
+
     bind_vao();
-    if (!this->initialized) this->initialize(shader);
-    shader->setDebugFlag(this->debug);
+    if (!this->initialized) this->initialize(use_shader);
+    use_shader->setDebugFlag(this->debug);
 
     if (this->texture_set) {
-      shader->setTextureFlag(true);
+      use_shader->setTextureFlag(true);
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, this->texture);
     }
-
-    shader->setColor(this->color);
 
     glDrawArrays(GL_TRIANGLES, 0, this->count_v);
 
@@ -39,7 +57,9 @@ void SubObject3D::render(ShaderProgram* shader)
   }
 
   // Render bounding box
-  if (this->bounds != nullptr && this->bounds_enabled) this->bounds->render(shader);
+  if (this->bounds != nullptr && this->bounds_enabled) {
+    this->bounds->render(proj, view, model, use_material, use_shader);
+  }
 }
 
 

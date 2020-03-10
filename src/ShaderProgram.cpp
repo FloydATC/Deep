@@ -15,11 +15,17 @@ ShaderProgram::ShaderProgram(const std::string vs_filename, const std::string fs
   this->vertex_v = -1;
   this->vertex_vt = -1;
   this->vertex_vn = -1;
-  this->uniform_camera_mat = -1;
+  this->uniform_projection_mat = -1;
+  this->uniform_view_mat = -1;
   this->uniform_model_mat = -1;
-  this->uniform_color = -1;
+  this->uniform_color_a = -1;
+  this->uniform_color_d = -1;
+  this->uniform_color_s = -1;
+  this->uniform_color_e = -1;
   this->uniform_debug_flag = -1;
   this->uniform_texture_flag = -1;
+
+  this->setDefaults();
 }
 
 ShaderProgram::~ShaderProgram()
@@ -62,25 +68,7 @@ void ShaderProgram::compile()
   glAttachShader(programId, fs->id());
   glLinkProgram(programId);
   glGetProgramiv(programId, GL_LINK_STATUS, (int *)&this->success);
-  //if(success) std::cout << "ShaderProgram " << programId << " successfully linked" << std::endl;
   if(!success) fetchError();
-//  {
-//    int maxLength = 1024;
-//
-//    /* Noticed that glGetProgramiv is used to get the length for a shader program, not glGetShaderiv. */
-//    glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &maxLength);
-//
-//    /* The maxLength includes the NULL character */
-//    GLchar* InfoLog = (char *)malloc(maxLength);
-//
-//    /* Notice that glGetProgramInfoLog, not glGetShaderInfoLog. */
-//    glGetProgramInfoLog(programId, maxLength, &maxLength, InfoLog);
-//
-//    std::cerr << "Error linking shader program: " << InfoLog << std::endl;
-//    free(InfoLog);
-//  }
-
-  //check_gl("linking shaders");
 
   // Dispose of the shader objects (they have been compiled into shaderProgram now)
   glDetachShader(programId, vs->id());
@@ -102,42 +90,82 @@ void ShaderProgram::fetchError()
 }
 
 
+void ShaderProgram::setDefaults()
+{
+  this->setAttributeV("attr_v");
+  this->setAttributeVT("attr_vt");
+  this->setAttributeVN("attr_vn");
+
+  this->setUniformProjectionMatrix("projection");
+  this->setUniformViewMatrix("view");
+  this->setUniformModelMatrix("model");
+
+  this->setUniformAmbientColor("color_a");
+  this->setUniformDiffuseColor("color_d");
+  this->setUniformSpecularColor("color_s");
+  this->setUniformEmissiveColor("color_e");
+
+  this->setUniformDebugFlag("is_debug");
+  this->setUniformTextureFlag("use_texture");
+}
+
 void ShaderProgram::setAttributeV(std::string name)
 {
   this->vertex_v = glGetAttribLocation(this->programId, name.c_str());
-  if (this->vertex_v == -1) std::cerr << "ShaderProgram::setAttributeV(" << name << ") name not found" << std::endl;
 }
 
 void ShaderProgram::setAttributeVT(std::string name)
 {
   this->vertex_vt = glGetAttribLocation(this->programId, name.c_str());
-  if (this->vertex_vt == -1) std::cerr << "ShaderProgram::setAttributeVT(" << name << ") name not found" << std::endl;
 }
 
 void ShaderProgram::setAttributeVN(std::string name)
 {
   this->vertex_vn = glGetAttribLocation(this->programId, name.c_str());
-  if (this->vertex_vn == -1) std::cerr << "ShaderProgram::setAttributeVN(" << name << ") name not found" << std::endl;
 }
 
 
-void ShaderProgram::setUniformCameraMatrix(std::string name)
+void ShaderProgram::setUniformProjectionMatrix(std::string name)
 {
-  this->uniform_camera_mat = glGetUniformLocation(this->programId, name.c_str());
-  if (this->uniform_camera_mat == -1) std::cerr << "ShaderProgram::setUniformCameraMatrix(" << name << ") name not found" << std::endl;
+  this->uniform_projection_mat = glGetUniformLocation(this->programId, name.c_str());
+}
+
+void ShaderProgram::setUniformViewMatrix(std::string name)
+{
+  this->uniform_view_mat = glGetUniformLocation(this->programId, name.c_str());
 }
 
 void ShaderProgram::setUniformModelMatrix(std::string name)
 {
   this->uniform_model_mat = glGetUniformLocation(this->programId, name.c_str());
-  if (this->uniform_model_mat == -1) std::cerr << "ShaderProgram::setUniformModelMatrix(" << name << ") name not found" << std::endl;
 }
 
-void ShaderProgram::setUniformColor(std::string name)
+
+void ShaderProgram::setUniformAmbientColor(std::string name)
 {
-  this->uniform_color = glGetUniformLocation(this->programId, name.c_str());
-  if (this->uniform_color == -1) std::cerr << "ShaderProgram::setUniformColor(" << name << ") name not found" << std::endl;
+  this->uniform_color_a = glGetUniformLocation(this->programId, name.c_str());
 }
+
+
+void ShaderProgram::setUniformDiffuseColor(std::string name)
+{
+  this->uniform_color_d = glGetUniformLocation(this->programId, name.c_str());
+}
+
+
+void ShaderProgram::setUniformSpecularColor(std::string name)
+{
+  this->uniform_color_s = glGetUniformLocation(this->programId, name.c_str());
+}
+
+
+void ShaderProgram::setUniformEmissiveColor(std::string name)
+{
+  this->uniform_color_e = glGetUniformLocation(this->programId, name.c_str());
+}
+
+
+
 
 void ShaderProgram::setUniformDebugFlag(std::string name)
 {
@@ -152,13 +180,22 @@ void ShaderProgram::setUniformTextureFlag(std::string name)
 }
 
 
-void ShaderProgram::setCameraMatrix(Matrix4 matrix)
+void ShaderProgram::setProjectionMatrix(Matrix4 matrix)
 {
-  if (this->uniform_camera_mat == -1) {
-    std::cerr << "ShaderProgram::setCameraMatrix() uniform not set" << std::endl;
+  if (this->uniform_projection_mat == -1) {
+    std::cerr << "ShaderProgram::setProjectionMatrix() uniform not set" << std::endl;
     return;
   }
-  glUniformMatrix4fv(this->uniform_camera_mat, 1, GL_FALSE, matrix.get());
+  glUniformMatrix4fv(this->uniform_projection_mat, 1, GL_FALSE, matrix.get());
+}
+
+void ShaderProgram::setViewMatrix(Matrix4 matrix)
+{
+  if (this->uniform_view_mat == -1) {
+    std::cerr << "ShaderProgram::setViewMatrix() uniform not set" << std::endl;
+    return;
+  }
+  glUniformMatrix4fv(this->uniform_view_mat, 1, GL_FALSE, matrix.get());
 }
 
 void ShaderProgram::setModelMatrix(Matrix4 matrix)
@@ -188,24 +225,48 @@ void ShaderProgram::setTextureFlag(bool value)
   glUniform1i(this->uniform_texture_flag, (value ? 1 : 0));
 }
 
-void ShaderProgram::setColor(float r, float g, float b, float a)
+void ShaderProgram::setColors(Material* material)
 {
-  GLfloat color[4] = { r, g, b, a };
-  if (this->uniform_color == -1) {
-    std::cerr << "ShaderProgram::setColor() uniform not set" << std::endl;
-    return;
-  }
-  glUniform4fv(this->uniform_color, 1, color);
+  if (this->uniform_color_a != -1) glUniform4fv(this->uniform_color_a, 1, material->getAmbientColor().data);
+  if (this->uniform_color_d != -1) glUniform4fv(this->uniform_color_d, 1, material->getDiffuseColor().data);
+  if (this->uniform_color_s != -1) glUniform4fv(this->uniform_color_s, 1, material->getSpecularColor().data);
+  if (this->uniform_color_e != -1) glUniform4fv(this->uniform_color_e, 1, material->getEmissiveColor().data);
 }
 
-void ShaderProgram::setColor(GLfloat* color)
+
+void ShaderProgram::setAmbientColor(Vector4 color)
 {
-  if (this->uniform_color == -1) {
-    std::cerr << "ShaderProgram::setColor() uniform not set" << std::endl;
+  if (this->uniform_color_a == -1) {
+    std::cerr << "ShaderProgram::setAmbientColor() uniform not set" << std::endl;
     return;
   }
-  glUniform4fv(this->uniform_color, 1, color);
+  glUniform4fv(this->uniform_color_a, 1, color.data);
 }
+void ShaderProgram::setDiffuseColor(Vector4 color)
+{
+  if (this->uniform_color_d == -1) {
+    std::cerr << "ShaderProgram::setDiffuseColor() uniform not set" << std::endl;
+    return;
+  }
+  glUniform4fv(this->uniform_color_d, 1, color.data);
+}
+void ShaderProgram::setSpecularColor(Vector4 color)
+{
+  if (this->uniform_color_s == -1) {
+    std::cerr << "ShaderProgram::setSpecularColor() uniform not set" << std::endl;
+    return;
+  }
+  glUniform4fv(this->uniform_color_s, 1, color.data);
+}
+void ShaderProgram::setEmissiveColor(Vector4 color)
+{
+  if (this->uniform_color_e == -1) {
+    std::cerr << "ShaderProgram::setEmissiveColor() uniform not set" << std::endl;
+    return;
+  }
+  glUniform4fv(this->uniform_color_e, 1, color.data);
+}
+
 
 void ShaderProgram::enableAttributeV()
 {
@@ -215,6 +276,7 @@ void ShaderProgram::enableAttributeV()
   }
   glEnableVertexAttribArray(this->vertex_v);
 }
+
 
 void ShaderProgram::enableAttributeVT()
 {
@@ -288,5 +350,32 @@ void ShaderProgram::setAttribPointerVN(GLint values, GLenum type, GLsizei typesi
     return;
   }
   glVertexAttribPointer(this->vertex_vn, values, type, GL_FALSE, stride*typesize, (char*) NULL+offset*typesize);
+}
+
+
+bool ShaderProgram::hasAttributeV()
+{
+  return this->vertex_v != -1;
+}
+
+bool ShaderProgram::hasAttributeVT()
+{
+  return this->vertex_vt != -1;
+}
+
+bool ShaderProgram::hasAttributeVN()
+{
+  return this->vertex_vn != -1;
+}
+
+
+std::ostream& operator <<(std::ostream& stream, const ShaderProgram* shader) {
+  if (shader == nullptr) {
+    stream << "<no shader>";
+    return stream;
+  } else {
+    stream << "<ShaderProgram " << shader->vs_filename << " + " << shader->fs_filename << ">";
+    return stream;
+  }
 }
 

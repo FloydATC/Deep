@@ -7,26 +7,31 @@
 #include "ShaderProgram.h"
 #include "Material.h"
 
+
 class Mesh3D
 {
   public:
     // No public ctor
     virtual ~Mesh3D();
 
-    virtual void render(ShaderProgram* shader) = 0;
+    virtual void render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader) = 0;
 
     void setName(std::string name);
     std::string getName();
+    void setFilename(std::string filename);
+    std::string getFilename();
 
-    void setTexture(GLuint texture);
+    virtual void setTexture(GLuint texture);
 
-    void setColor(float* color);
-    void setColor(float r, float g, float b, float a);
-
-    void setMaterial(Material* material);
+    virtual void setMaterial(Material* material);
     Material* getMaterial();
+
+    virtual void setShader(ShaderProgram* shader);
+    ShaderProgram* getShader();
+
     void setBounds(Mesh3D* box);
     Mesh3D* getBounds();
+
     bool bounds_enabled;
 
     bool isEnabled();
@@ -35,19 +40,27 @@ class Mesh3D
 
     bool debug;
 
+    std::string file;
+    std::string name;
+    int serial;
+
+    static int mesh_serial_no;
+
 
   protected:
     Mesh3D();
 
+    Material*       material;
+    Mesh3D*         bounds;
+    ShaderProgram*  shader;
+
     void initialize(ShaderProgram* shader);
 
     friend class Obj3DLoader;
-    Material* material;
     void set_v(float* v, int num_vertices);
     void set_vt(float* v, int num_vertices);
     void set_vn(float* v, int num_vertices);
 
-    std::string name;
 
     int count_v;
     int count_vt;
@@ -62,7 +75,8 @@ class Mesh3D
     bool texture_set;
     bool render_enabled;
 
-    Mesh3D* bounds;
+    Material* my_material(Material* standard);
+    ShaderProgram* my_shader(ShaderProgram* standard);
 
     void bind_vao();
     void unbind_vao();
@@ -70,9 +84,13 @@ class Mesh3D
 
     bool initialized;
 
-    GLfloat color[4] = { 1.0, 1.0, 1.0, 1.0 };
+
 
   private:
 };
+
+
+
+std::ostream& operator <<(std::ostream& stream, const Mesh3D* mesh);
 
 #endif // MESH3D_H

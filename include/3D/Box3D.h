@@ -17,7 +17,7 @@ class Box3D : public Mesh3D
     void extend(Vector3 vertex);
     void set_shader_v(GLint attr);
     void finalize();
-    void render(ShaderProgram* shader);
+    void render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader);
 
   protected:
 

@@ -22,15 +22,29 @@ Box3D::~Box3D()
 }
 
 
-void Box3D::render(ShaderProgram* shader)
+void Box3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader)
 {
-  //std::cout << "Box3D" << this << "::render()" << std::endl;
+  // Resolve material + shader
+  Material* use_material = my_material(material);
+  ShaderProgram* use_shader = my_shader(shader);
+  if (use_material == nullptr) std::cerr << this << " has no material" << std::endl;
+  if (use_shader == nullptr) std::cerr << this << " has no shader" << std::endl;
+  if (use_material == nullptr || use_shader == nullptr) return;
+
+  // Set uniform values
+  glUseProgram(use_shader->id());
+  use_shader->setProjectionMatrix(proj);
+  use_shader->setViewMatrix(view);
+  use_shader->setModelMatrix(model);
+  use_shader->setColors(use_material);
+
+
   bind_vao();
   if (!this->finalized) this->finalize();
-  if (!this->initialized) this->initialize(shader);
-  shader->setColor(1.0, 1.0, 0.0, 1.0);
-  shader->setDebugFlag(false);
-  shader->setTextureFlag(false);
+  if (!this->initialized) this->initialize(use_shader);
+  //shader->setColor(1.0, 1.0, 0.0, 1.0);
+  use_shader->setDebugFlag(false);
+  use_shader->setTextureFlag(false);
   glLineWidth(1.0);
   glPointSize(4.0);
   //std::cout << "Box3D::render() glDrawArrays(GL_POINTS, 0, 12)" << std::endl;

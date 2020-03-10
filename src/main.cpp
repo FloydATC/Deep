@@ -391,23 +391,9 @@ int main(int argc, char* argv[])
       scene.getCamera()->setPosition(Vector3(0.0, 0.0, 1.0));
 
       std::cout << "Load shaders" << std::endl;
+      ShaderProgram* screen_shader = scene.getShader("glsl/screen_vert.glsl", "glsl/screen_frag.glsl");
       ShaderProgram* scene_shader = scene.getShader("glsl/scene_vert.glsl", "glsl/scene_frag.glsl");
-      scene_shader->setAttributeV("vertex");
-      scene_shader->setAttributeVT("uv");
-      scene_shader->setAttributeVN("normal");
-      scene_shader->setUniformCameraMatrix("scene");
-      scene_shader->setUniformModelMatrix("model");
-      scene_shader->setUniformDebugFlag("is_debug");
-      scene_shader->setUniformTextureFlag("use_texture");
-      scene_shader->setUniformColor("color");
-
       ShaderProgram* ortho_shader = scene.getShader("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
-      ortho_shader->setAttributeV("vertex");
-      ortho_shader->setAttributeVT("uv");
-      ortho_shader->setUniformModelMatrix("ortho");
-      ortho_shader->setUniformColor("color");
-      ortho_shader->setUniformDebugFlag("is_debug");
-      ortho_shader->setUniformTextureFlag("use_texture");
 
       //Overlay2D* ui = new Overlay2D();
       //ui->setShader(ortho_shader);
@@ -423,8 +409,9 @@ int main(int argc, char* argv[])
 #endif
 
       Obj3D* screen = scene.getObj3D("obj/screen.obj");
-      screen->getPart(0)->setColor(1.0, 1.0, 1.0, 1.0); // Display
-      screen->getPart(1)->setColor(0.2, 0.2, 0.3, 1.0); // Enclosure
+      //screen->getPart(0)->setColor(1.0, 1.0, 1.0, 1.0); // Display
+      screen->getPart(0)->setShader(screen_shader);
+      //screen->getPart(1)->setColor(0.2, 0.2, 0.3, 1.0); // Enclosure
 
       scene.addProp(screen);
       scene.addProp(screen);
@@ -441,7 +428,13 @@ int main(int argc, char* argv[])
       scene.getProp(2)->setDirection(-15, 15,  0);
       scene.getProp(3)->setDirection(-15,-15,  0);
 
+      ShaderProgram* plane_shader = scene.getShader("glsl/plane_vert.glsl", "glsl/plane_frag.glsl");
+      Material* plane_material = scene.getMaterial();
+      plane_material->setDiffuseColor(0.9, 0.9, 1.0);
+      plane_material->setName("plane");
       Plane3D* plane = new Plane3D();
+      plane->setShader(plane_shader);
+      plane->setMaterial(plane_material);
       scene.addProp(plane);
       scene.getProp(4)->setPosition(Vector3(0.0, -1.0, 0.0));
       scene.getProp(4)->setDirection(Vector3(0.0, 1.0, 0.0));
@@ -450,8 +443,9 @@ int main(int argc, char* argv[])
       scene.addProp(cube);
       Texture* test = scene.getTexture("textures/test256.png");
       scene.getProp(5)->setTexture(test);
+      scene.getProp(5)->setPosition(Vector3(0.0, -1.0, 0.0));
 
-      scene.setShader(scene_shader); // Set same shader on all Props
+      scene.setShader(scene_shader); // Set default shader
 
 
 

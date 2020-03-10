@@ -59,7 +59,9 @@ class Prop3D : public Entity3D
   private:
     Mesh3D* mesh;
 
-    ShaderProgram* shader = nullptr;
+    ShaderProgram* shader;
+    Material default_material;
+    Material* material;
 
     GLuint texture;
     bool texture_set;

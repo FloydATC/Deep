@@ -30,12 +30,13 @@ class Obj3D : public Mesh3D
     Obj3D();
     ~Obj3D();
 
-    void render(ShaderProgram* shader);
+    void render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader);
     void setShader(ShaderProgram* shader);
 
     void addPart(Mesh3D* mesh);
     Mesh3D* getPart(int index);
     int numParts();
+    void setTexture(GLuint texture);
 
   protected:
 

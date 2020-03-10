@@ -85,7 +85,7 @@ void Overlay2D::pre_draw(Shape2D* shape)
 {
   //std::cout << "Overlay2D::pre_draw()" << std::endl;
   //glUniform4fv(uniform_color, 1, this->color);
-  this->shader->setColor(color);
+  this->shader->setDiffuseColor(Vector4(color[0], color[1], color[2], color[3]));
   if (this->shader == nullptr) {
     std::cerr << "Overlay2D::pre_draw() shader not set" << std::endl;
     return;

@@ -4,14 +4,14 @@
 
 #include "Vectors.h"
 
-#define DEBUG_TRACE_LOADER
+//#define DEBUG_TRACE_LOADER
 
 MtlLoader::MtlLoader()
 {
   //ctor
   initialize();
 #ifdef DEBUG_TRACE_LOADER
-  std::cout << "MtlLoader" << this << " created" << std::endl;
+  std::cout << "MtlLoader created: " << this << std::endl;
 #endif
 }
 
@@ -19,7 +19,7 @@ MtlLoader::~MtlLoader()
 {
   //dtor
 #ifdef DEBUG_TRACE_LOADER
-  std::cout << "MtlLoader" << this << " destroyed" << std::endl;
+  std::cout << "MtlLoader destroyed: " << this << std::endl;
 #endif
 }
 
@@ -48,6 +48,8 @@ Material* MtlLoader::load(std::string filename, std::string materialname)
     return nullptr;
   }
   this->material = new Material();
+  this->material->setName(materialname);
+  this->material->setFilename(filename);
 
   while (!scanner->is_eof()) {
     scanner->skip_whitespace(true);
@@ -119,7 +121,7 @@ void MtlLoader::get_Ka()
   std::cout << "MtlLoader::get_Ka() " << scanner->where() << std::endl;
 #endif
   if (this->current) {
-    this->material->color_ambient = Vector3(
+    this->material->setAmbientColor(
       scanner->get_float(),
       scanner->get_float(),
       scanner->get_float()
@@ -135,7 +137,7 @@ void MtlLoader::get_Kd()
   std::cout << "MtlLoader::get_Kd() " << scanner->where() << std::endl;
 #endif
   if (this->current) {
-    this->material->color_diffuse = Vector3(
+    this->material->setDiffuseColor(
       scanner->get_float(),
       scanner->get_float(),
       scanner->get_float()
@@ -151,7 +153,7 @@ void MtlLoader::get_Ks()
   std::cout << "MtlLoader::get_Ks() " << scanner->where() << std::endl;
 #endif
   if (this->current) {
-    this->material->color_specular = Vector3(
+    this->material->setSpecularColor(
       scanner->get_float(),
       scanner->get_float(),
       scanner->get_float()
@@ -167,7 +169,7 @@ void MtlLoader::get_Ke()
   std::cout << "MtlLoader::get_Ke() " << scanner->where() << std::endl;
 #endif
   if (this->current) {
-    this->material->color_emissive = Vector3(
+    this->material->setEmissiveColor(
       scanner->get_float(),
       scanner->get_float(),
       scanner->get_float()
@@ -220,3 +222,6 @@ void MtlLoader::ignore()
   while (!scanner->is_eof() && !scanner->is_eol()) scanner->advance();
   scanner->consume_eol();
 }
+
+
+

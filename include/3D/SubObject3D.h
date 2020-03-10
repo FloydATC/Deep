@@ -11,7 +11,7 @@ class SubObject3D : public Mesh3D
     SubObject3D();
     ~SubObject3D();
 
-    void render(ShaderProgram* shader);
+    void render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader);
 
   protected:
 
