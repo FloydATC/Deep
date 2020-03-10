@@ -63,7 +63,7 @@ Vector3 unprojected_vector(Vector2 pixel, Vector2 display, Matrix4 projection, M
   Vector4 pixel_clip = Vector4(pixel_nds.x, pixel_nds.y, -1.0, 1.0); // homogeneous clip space
   Vector4 pixel_eye = projection.invert() * pixel_clip;
   pixel_eye = Vector4(pixel_eye.x, pixel_eye.y, -1.0, 0.0); // eye space
-  Vector3 ray_world = (view.invert() * pixel_eye).xyz();
+  Vector3 ray_world = (view.invert() * pixel_eye).xyz;
   return ray_world.normalize(); // direction in world space
 }
 

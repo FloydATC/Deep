@@ -66,9 +66,14 @@ struct Vector2
 ///////////////////////////////////////////////////////////////////////////////
 struct Vector3
 {
-    float x;
-    float y;
-    float z;
+    union {
+      struct { float x, y, z; };
+      struct { float r, g, b; };
+      Vector2 xy;
+    };
+    //float x;
+    //float y;
+    //float z;
 
     // ctors
     Vector3() : x(0), y(0), z(0) {};
@@ -82,7 +87,7 @@ struct Vector3
     Vector3&    normalize();                            //
     float       dot(const Vector3& vec) const;          // dot product
     Vector3     cross(const Vector3& vec) const;        // cross product
-    Vector2     xy() const;
+    //Vector2     xy() const;
     bool        equal(const Vector3& vec, float e) const; // compare with epsilon
 
     // operators
@@ -114,10 +119,17 @@ struct Vector3
 ///////////////////////////////////////////////////////////////////////////////
 struct Vector4
 {
-    float x;
-    float y;
-    float z;
-    float w;
+    union {
+      struct { float x, y, z, w; };
+      struct { float r, g, b, a; };
+      Vector2 xy;
+      Vector3 xyz;
+      Vector3 rgb;
+    };
+    //float x;
+    //float y;
+    //float z;
+    //float w;
 
     // ctors
     Vector4() : x(0), y(0), z(0), w(0) {};
@@ -130,7 +142,7 @@ struct Vector4
     Vector4&    normalize();                            //
     float       dot(const Vector4& vec) const;          // dot product
     bool        equal(const Vector4& vec, float e) const; // compare with epsilon
-    Vector3     xyz() const;
+    //Vector3     xyz() const;
 
     // operators
     Vector4     operator-() const;                      // unary operator (negate)
@@ -403,9 +415,9 @@ inline Vector3 Vector3::cross(const Vector3& rhs) const {
     return Vector3(y*rhs.z - z*rhs.y, z*rhs.x - x*rhs.z, x*rhs.y - y*rhs.x);
 }
 
-inline Vector2 Vector3::xy() const {
-  return Vector2(this->x, this->y);
-}
+//inline Vector2 Vector3::xy() const {
+//  return Vector2(this->x, this->y);
+//}
 
 inline bool Vector3::equal(const Vector3& rhs, float epsilon) const {
     return fabs(x - rhs.x) < epsilon && fabs(y - rhs.y) < epsilon && fabs(z - rhs.z) < epsilon;
@@ -427,9 +439,9 @@ inline std::ostream& operator<<(std::ostream& os, const Vector3& vec) {
 // inline functions for Vector4
 ///////////////////////////////////////////////////////////////////////////////
 
-inline Vector3 Vector4::xyz() const {
-  return Vector3(x, y, z);
-}
+//inline Vector3 Vector4::xyz() const {
+//  return Vector3(x, y, z);
+//}
 
 inline Vector4 Vector4::operator-() const {
     return Vector4(-x, -y, -z, -w);

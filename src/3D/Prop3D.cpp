@@ -246,7 +246,7 @@ Vector2 Prop3D::relative_mouse_pos(Vector2 mouse, Camera3D* camera)
   Vector3 point_object = model_matrix.invert() * point_world;
   //std::cout << "  point_object = " << point_object << std::endl;
 
-  return point_object.xy();
+  return point_object.xy;
 }
 
 

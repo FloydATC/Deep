@@ -225,7 +225,7 @@ Vector3 Entity3D::getPosition()
 void Entity3D::strafeLeft(float distance)
 {
   Vector4 motion = Vector4(-distance, 0, 0, 0) * getRotationMatrix();
-  this->position += motion.xyz();
+  this->position += motion.xyz;
   this->need_recalc = true;
 #ifdef DEBUG_TRACE_ENTITY
   std::cout << "Entity3D" << this << "::strafeLeft() position=" << this->position << std::endl;
@@ -235,7 +235,7 @@ void Entity3D::strafeLeft(float distance)
 void Entity3D::strafeRight(float distance)
 {
   Vector4 motion = Vector4(distance, 0, 0, 0) * getRotationMatrix();
-  this->position += motion.xyz();
+  this->position += motion.xyz;
   this->need_recalc = true;
 #ifdef DEBUG_TRACE_ENTITY
   std::cout << "Entity3D" << this << "::strafeRight() position=" << this->position << std::endl;
@@ -245,7 +245,7 @@ void Entity3D::strafeRight(float distance)
 void Entity3D::strafeUp(float distance)
 {
   Vector4 motion = Vector4(0, distance, 0, 0) * getRotationMatrix();
-  this->position += motion.xyz();
+  this->position += motion.xyz;
   this->need_recalc = true;
 #ifdef DEBUG_TRACE_ENTITY
   std::cout << "Entity3D" << this << "::strafeUp() position=" << this->position << std::endl;
@@ -255,7 +255,7 @@ void Entity3D::strafeUp(float distance)
 void Entity3D::strafeDown(float distance)
 {
   Vector4 motion = Vector4(0, -distance, 0, 0) * getRotationMatrix();
-  this->position += motion.xyz();
+  this->position += motion.xyz;
   this->need_recalc = true;
 #ifdef DEBUG_TRACE_ENTITY
   std::cout << "Entity3D" << this << "::strafeDown() position=" << this->position << std::endl;
@@ -265,7 +265,7 @@ void Entity3D::strafeDown(float distance)
 void Entity3D::strafeForward(float distance)
 {
   Vector4 motion = Vector4(0, 0, -distance, 0) * getRotationMatrix();
-  this->position += motion.xyz();
+  this->position += motion.xyz;
   this->need_recalc = true;
 #ifdef DEBUG_TRACE_ENTITY
   std::cout << "Entity3D" << this << "::strafeForward() position=" << this->position << std::endl;
@@ -275,7 +275,7 @@ void Entity3D::strafeForward(float distance)
 void Entity3D::strafeBackward(float distance)
 {
   Vector4 motion = Vector4(0, 0, distance, 0) * getRotationMatrix();
-  this->position += motion.xyz();
+  this->position += motion.xyz;
   this->need_recalc = true;
 #ifdef DEBUG_TRACE_ENTITY
   std::cout << "Entity3D" << this << "::strafeBackward() position=" << this->position << std::endl;
