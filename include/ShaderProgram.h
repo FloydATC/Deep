@@ -1,6 +1,8 @@
 #ifndef SHADERPROGRAM_H
 #define SHADERPROGRAM_H
 
+#include <unordered_map>
+
 #include <iostream>
 #include <string>
 #include "GFX.h"
@@ -16,68 +18,31 @@ class ShaderProgram
     GLint current();
     GLuint id();
 
-    void setAttributeV(std::string name);
-    void setAttributeVT(std::string name);
-    void setAttributeVN(std::string name);
-
-    void setUniformProjectionMatrix(std::string name);
-    void setUniformViewMatrix(std::string name);
-    void setUniformModelMatrix(std::string name);
-
-    void setUniformAmbientColor(std::string name);
-    void setUniformDiffuseColor(std::string name);
-    void setUniformSpecularColor(std::string name);
-    void setUniformEmissiveColor(std::string name);
-
-    void setUniformDebugFlag(std::string name);
-    void setUniformTextureFlag(std::string name);
-
-    void enableAttributeV();
-    void enableAttributeVT();
-    void enableAttributeVN();
-
-    void disableAttributeV();
-    void disableAttributeVT();
-    void disableAttributeVN();
-
-    void setAttribPointerV(GLint values, GLenum type, GLsizei typesize, GLsizei stride, GLsizei offset);
-    void setAttribPointerVT(GLint values, GLenum type, GLsizei typesize, GLsizei stride, GLsizei offset);
-    void setAttribPointerVN(GLint values, GLenum type, GLsizei typesize, GLsizei stride, GLsizei offset);
-
-    void setProjectionMatrix(Matrix4 matrix);
-    void setViewMatrix(Matrix4 matrix);
-    void setModelMatrix(Matrix4 matrix);
-
-    void setDebugFlag(bool value);
-    void setTextureFlag(bool value);
     void setColors(Material* material);
-
-    void setAmbientColor(Vector4 color);
-    void setDiffuseColor(Vector4 color);
-    void setSpecularColor(Vector4 color);
-    void setEmissiveColor(Vector4 color);
-
-    bool hasAttributeV();
-    bool hasAttributeVT();
-    bool hasAttributeVN();
 
     int success;
     std::string error;
 
-    GLint uniform_projection_mat;
-    GLint uniform_view_mat;
-    GLint uniform_model_mat;
+    // Vertex attribute methods
+    void mapAttribute(std::string name, std::string alias);
+    bool hasAttribute(std::string name);
+    void enableAttribute(std::string name);
+    void disableAttribute(std::string name);
+    void setAttributePointer(std::string name, GLint values, GLenum type, GLsizei typesize, GLsizei stride, GLsizei offset);
 
-    GLint uniform_color_a;
-    GLint uniform_color_d;
-    GLint uniform_color_s;
-    GLint uniform_color_e;
+    // Shader uniform methods
+    void mapUniform(std::string name, std::string alias);
+    bool hasUniform(std::string name);
+    void setUniformBoolean(std::string name, bool value);
+    void setUniformInteger(std::string name, int value);
+    void setUniformVector2(std::string name, Vector2 value);
+    void setUniformVector3(std::string name, Vector3 value);
+    void setUniformVector4(std::string name, Vector4 value);
+    void setUniformMatrix4(std::string name, Matrix4 value);
 
-    GLint uniform_debug_flag;
-    GLint uniform_texture_flag;
-    GLint vertex_v;
-    GLint vertex_vt;
-    GLint vertex_vn;
+    std::unordered_map<std::string,GLint> attribute;
+    std::unordered_map<std::string,GLint> uniform;
+
 
     std::string vs_filename;
     std::string fs_filename;

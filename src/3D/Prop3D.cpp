@@ -4,6 +4,7 @@
 #include "3D/Math3D.h"
 
 #include "Scene3D.h" // debugging
+#include "Vectors.h"
 
 //#define DEBUG_TRACE_PROP
 
@@ -21,6 +22,10 @@ Prop3D::Prop3D()
   this->texture = 0;
   this->texture_set = false;
   this->bounds_enabled = false;
+  this->decal_texture = 0;
+  this->decal_texture_set = false;
+  this->decal_position = Vector2(0, 0);
+  this->decal_position_set = false;
 #ifdef DEBUG_TRACE_PROP
   std::cout << "Prop3D" << this << " created" << std::endl;
 #endif
@@ -42,7 +47,10 @@ void Prop3D::render(Camera3D* camera) {
 #endif
 
   this->mesh->bounds_enabled = this->bounds_enabled;
+  // Set instance-specific properties on shared mesh object
   if (this->texture_set) this->mesh->setTexture(this->texture);
+  if (this->decal_texture_set) this->mesh->setDecalTexture(this->decal_texture);
+  if (this->decal_position_set) this->mesh->setDecalPosition(this->decal_position);
 
   this->mesh->render(
     camera->getPerspectiveMatrix(),
@@ -154,6 +162,25 @@ void Prop3D::hideBounds()
 }
 
 
+
+void Prop3D::setDecalTexture(GLuint texture)
+{
+#ifdef DEBUG_TRACE_MESH
+  std::cout << "Prop3D::setDecalTexture() mesh=" << this << " decal texture set" << std::endl;
+#endif
+  this->decal_texture = texture;
+  this->decal_texture_set = true;
+}
+
+
+void Prop3D::setDecalPosition(Vector2 position)
+{
+#ifdef DEBUG_TRACE_MESH
+  std::cout << "Prop3D::setDecalPosition() mesh=" << this << " decal position set" << std::endl;
+#endif
+  this->decal_position = position;
+  this->decal_position_set = true;
+}
 
 
 

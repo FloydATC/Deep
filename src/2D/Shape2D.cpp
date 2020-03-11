@@ -17,9 +17,12 @@ Shape2D::~Shape2D()
 void Shape2D::draw_untextured_vbo(GLsizeiptr arrsize, const void* arr, GLenum type, GLsizei typesize, GLenum mode, GLsizei vertices)
 {
   glBufferData(GL_ARRAY_BUFFER, arrsize, arr, GL_STREAM_DRAW); // Buffer will be used only once
-  glEnableVertexAttribArray(shader->vertex_v);
-  glDisableVertexAttribArray(shader->vertex_vt);
-  glVertexAttribPointer(shader->vertex_v, 2, type, GL_FALSE, 2*typesize, (char*) NULL+0*typesize);
+  shader->enableAttribute("attr_v");
+  shader->disableAttribute("attr_v");
+  shader->setAttributePointer("attr_v", arrsize, type, typesize, 2, 0);
+  //glEnableVertexAttribArray(shader->vertex_v);
+  //glDisableVertexAttribArray(shader->vertex_vt);
+  //glVertexAttribPointer(shader->vertex_v, 2, type, GL_FALSE, 2*typesize, (char*) NULL+0*typesize);
   glDrawArrays(mode, 0, vertices);
 }
 

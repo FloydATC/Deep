@@ -46,6 +46,10 @@ class Prop3D : public Entity3D
     void setTexture(GLuint texture);
     void setTexture(Texture* texture);
 
+    void setDecalTexture(GLuint texture);
+    void setDecalTexture(Texture* texture) { setDecalTexture(texture->id()); }
+    void setDecalPosition(Vector2 position);
+
     // Make private once values have been verified
     std::vector<Vector3> xy_plane;
     bool xy_plane_visible();
@@ -65,6 +69,11 @@ class Prop3D : public Entity3D
 
     GLuint texture;
     bool texture_set;
+
+    GLuint decal_texture;
+    bool decal_texture_set;
+    Vector2 decal_position;
+    bool decal_position_set;
 
     bool bounds_enabled;
 

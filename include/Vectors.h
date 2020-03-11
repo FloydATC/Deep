@@ -22,8 +22,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 struct Vector2
 {
-    float x;
-    float y;
+    union {
+      float data[2];
+      struct { float x, y; };
+    };
+    //float x;
+    //float y;
 
     // ctors
     Vector2() : x(0), y(0) {};

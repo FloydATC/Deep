@@ -49,12 +49,12 @@ GLuint Display::textureId()
 
 void Display::draw_untextured_vbo(GLsizeiptr arrsize, const void* arr, GLenum type, GLsizei typesize, GLenum mode, GLsizei vertices)
 {
-  this->shader->setEmissiveColor(Vector4(this->color[0], this->color[1], this->color[2], this->color[3]));
-  this->shader->setTextureFlag(false);
+  this->shader->setUniformVector4("color_e", this->color);
+  this->shader->setUniformBoolean("use_texture", false);
   bind_vbo();
   glBufferData(GL_ARRAY_BUFFER, arrsize, arr, GL_STREAM_DRAW); // Buffer will be used only once
-  this->shader->disableAttributeVT();
-  this->shader->setAttribPointerV(2, type, typesize, 2, 0);
+  this->shader->disableAttribute("attr_vt");
+  this->shader->setAttributePointer("attr_v", 2, type, typesize, 2, 0);
   glDrawArrays(mode, 0, vertices);
 }
 
@@ -289,17 +289,21 @@ void Display::draw_surface(int row, int col, float r, float g, float b, GLuint s
   //   x   y   u  v
 
   glBindTexture(GL_TEXTURE_2D, src_texture);
-  this->shader->setEmissiveColor(Vector4(r, g, b, 1.0)); // Specific color for this call
-  this->shader->setTextureFlag(true);
+  this->shader->setUniformVector4("color_e", Vector4(r, g, b, 1.0)); // Specific color for this call
+  this->shader->setUniformBoolean("use_texture", true);
+  //this->shader->setEmissiveColor(Vector4(r, g, b, 1.0));
+  //this->shader->setTextureFlag(true);
   bind_vbo();
   glBufferData(GL_ARRAY_BUFFER, sizeof(rect), rect, GL_STATIC_DRAW);
-  this->shader->enableAttributeVT();
-  this->shader->setAttribPointerV(2, GL_FLOAT, sizeof(GLfloat), 4, 0);
-  this->shader->setAttribPointerVT(2, GL_FLOAT, sizeof(GLfloat), 4, 2);
+  this->shader->enableAttribute("attr_vt");
+  this->shader->setAttributePointer("attr_v", 2, GL_FLOAT, sizeof(GLfloat), 4, 0);
+  this->shader->setAttributePointer("attr_vt", 2, GL_FLOAT, sizeof(GLfloat), 4, 2);
   glDrawArrays(GL_TRIANGLES, 0, 6);
   color[3] = 1.0;
-  this->shader->setTextureFlag(false);
-  this->shader->setEmissiveColor(this->color); // Restore "current" color
+  this->shader->setUniformVector4("color_e", this->color); // Restore current color for this display
+  this->shader->setUniformBoolean("use_texture", false);
+  //this->shader->setTextureFlag(false);
+  //this->shader->setEmissiveColor(this->color); // Restore "current" color
 }
 
 
@@ -385,7 +389,8 @@ void Display::set_rgbcolor(float r, float g, float b)
   this->color.g = clampf(g, 0.0, 1.0);
   this->color.b = clampf(b, 0.0, 1.0);
   this->color.a = 1.0;
-  this->shader->setEmissiveColor(this->color);
+  this->shader->setUniformVector4("color_e", this->color);
+  //this->shader->setEmissiveColor(this->color);
 }
 
 void Display::prepare_vao()
@@ -495,15 +500,12 @@ bool Display::pre_render()
   glDisable(GL_DEPTH_TEST);
 
   glUseProgram(this->shader->id());
-  this->shader->setDebugFlag(false);
   glActiveTexture(GL_TEXTURE0);
 
-  //glUniformMatrix4fv(uniform_ortho, 1, GL_FALSE, m_ortho.get());
-  //glEnableVertexAttribArray(attr_vertex);
-  this->shader->setProjectionMatrix(this->m_ortho);
-  this->shader->setViewMatrix(Matrix4());
-  this->shader->setModelMatrix(Matrix4());
-  this->shader->enableAttributeV();
+  this->shader->setUniformMatrix4("projection", this->m_ortho);
+  this->shader->setUniformMatrix4("view", Matrix4());
+  this->shader->setUniformMatrix4("model", Matrix4());
+  this->shader->enableAttribute("attr_v");
 
   if (initialized == false) {
     reset();

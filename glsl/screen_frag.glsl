@@ -2,7 +2,6 @@
 
 // Render display screen in 3D scene
 
-in vec3 v;
 in vec2 vt;
 in vec3 vn;
 
@@ -10,6 +9,9 @@ uniform vec4 color_a;
 uniform vec4 color_d;
 uniform vec4 color_s;
 uniform vec4 color_e;
+
+uniform vec2 decal_position;
+uniform sampler2D decal_texture;
 
 uniform sampler2D texture_diffuse;
 uniform sampler2D texture_specular;

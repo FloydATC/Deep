@@ -6,7 +6,8 @@
 #include "GFX.h"
 #include "ShaderProgram.h"
 #include "Material.h"
-
+#include "Texture.h"
+#include "Vectors.h"
 
 class Mesh3D
 {
@@ -22,6 +23,10 @@ class Mesh3D
     std::string getFilename();
 
     virtual void setTexture(GLuint texture);
+
+    virtual void setDecalTexture(GLuint texture);
+    void setDecalTexture(Texture* texture) { setDecalTexture(texture->id()); }
+    virtual void setDecalPosition(Vector2 position);
 
     virtual void setMaterial(Material* material);
     Material* getMaterial();
@@ -84,6 +89,10 @@ class Mesh3D
 
     bool initialized;
 
+    GLuint decal_texture;
+    bool decal_texture_set;
+    Vector2 decal_position;
+    bool decal_position_set;
 
 
   private:

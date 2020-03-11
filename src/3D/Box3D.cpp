@@ -33,9 +33,12 @@ void Box3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material
 
   // Set uniform values
   glUseProgram(use_shader->id());
-  use_shader->setProjectionMatrix(proj);
-  use_shader->setViewMatrix(view);
-  use_shader->setModelMatrix(model);
+  use_shader->setUniformMatrix4("projection", proj);
+  use_shader->setUniformMatrix4("view", view);
+  use_shader->setUniformMatrix4("model", model);
+  //use_shader->setProjectionMatrix(proj);
+  //use_shader->setViewMatrix(view);
+  //use_shader->setModelMatrix(model);
   use_shader->setColors(use_material);
 
 
@@ -43,8 +46,10 @@ void Box3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material
   if (!this->finalized) this->finalize();
   if (!this->initialized) this->initialize(use_shader);
   //shader->setColor(1.0, 1.0, 0.0, 1.0);
-  use_shader->setDebugFlag(false);
-  use_shader->setTextureFlag(false);
+  shader->setUniformBoolean("is_debug", false);
+  shader->setUniformBoolean("use_texture", false);
+  //use_shader->setDebugFlag(false);
+  //use_shader->setTextureFlag(false);
   glLineWidth(1.0);
   glPointSize(4.0);
   //std::cout << "Box3D::render() glDrawArrays(GL_POINTS, 0, 12)" << std::endl;

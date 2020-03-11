@@ -148,6 +148,7 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
     // v 0,0 is center of screen so we must calibrate to VM's screen
     // Maybe we should do this inside Machine.cpp, I'm not 100% sure.
     //std::cout << "  raw mouse position " << v.x << "," << v.y << std::endl;
+    p->setDecalPosition(Vector2(v.x, v.y));
     v.x = (v.x + 0.38) * 320 / 0.76;
     v.y = ((v.y * -1) + 0.3) * 200 / 0.6;
     if (v.x >= 0 && v.x < 320 && v.y >= 0 && v.y < 200) {
@@ -408,9 +409,11 @@ int main(int argc, char* argv[])
       std::cout << "main() Virtual machines ready" << std::endl;
 #endif
 
+      Texture* mouse = scene.getTexture("textures/mouse.png");
       Obj3D* screen = scene.getObj3D("obj/screen.obj");
       //screen->getPart(0)->setColor(1.0, 1.0, 1.0, 1.0); // Display
       screen->getPart(0)->setShader(screen_shader);
+      screen->getPart(0)->setDecalTexture(mouse);
       //screen->getPart(1)->setColor(0.2, 0.2, 0.3, 1.0); // Enclosure
 
       scene.addProp(screen);
@@ -430,7 +433,7 @@ int main(int argc, char* argv[])
 
       ShaderProgram* plane_shader = scene.getShader("glsl/plane_vert.glsl", "glsl/plane_frag.glsl");
       Material* plane_material = scene.getMaterial();
-      plane_material->setDiffuseColor(0.9, 0.9, 1.0);
+      plane_material->setDiffuseColor(0.95, 0.95, 1.0);
       plane_material->setName("plane");
       Plane3D* plane = new Plane3D();
       plane->setShader(plane_shader);
@@ -446,7 +449,6 @@ int main(int argc, char* argv[])
       scene.getProp(5)->setPosition(Vector3(0.0, -1.0, 0.0));
 
       scene.setShader(scene_shader); // Set default shader
-
 
 
 #ifndef DEBUG_NO_VIRTUAL_MACHINES

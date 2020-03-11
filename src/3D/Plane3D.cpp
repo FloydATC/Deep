@@ -45,9 +45,9 @@ void Plane3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* materi
 
   // Set uniform values
   glUseProgram(use_shader->id());
-  use_shader->setProjectionMatrix(proj);
-  use_shader->setViewMatrix(view);
-  use_shader->setModelMatrix(model);
+  use_shader->setUniformMatrix4("projection", proj);
+  use_shader->setUniformMatrix4("view", view);
+  use_shader->setUniformMatrix4("model", model);
   use_shader->setColors(use_material);
 
   bind_vao();
@@ -55,10 +55,8 @@ void Plane3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* materi
   glDisable(GL_CULL_FACE);
   if (this->finalized == false) finalize();
   if (this->initialized == false) initialize(use_shader);
-  //use_shader->setColor(this->color);
-  use_shader->setDebugFlag(false);
-  use_shader->setTextureFlag(true);
-  glBindTexture(GL_TEXTURE_2D, 0); // debug + texture = use a shader generated texture
+
+  glBindTexture(GL_TEXTURE_2D, 0);
   glDrawArrays(GL_TRIANGLES, 0, 6);
   glEnable(GL_CULL_FACE);
   unbind_vao();

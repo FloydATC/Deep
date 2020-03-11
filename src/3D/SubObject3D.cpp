@@ -36,19 +36,24 @@ void SubObject3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* ma
 
     // Set uniform values
     glUseProgram(use_shader->id());
-    use_shader->setProjectionMatrix(proj);
-    use_shader->setViewMatrix(view);
-    use_shader->setModelMatrix(model);
+    use_shader->setUniformMatrix4("projection", proj);
+    use_shader->setUniformMatrix4("view", view);
+    use_shader->setUniformMatrix4("model", model);
+    //use_shader->setProjectionMatrix(proj);
+    //use_shader->setViewMatrix(view);
+    //use_shader->setModelMatrix(model);
     use_shader->setColors(use_material);
 
     bind_vao();
     if (!this->initialized) this->initialize(use_shader);
-    use_shader->setDebugFlag(this->debug);
+    use_shader->setUniformBoolean("is_debug", this->debug);
 
     if (this->texture_set) {
-      use_shader->setTextureFlag(true);
+      use_shader->setUniformBoolean("use_texture", true);
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, this->texture);
+    } else {
+      use_shader->setUniformBoolean("use_texture", false);
     }
 
     glDrawArrays(GL_TRIANGLES, 0, this->count_v);

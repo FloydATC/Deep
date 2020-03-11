@@ -58,29 +58,29 @@ void Mesh3D::initialize(ShaderProgram* shader)
   std::cout << "Mesh3D::initialize() mesh=" << this << " vao=" << this->vao << " name=" << this->name << std::endl;
 #endif
   bind_vao();
-  if (this->count_v  > 0 && shader->hasAttributeV()) {
+  if (this->count_v  > 0 && shader->hasAttribute("attr_v")) {
 #ifdef DEBUG_TRACE_MESH
     std::cout << "Mesh3D::initialize() enable V" << std::endl;
 #endif
     bind_vbo(this->vbo_v);
-    shader->enableAttributeV();
-    shader->setAttribPointerV(3, GL_FLOAT, sizeof(GLfloat), 3, 0);
+    shader->enableAttribute("attr_v");
+    shader->setAttributePointer("attr_v", 3, GL_FLOAT, sizeof(GLfloat), 3, 0);
   }
-  if (this->count_vt  > 0 && shader->hasAttributeVT()) {
+  if (this->count_vt  > 0 && shader->hasAttribute("attr_vt")) {
 #ifdef DEBUG_TRACE_MESH
     std::cout << "Mesh3D::initialize() enable VT" << std::endl;
 #endif
     bind_vbo(this->vbo_vt);
-    shader->enableAttributeVT();
-    shader->setAttribPointerVT(2, GL_FLOAT, sizeof(GLfloat), 2, 0);
+    shader->enableAttribute("attr_vt");
+    shader->setAttributePointer("attr_vt", 2, GL_FLOAT, sizeof(GLfloat), 2, 0);
   }
-  if (this->count_vn  > 0 && shader->hasAttributeVN()) {
+  if (this->count_vn  > 0 && shader->hasAttribute("attr_vn")) {
 #ifdef DEBUG_TRACE_MESH
     std::cout << "Mesh3D::initialize() enable VN" << std::endl;
 #endif
     bind_vbo(this->vbo_vn);
-    shader->enableAttributeVN();
-    shader->setAttribPointerVN(3, GL_FLOAT, sizeof(GLfloat), 3, 0);
+    shader->enableAttribute("attr_vn");
+    shader->setAttributePointer("attr_vn", 3, GL_FLOAT, sizeof(GLfloat), 3, 0);
   }
 #ifdef DEBUG_TRACE_OPENGL
   glObjectLabel(GL_VERTEX_ARRAY, this->vao,    -1, std::string(this->name + " VAO").c_str());
@@ -262,6 +262,24 @@ void Mesh3D::hide()
 }
 
 
+void Mesh3D::setDecalTexture(GLuint texture)
+{
+#ifdef DEBUG_TRACE_MESH
+  std::cout << "Mesh3D::setDecalTexture() mesh=" << this << " decal texture set" << std::endl;
+#endif
+  this->decal_texture = texture;
+  this->decal_texture_set = true;
+}
+
+
+void Mesh3D::setDecalPosition(Vector2 position)
+{
+#ifdef DEBUG_TRACE_MESH
+  std::cout << "Mesh3D::setDecalPosition() mesh=" << this << " decal position set" << std::endl;
+#endif
+  this->decal_position = position;
+  this->decal_position_set = true;
+}
 
 
 std::ostream& operator <<(std::ostream& stream, const Mesh3D* mesh) {

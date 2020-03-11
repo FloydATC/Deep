@@ -31,9 +31,14 @@ void Overlay2D::pre_render()
   //std::cout << "Overlay2D::pre_render() glUseProgram(" << this->shader->id() << ")" << std::endl;
   glUseProgram(this->shader->id());
   //std::cout << "Overlay2D::pre_render() glUniformMatrix4fv(" << this->shader->uniform_model_mat << ", 1, GL_FALSE, this->mat.get())" << std::endl;
-  this->shader->setModelMatrix(this->mat);
-  this->shader->setDebugFlag(false);
-  this->shader->setTextureFlag(false);
+  this->shader->setUniformMatrix4("projection", this->mat);
+  //this->shader->setUniform("model", Matrix4());
+  //this->shader->setUniform("view", Matrix4());
+  this->shader->setUniformBoolean("is_debug", false);
+  this->shader->setUniformBoolean("use_texture", false);
+  //this->shader->setModelMatrix(this->mat);
+  //this->shader->setDebugFlag(false);
+  //this->shader->setTextureFlag(false);
   //glUniformMatrix4fv(this->shader->uniform_model_mat, 1, GL_FALSE, this->mat.get());
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
@@ -85,7 +90,8 @@ void Overlay2D::pre_draw(Shape2D* shape)
 {
   //std::cout << "Overlay2D::pre_draw()" << std::endl;
   //glUniform4fv(uniform_color, 1, this->color);
-  this->shader->setDiffuseColor(Vector4(color[0], color[1], color[2], color[3]));
+  this->shader->setUniformVector4("color_d", Vector4(color[0], color[1], color[2], color[3]));
+  //this->shader->setDiffuseColor(Vector4(color[0], color[1], color[2], color[3]));
   if (this->shader == nullptr) {
     std::cerr << "Overlay2D::pre_draw() shader not set" << std::endl;
     return;
