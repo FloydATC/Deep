@@ -38,6 +38,9 @@ class Obj3D : public Mesh3D
     int numParts();
     void setTexture(GLuint texture);
 
+    void setDecalTexture(GLuint texture);
+    void setDecalPosition(Vector2 position);
+
   protected:
 
     std::vector<Mesh3D*> parts;

@@ -75,3 +75,13 @@ void Obj3D::setShader(ShaderProgram* shader)
   for (auto& part : this->parts) part->setShader(shader);
 }
 
+void Obj3D::setDecalTexture(GLuint texture)
+{
+  for (auto& part : this->parts) part->setDecalTexture(texture);
+}
+
+void Obj3D::setDecalPosition(Vector2 position)
+{
+  for (auto& part : this->parts) part->setDecalPosition(position);
+}
+

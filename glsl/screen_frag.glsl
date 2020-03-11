@@ -10,12 +10,10 @@ uniform vec4 color_d;
 uniform vec4 color_s;
 uniform vec4 color_e;
 
-uniform vec2 decal_position;
-uniform sampler2D decal_texture;
+uniform vec2 position_decal;
+uniform sampler2D texture_decal;
 
 uniform sampler2D texture_diffuse;
-uniform sampler2D texture_specular;
-uniform sampler2D texture_bump;
 
 uniform int is_debug;
 uniform int use_texture;
@@ -32,13 +30,6 @@ float shadow(int component, vec2 tex, float offset) {
   return max(pix, sha);
 }
 
-float checkerboard(float x, float y, float scale) {
-	return float((
-		int(floor(x / scale)) +
-		int(floor(y / scale))
-	) % 2);
-}
-
 
 void main() {
 
@@ -49,5 +40,7 @@ void main() {
     float g = max(separation(1, vt, -0.001), shadow(1, vt, -0.0008));
 
     col = color_d * vec4( r, g, b, 1.0 );
+    vec4 cursor = texture2D( texture_decal, vec2( ((vt.x - position_decal.x*1.2 - 0.5)*60.0), (vt.y - position_decal.y*1.42 - 0.47)*30.0));
+    if (cursor.a > 0.5) col = cursor;
   }
 }

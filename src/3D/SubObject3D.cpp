@@ -48,13 +48,36 @@ void SubObject3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* ma
     if (!this->initialized) this->initialize(use_shader);
     use_shader->setUniformBoolean("is_debug", this->debug);
 
+
+
     if (this->texture_set) {
       use_shader->setUniformBoolean("use_texture", true);
-      glActiveTexture(GL_TEXTURE0);
+
+      GLint texture_diffuse = glGetUniformLocation(use_shader->id(), "texture_diffuse");
+      //std::cout << "SubObject3D::render() texture_diffuse=" << texture_diffuse << std::endl;
+      int unit_diffuse = 0; // ???
+      glUniform1i(texture_diffuse, unit_diffuse);
+      glActiveTexture(GL_TEXTURE0 + unit_diffuse);
       glBindTexture(GL_TEXTURE_2D, this->texture);
+      //glBindSampler(unit_diffuse, linearFiltering); // ?? see: genSamplers()
+
+      GLint texture_decal = glGetUniformLocation(use_shader->id(), "texture_decal");
+      //std::cout << "SubObject3D::render() texture_decal=" << texture_decal << std::endl;
+      int unit_decal = 1; // ???
+      glUniform1i(texture_decal, unit_decal);
+      glActiveTexture(GL_TEXTURE0 + unit_decal);
+      glBindTexture(GL_TEXTURE_2D, this->decal_texture);
+      //glBindSampler(unit_diffuse, linearFiltering); // ?? see: genSamplers()
+
+      if (use_shader->hasUniform("position_decal") && this->decal_position_set) {
+        use_shader->setUniformVector2("position_decal", this->decal_position);
+      }
+
     } else {
       use_shader->setUniformBoolean("use_texture", false);
     }
+
+
 
     glDrawArrays(GL_TRIANGLES, 0, this->count_v);
 

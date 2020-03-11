@@ -115,6 +115,12 @@ void ShaderProgram::setDefaults()
 
   this->mapUniform("is_debug", "is_debug");
   this->mapUniform("use_texture", "use_texture");
+
+  this->mapUniform("position_decal", "position_decal");
+  this->mapUniform("texture_decal", "texture_decal");
+  this->mapUniform("texture_diffuse", "texture_diffuse");
+  this->mapUniform("texture_emissive", "texture_emissive");
+
 }
 
 

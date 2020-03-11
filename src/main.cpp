@@ -137,6 +137,8 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
   // Detect Obj3D mouse intersection
   // WARNING! This temporary code assumes a 1:1 relationship between Obj3Ds and VMs
   Vector2 mouse = Vector2(msg->motion.x, msg->motion.y);
+  bool mouse_virtual = false;
+
   for (int i=0; i<4; i++) {
     //std::cout << "VM " << i << std::endl;
     Prop3D* p = scene->getProp(i);
@@ -148,19 +150,22 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
     // v 0,0 is center of screen so we must calibrate to VM's screen
     // Maybe we should do this inside Machine.cpp, I'm not 100% sure.
     //std::cout << "  raw mouse position " << v.x << "," << v.y << std::endl;
-    p->setDecalPosition(Vector2(v.x, v.y));
-    v.x = (v.x + 0.38) * 320 / 0.76;
-    v.y = ((v.y * -1) + 0.3) * 200 / 0.6;
-    if (v.x >= 0 && v.x < 320 && v.y >= 0 && v.y < 200) {
+    Vector2 mv; // v mapped to 320x200 display of VM
+    mv.x = (v.x + 0.38) * 320 / 0.76;
+    mv.y = ((v.y * -1) + 0.3) * 200 / 0.6;
+    if (mv.x >= 0 && mv.x < 320 && mv.y >= 0 && mv.y < 200) {
+      p->setDecalPosition(Vector2(v.x, v.y));
       Message* relative = new Message(Message::Type::MouseMotion);
-      relative->motion.x = int(v.x);
-      relative->motion.y = int(v.y);
+      relative->motion.x = int(mv.x);
+      relative->motion.y = int(mv.y);
       //std::cout << "  mouse position " << relative->motion.x << "," << relative->motion.y << std::endl;
       vms[i]->push(relative);
+      mouse_virtual = true;
     }
 
   }
-
+  // Hide system mouse cursor if it is active on one of the VM screens
+  SDL_ShowCursor( mouse_virtual ? SDL_DISABLE : SDL_ENABLE);
   delete msg;
 }
 
@@ -430,6 +435,12 @@ int main(int argc, char* argv[])
       scene.getProp(1)->setDirection( 15,-15,  0);
       scene.getProp(2)->setDirection(-15, 15,  0);
       scene.getProp(3)->setDirection(-15,-15,  0);
+
+      // Hide mouse cursors by default
+      scene.getProp(0)->setDecalPosition(Vector2(-1, -1));
+      scene.getProp(1)->setDecalPosition(Vector2(-1, -1));
+      scene.getProp(2)->setDecalPosition(Vector2(-1, -1));
+      scene.getProp(3)->setDecalPosition(Vector2(-1, -1));
 
       ShaderProgram* plane_shader = scene.getShader("glsl/plane_vert.glsl", "glsl/plane_frag.glsl");
       Material* plane_material = scene.getMaterial();
