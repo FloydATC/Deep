@@ -444,7 +444,9 @@ int main(int argc, char* argv[])
 
       ShaderProgram* plane_shader = scene.getShader("glsl/plane_vert.glsl", "glsl/plane_frag.glsl");
       Material* plane_material = scene.getMaterial();
+      plane_material->setAmbientColor(0.12, 0.12, 0.1);
       plane_material->setDiffuseColor(0.95, 0.95, 1.0);
+      plane_material->setSpecularColor(0.60, 0.60, 0.55);
       plane_material->setName("plane");
       Plane3D* plane = new Plane3D();
       plane->setShader(plane_shader);

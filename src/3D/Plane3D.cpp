@@ -95,6 +95,18 @@ void Plane3D::finalize()
 #ifdef DEBUG_TRACE_PLANE
   std::cout << "Plane3D::finalize() " << sizeof(vertices_vt) << " bytes -> vbo_vt " << this->vbo_vt << std::endl;
 #endif
+  float vertices_vn[18] = {
+    0.0, 0.0, 1.0,
+    0.0, 0.0, 1.0,
+    0.0, 0.0, 1.0,
+    0.0, 0.0, 1.0,
+    0.0, 0.0, 1.0,
+    0.0, 0.0, 1.0
+  };
+  set_vn(vertices_vn, 6);
+#ifdef DEBUG_TRACE_PLANE
+  std::cout << "Plane3D::finalize() " << sizeof(vertices_vn) << " bytes -> vbo_vn " << this->vbo_vn << std::endl;
+#endif
   this->finalized = true;
 }
 

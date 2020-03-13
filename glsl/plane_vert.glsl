@@ -7,13 +7,21 @@ uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
 
+out vec3 v;
 out vec2 vt;
 out vec3 vn;
+out vec3 eye;
+
 
 void main() {
   mat4 m = projection * view * model;
 
   vt = attr_vt;
-  vn = (model * vec4(attr_vn, 1.0)).xyz;
+  vn = mat3(model) * attr_vn; // For lighting
+  v =  mat3(model) * attr_v; // For lighting
+
+  mat4 iv = inverse(view);
+  eye = vec3(iv[3][0], iv[3][1],iv[3][2]);
+
   gl_Position = m * vec4(attr_v, 1.0);
 }

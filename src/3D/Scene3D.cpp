@@ -59,7 +59,7 @@ void Scene3D::render()
 #endif
   glViewport(0, 0, this->cam->getWidth(), this->cam->getHeight());
 
-  glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+  glClearColor(0.04f, 0.04f, 0.05f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
