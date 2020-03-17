@@ -7,6 +7,7 @@ Box3D::Box3D()
   //ctor
   this->vertices.resize(8*3); // 8 corners, 3 dimensions (x,y,z)
   glGenBuffers(1, &this->ibo);
+  this->cast_shadow = false;
 #ifdef DEBUG_TRACE_OPENGL
   glObjectLabel(GL_BUFFER, this->ibo, -1, "Box3D IBO");
 #endif

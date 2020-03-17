@@ -8,6 +8,7 @@ Plane3D::Plane3D()
   //ctor
   this->finalized = false;
   this->name = "Plane3D";
+  this->cast_shadow = false;
 #ifdef DEBUG_TRACE_OPENGL
   glObjectLabel(GL_VERTEX_ARRAY, this->vao, -1, "Plane3D VAO");
   glObjectLabel(GL_BUFFER, this->vbo_v, -1, "Plane3D VBO v");

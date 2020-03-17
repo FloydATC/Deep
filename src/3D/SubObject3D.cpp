@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "3D/ShadowVolume3D.h"
+
 //#define DEBUG_TRACE_SUBOBJ
 
 SubObject3D::SubObject3D()
@@ -91,5 +93,15 @@ void SubObject3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* ma
 }
 
 
+void SubObject3D::generateShadowVolume(Light3D* light)
+{
+  this->shadow = new ShadowVolume3D(light, this);
+}
 
+
+void SubObject3D::destroyShadowVolume()
+{
+  delete this->shadow;
+  this->shadow = nullptr;
+}
 

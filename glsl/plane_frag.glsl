@@ -27,15 +27,17 @@ void main() {
   vec3 normal = normalize(vn); // vn may have been interpolated so normalize it
   vec3 light_direction = normalize(light_position - v);
   float diffuse_factor = clamp(dot(normal, light_direction), 0.0f, 1.0f);
+  //diffuse_factor = 0.0;
 
   vec3 view_direction = normalize(eye - v);
   vec3 reflect_direction = reflect(-light_direction, normal);
   float specular_factor = pow(clamp(dot(view_direction, reflect_direction), 0.0f, 1.0f), 32);
+  //specular_factor = 0.0;
 
   float c =
     checkerboard(vt.x, vt.y, 1) * 0.4 +
     checkerboard(vt.x, vt.y, 1/8.0) * 0.3 +
     checkerboard(vt.x, vt.y, 1/64.0) * 0.2 +
     0.1;
-  col = color_a + (color_d * vec4(vec3(c/2 + 0.3), 1) * diffuse_factor) + (color_s * specular_factor);
+  col = color_a + (color_d * vec4(vec3(c/2 + 0.3), 1) * diffuse_factor) + (color_s * specular_factor) + color_e;
 }

@@ -6,6 +6,7 @@
 
 int Mesh3D::mesh_serial_no = 0;
 
+
 Mesh3D::Mesh3D()
 {
   //ctor
@@ -23,6 +24,7 @@ Mesh3D::Mesh3D()
   this->texture = 0;
   this->texture_set = false;
   this->render_enabled = true;
+  this->cast_shadow = true;
   this->bounds = nullptr;
   this->bounds_enabled = false;
   this->debug = false;
@@ -282,7 +284,51 @@ void Mesh3D::setDecalPosition(Vector2 position)
 }
 
 
-std::ostream& operator <<(std::ostream& stream, const Mesh3D* mesh) {
+void Mesh3D::addFace(Face3D face)
+{
+  // For shadow volumes
+  faces.push_back(face);
+}
+
+
+bool Mesh3D::castsShadow()
+{
+  return this->cast_shadow;
+}
+
+
+void Mesh3D::findAdjacentFaces()
+{
+  // When generating shadow volumes we will need polygon adjacency information
+  // so we can trace the contours of the mesh from arbitrary directions.
+  // To this end, each Face3D holds the index of its neighbouring Face3D on each edge.
+  // Note: This means all meshes must be fully enclosed and have no overlapping faces.
+#ifdef DEBUG_TRACE_MESH
+  std::cout << "Mesh3D::findAdjacentFaces() begin" << std::endl;
+#endif
+  for (unsigned int f1=0; f1<this->faces.size(); f1++) {
+    for (int e1=0; e1<3; e1++) {
+      if (this->faces[f1].adjacent[e1] != -1) continue;
+      for (unsigned int f2=f1; f2<this->faces.size(); f2++) {
+        for (int e2=0; e2<3; e2++) {
+          if (this->faces[f2].adjacent[e2] != -1) continue;
+          if (this->faces[f1].edge(e1) == this->faces[f2].edge(e2)) {
+            this->faces[f1].adjacent[e1] = f2;
+            this->faces[f2].adjacent[e2] = f1;
+          }
+        }
+      }
+    }
+  }
+#ifdef DEBUG_TRACE_MESH
+  std::cout << "Mesh3D::findAdjacentFaces() done" << std::endl;
+#endif
+}
+
+
+
+std::ostream& operator <<(std::ostream& stream, const Mesh3D* mesh)
+{
   if (mesh == nullptr) {
     stream << "<no mesh>";
     return stream;

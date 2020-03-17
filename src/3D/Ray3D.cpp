@@ -9,6 +9,7 @@ Ray3D::Ray3D()
   //ctor
   this->finalized = false;
   this->name = "Ray3D";
+  this->cast_shadow = false;
 #ifdef DEBUG_TRACE_RAY
   std::cout << "Ray3D" << this << " created" << std::endl;
 #endif

@@ -20,9 +20,14 @@ Scene3D::~Scene3D()
   std::cout << "Scene3D" << this << " destruction" << std::endl;
 #endif
 
-  // Destroy all Prop3D objects in std::vector
-  for (const auto& prop : prop3d) {
-    delete prop;
+  // Destroy all Prop3D objects in std::unordered_map
+  for( const auto& prop : prop3d ) {
+    delete prop.second; // first=key, second=value
+  }
+
+  // Destroy all Light3D objects in std::unordered_map
+  for( const auto& light : light3d ) {
+    delete light.second; // first=key, second=value
   }
 
   // Destroy all Material objects in std::vector
@@ -60,14 +65,45 @@ void Scene3D::render()
   glViewport(0, 0, this->cam->getWidth(), this->cam->getHeight());
 
   glClearColor(0.04f, 0.04f, 0.05f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
 
-  // Render 3D models
+  // Ambient color pass: Render 3D models
   for (const auto& prop : prop3d) {
-    prop->render(this->cam);
+    prop.second->render(this->cam);
   }
+
+  // Calculate and draw shadow volumes for each light and each mesh
+  for (const auto& light_pair : light3d) {
+    Light3D* light = light_pair.second;
+    if (light->isEnabled() == false) continue;
+
+
+    for (const auto& prop_pair : prop3d) {
+      Prop3D* prop = prop_pair.second;
+      if (prop->castsShadow() == false) continue;
+
+      prop->generateShadowVolumes(light);
+
+      prop->renderShadowVolumes(GL_FRONT);
+
+    }
+
+
+    for (const auto& prop_pair : prop3d) {
+      Prop3D* prop = prop_pair.second;
+      if (prop->castsShadow() == false) continue;
+
+      prop->renderShadowVolumes(GL_BACK);
+
+      prop->destroyShadowVolumes();
+    }
+  }
+
+
+
 
 #ifdef DEBUG_TRACE_SCENE
   std::cout << "Scene3D" << this << "::render() completed" << std::endl;
@@ -130,28 +166,51 @@ Texture* Scene3D::getTexture(const std::string filename)
 }
 
 
-Prop3D* Scene3D::addProp(Mesh3D* mesh)
+Prop3D* Scene3D::addProp(std::string name, Mesh3D* mesh)
 {
 #ifdef DEBUG_TRACE_SCENE
   std::cout << "Scene3D" << this << "::addProp() mesh=" << mesh << " name=" << mesh->getName() << std::endl;
 #endif
   Prop3D* prop = new Prop3D();
   prop->setMesh(mesh);
-  prop3d.push_back(prop);
+  prop3d.insert({ name, prop });
   return prop;
 }
 
 
-Prop3D* Scene3D::getProp(int index)
+Prop3D* Scene3D::getPropByName(std::string name)
 {
-  if (index < 0 || index > ((int)prop3d.size())-1) return nullptr;
-  return prop3d[index];
+  if (prop3d.count(name) == 0) return nullptr;
+  return prop3d.at(name);
 }
 
 
 int Scene3D::getPropCount()
 {
   return prop3d.size();
+}
+
+
+void Scene3D::addLight(std::string name, Light3D* light)
+{
+#ifdef DEBUG_TRACE_SCENE
+  std::cout << "Scene3D" << this << "::addLight() light=" << light << " name=" << name << std::endl;
+#endif
+  light3d.insert({ name, light });
+  return;
+}
+
+
+Light3D* Scene3D::getLightByName(std::string name)
+{
+  if (light3d.count(name) == 0) return nullptr;
+  return light3d.at(name);
+}
+
+
+int Scene3D::getLightCount()
+{
+  return light3d.size();
 }
 
 
@@ -166,6 +225,6 @@ void Scene3D::setShader(ShaderProgram* shader)
 #ifdef DEBUG_TRACE_SCENE
   std::cout << "Scene3D" << this << "::setShader() shader=" << shader << std::endl;
 #endif
-  for (const auto& prop : this->prop3d) prop->setShader(shader);
+  for (const auto& prop : this->prop3d) prop.second->setShader(shader);
 }
 

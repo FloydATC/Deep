@@ -2,12 +2,17 @@
 #define MESH3D_H
 
 #include <string>
+#include <vector>
 
 #include "GFX.h"
 #include "ShaderProgram.h"
 #include "Material.h"
 #include "Texture.h"
 #include "Vectors.h"
+#include "3D/Face3D.h"
+#include "3D/Light3D.h"
+
+class ShadowVolume3D; // Forward declaration
 
 class Mesh3D
 {
@@ -37,9 +42,16 @@ class Mesh3D
     void setBounds(Mesh3D* box);
     Mesh3D* getBounds();
 
+    void addFace(Face3D face);
+    void findAdjacentFaces();
+
     bool bounds_enabled;
 
     bool isEnabled();
+    virtual bool castsShadow();
+    virtual void generateShadowVolume(Light3D* light) {}
+    virtual void destroyShadowVolume() {}
+
     void show();
     void hide();
 
@@ -51,9 +63,12 @@ class Mesh3D
 
     static int mesh_serial_no;
 
+    std::vector<Face3D> faces; // for shadow volumes
+
+
 
   protected:
-    Mesh3D();
+    Mesh3D(); // No public constructor
 
     Material*       material;
     Mesh3D*         bounds;
@@ -79,6 +94,7 @@ class Mesh3D
 
     bool texture_set;
     bool render_enabled;
+    bool cast_shadow;
 
     Material* my_material(Material* standard);
     ShaderProgram* my_shader(ShaderProgram* standard);
@@ -94,6 +110,7 @@ class Mesh3D
     Vector2 decal_position;
     bool decal_position_set;
 
+    ShadowVolume3D* shadow;
 
   private:
 };

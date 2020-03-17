@@ -38,10 +38,11 @@ class Obj3DLoader
     std::vector<Vector3> indexed_v;
     std::vector<Vector2> indexed_vt;
     std::vector<Vector3> indexed_vn;
-    std::vector<Point> linear_points;
 
+    std::vector<Point> linear_points;
     std::vector<int> subobject_start;
     std::vector<int> subobject_length;
+
     std::vector<SubObject3D*> subobject_mesh;
     std::vector<Material*> subobject_material;
     Box3D* box;
@@ -50,6 +51,9 @@ class Obj3DLoader
     float* make_v_array();
     float* make_vt_array();
     float* make_vn_array();
+
+    void begin_mesh(std::string filename, std::string name);
+    SubObject3D* current_mesh;
 
     std::vector<Point> compute_vn(std::vector<Point> face);
     void add_triangle(std::vector<Point> face);

@@ -263,8 +263,28 @@ Vector2 Prop3D::relative_mouse_pos(Vector2 mouse, Camera3D* camera)
 }
 
 
+bool Prop3D::castsShadow()
+{
+  return this->mesh->castsShadow();
+}
 
 
+void Prop3D::generateShadowVolumes(Light3D* light)
+{
+  this->mesh->generateShadowVolume(light);
+}
+
+
+void Prop3D::renderShadowVolumes(GLenum face)
+{
+
+}
+
+
+void Prop3D::destroyShadowVolumes()
+{
+  this->mesh->destroyShadowVolume();
+}
 
 
 

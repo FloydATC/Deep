@@ -5,6 +5,7 @@
 
 #include "GFX.h"
 #include "Matrices.h"
+#include "3D/Light3D.h"
 #include "3D/Obj3D.h"
 #include "3D/Camera3D.h"
 #include "3D/Entity3D.h"
@@ -57,6 +58,11 @@ class Prop3D : public Entity3D
     void showBounds();
     void hideBounds();
 
+    bool castsShadow();
+
+    void generateShadowVolumes(Light3D* light);
+    void renderShadowVolumes(GLenum face);
+    void destroyShadowVolumes();
 
   protected:
 

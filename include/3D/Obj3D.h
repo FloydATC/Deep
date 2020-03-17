@@ -8,6 +8,7 @@
 #include <SDL.h>
 
 #include "3D/Box3D.h"
+#include "3D/Light3D.h"
 #include "3D/Mesh3D.h"
 #include "ShaderProgram.h"
 
@@ -40,6 +41,10 @@ class Obj3D : public Mesh3D
 
     void setDecalTexture(GLuint texture);
     void setDecalPosition(Vector2 position);
+
+    bool castsShadow();
+    void generateShadowVolume(Light3D* light);
+    void destroyShadowVolume();
 
   protected:
 

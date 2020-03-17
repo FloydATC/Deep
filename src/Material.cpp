@@ -27,10 +27,10 @@ void Material::initialize()
 #ifdef DEBUG_TRACE_MATERIAL
   std::cout << "Material::initialize() material=" << this << " begin" << std::endl;
 #endif
-  setAmbientColor(1.0, 0.0, 1.0);
+  setAmbientColor(0.1, 0.0, 0.1);
   setDiffuseColor(1.0, 0.0, 1.0);
   setSpecularColor(1.0, 0.0, 1.0);
-  setEmissiveColor(1.0, 0.0, 1.0);
+  setEmissiveColor(0.0, 0.0, 0.0);
 
   this->specular_exponent   = 1.0;
   this->optical_density     = 1.0;

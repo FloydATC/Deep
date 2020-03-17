@@ -5,6 +5,7 @@
 #include <string>
 
 #include "3D/Box3D.h"
+#include "3D/Face3D.h"
 
 //#define DEBUG_TRACE_OBJLOADER
 
@@ -36,6 +37,30 @@ void Obj3DLoader::reset()
   this->subobject_length.clear();
   this->box = nullptr;
 }
+
+
+void Obj3DLoader::begin_mesh(std::string filename, std::string name)
+{
+  // Create mesh object
+  SubObject3D* mesh = new SubObject3D();
+  mesh->setFilename(filename);
+  mesh->setName(name);
+
+  // Create and assign bounding box
+  this->box = new Box3D();
+  this->box->setName(name);
+  mesh->setBounds(this->box);
+
+  // Add mesh to container object
+  this->object->addPart(mesh);
+  this->object->setName(this->filename);
+  this->subobject_mesh.push_back(mesh);
+
+  // Set this mesh as "current"
+  this->current_mesh = mesh;
+}
+
+
 
 Obj3D* Obj3DLoader::load(std::string filename)
 {
@@ -83,6 +108,7 @@ Obj3D* Obj3DLoader::load(std::string filename)
     mesh->set_v(v_array+offset*3, length);
     mesh->set_vt(vt_array+offset*2, length);
     mesh->set_vn(vn_array+offset*3, length);
+    mesh->findAdjacentFaces();
   }
   free(v_array);
   free(vt_array);
@@ -246,23 +272,11 @@ void Obj3DLoader::get_o()
   // Prefix name with subobject number
   name = std::to_string(this->subobject_mesh.size()).append(":").append(name);
 
+  begin_mesh(this->filename, name);
+
   // Mark the beginning of sub-object ("part")
   this->subobject_start.push_back(this->linear_points.size());
   this->subobject_length.push_back(0);
-
-  // For now, just use the filename for naming
-  this->box = new Box3D();
-  this->box->setName(name);
-
-
-  SubObject3D* mesh = new SubObject3D();
-  mesh->setFilename(this->filename);
-  mesh->setName(name);
-  mesh->setBounds(this->box);
-
-  this->object->addPart(mesh);
-  this->object->setName(this->filename);
-  this->subobject_mesh.push_back(mesh);
 
 }
 
@@ -325,18 +339,10 @@ void Obj3DLoader::get_vp()
 
 std::vector<Point> Obj3DLoader::compute_vn(std::vector<Point> face)
 {
-  // Compute vertex normals for a flat surface
-  //For each triangle ABC
-  //  n := normalize(cross(B-A, C-A))
-  //  A.n := n
-  //  B.n := n
-  //  C.n := n
-  Vector3 ba = face[1].v - face[0].v;
-  Vector3 ca = face[2].v - face[0].v;
-  Vector3 n = ba.cross(ca).normalize();
-  face[0].vn = n;
-  face[1].vn = n;
-  face[2].vn = n;
+  Vector3 normal = Face3D(face[0].v, face[1].v, face[2].v).normal;
+  face[0].vn = normal;
+  face[1].vn = normal;
+  face[2].vn = normal;
   return face;
 }
 
@@ -345,9 +351,15 @@ void Obj3DLoader::add_triangle(std::vector<Point> face)
   if (face[0].vn.x == 0.0 && face[0].vn.x == 0.0 && face[0].vn.x == 0.0) {
     face = compute_vn(face);
   }
+
+  // For rendering, take each vertex
   for (auto & p : face) {
     linear_points.push_back(p);
   }
+
+  // For shadow volumes, take vertices of face
+  this->current_mesh->addFace(Face3D(face[0].v, face[1].v, face[2].v));
+
   subobject_length[subobject_length.size()-1] += 3; // Increment vertex count
 }
 

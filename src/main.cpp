@@ -31,6 +31,7 @@
 #include "3D/Plane3D.h"
 #include "hexdump.h" // For debugging only
 #include "Texture.h"
+#include "3D/Light3D.h"
 
 
 //std::thread gamethread;
@@ -103,7 +104,7 @@ void process_keydown(Message* msg, std::vector<Machine*> vms, GameState* gamesta
     //if (focused!=nullptr) { focused->push(new Message(Message::Type::Paste)); }
   }
   // Route event to the active Virtual Machine
-  vms[gamestate->current_vm]->push(msg);
+  if ((int)vms.size() >= gamestate->current_vm+1) vms[gamestate->current_vm]->push(msg);
 }
 
 
@@ -141,7 +142,8 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
 
   for (int i=0; i<4; i++) {
     //std::cout << "VM " << i << std::endl;
-    Prop3D* p = scene->getProp(i);
+    Prop3D* p = scene->getPropByName(std::string("vm").append(std::to_string(i)));
+    if (p == nullptr) continue;
     if (!p->xy_plane_visible()) continue;
     if (!p->mouse_intersects(mouse)) continue;
     gamestate->current_vm = i;
@@ -207,7 +209,7 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
     case Message::Type::TextInput:
       //std::cout << "processMsg() TextInput message" << std::endl;
       // Route event to the active Virtual Machine
-      vms[gamestate->current_vm]->push(msg);
+      if ((int)vms.size() >= gamestate->current_vm+1) vms[gamestate->current_vm]->push(msg);
       break;
     case Message::Type::MouseMotion: {
       process_mousemotion(msg, vms, scene, gamestate);
@@ -232,7 +234,7 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
     case Message::Type::KeyUp:
       //std::cout << "processMsg() KeyUp message" << std::endl;
       // Route event to the active Virtual Machine
-      vms[gamestate->current_vm]->push(msg);
+      if ((int)vms.size() >= gamestate->current_vm+1) vms[gamestate->current_vm]->push(msg);
       break;
     default:
       //std::cout << "GameThread() Msg type is UNHANDLED: " << msg->type << std::endl;
@@ -313,7 +315,8 @@ void OpenGL_debug_callback( GLenum source, GLenum type, GLuint id, GLenum severi
 }
 
 
-//#define DEBUG_NO_VIRTUAL_MACHINES
+#define DEBUG_NO_VIRTUAL_MACHINES
+#define DEBUG_NO_SCREENS
 int main(int argc, char* argv[])
 {
   (void)(argc);
@@ -361,6 +364,7 @@ int main(int argc, char* argv[])
       //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
       SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
       SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+      SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
       // Create OpenGL context here
       std::cout<<"GameThread() creating OpenGL context"<<std::endl;
@@ -397,9 +401,15 @@ int main(int argc, char* argv[])
       scene.getCamera()->setPosition(Vector3(0.0, 0.0, 1.0));
 
       std::cout << "Load shaders" << std::endl;
+#ifndef DEBUG_NO_SCREENS
       ShaderProgram* screen_shader = scene.getShader("glsl/screen_vert.glsl", "glsl/screen_frag.glsl");
+#endif
+
       ShaderProgram* scene_shader = scene.getShader("glsl/scene_vert.glsl", "glsl/scene_frag.glsl");
+
+#ifndef DEBUG_NO_VIRTUAL_MACHINES
       ShaderProgram* ortho_shader = scene.getShader("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
+#endif
 
       //Overlay2D* ui = new Overlay2D();
       //ui->setShader(ortho_shader);
@@ -414,6 +424,7 @@ int main(int argc, char* argv[])
       std::cout << "main() Virtual machines ready" << std::endl;
 #endif
 
+#ifndef DEBUG_NO_SCREENS
       Texture* mouse = scene.getTexture("textures/mouse.png");
       Obj3D* screen = scene.getObj3D("obj/screen.obj");
       //screen->getPart(0)->setColor(1.0, 1.0, 1.0, 1.0); // Display
@@ -421,54 +432,60 @@ int main(int argc, char* argv[])
       screen->getPart(0)->setDecalTexture(mouse);
       //screen->getPart(1)->setColor(0.2, 0.2, 0.3, 1.0); // Enclosure
 
-      scene.addProp(screen);
-      scene.addProp(screen);
-      scene.addProp(screen);
-      scene.addProp(screen);
+      scene.addProp("vm0", screen);
+      scene.addProp("vm1", screen);
+      scene.addProp("vm2", screen);
+      scene.addProp("vm3", screen);
 
-      scene.getProp(0)->setPosition(Vector3(-0.60,  0.50, -0.5));
-      scene.getProp(1)->setPosition(Vector3( 0.60,  0.50, -0.5));
-      scene.getProp(2)->setPosition(Vector3(-0.60, -0.50, -0.5));
-      scene.getProp(3)->setPosition(Vector3( 0.60, -0.50, -0.5));
+      scene.getPropByName("vm0")->setPosition(Vector3(-0.60,  0.50, -0.5));
+      scene.getPropByName("vm1")->setPosition(Vector3( 0.60,  0.50, -0.5));
+      scene.getPropByName("vm2")->setPosition(Vector3(-0.60, -0.50, -0.5));
+      scene.getPropByName("vm3")->setPosition(Vector3( 0.60, -0.50, -0.5));
 
-      scene.getProp(0)->setDirection( 15, 15,  0);
-      scene.getProp(1)->setDirection( 15,-15,  0);
-      scene.getProp(2)->setDirection(-15, 15,  0);
-      scene.getProp(3)->setDirection(-15,-15,  0);
+      scene.getPropByName("vm0")->setDirection( 15, 15,  0);
+      scene.getPropByName("vm1")->setDirection( 15,-15,  0);
+      scene.getPropByName("vm2")->setDirection(-15, 15,  0);
+      scene.getPropByName("vm3")->setDirection(-15,-15,  0);
 
       // Hide mouse cursors by default
-      scene.getProp(0)->setDecalPosition(Vector2(-1, -1));
-      scene.getProp(1)->setDecalPosition(Vector2(-1, -1));
-      scene.getProp(2)->setDecalPosition(Vector2(-1, -1));
-      scene.getProp(3)->setDecalPosition(Vector2(-1, -1));
+      scene.getPropByName("vm0")->setDecalPosition(Vector2(-1, -1));
+      scene.getPropByName("vm1")->setDecalPosition(Vector2(-1, -1));
+      scene.getPropByName("vm2")->setDecalPosition(Vector2(-1, -1));
+      scene.getPropByName("vm3")->setDecalPosition(Vector2(-1, -1));
+#endif
 
       ShaderProgram* plane_shader = scene.getShader("glsl/plane_vert.glsl", "glsl/plane_frag.glsl");
       Material* plane_material = scene.getMaterial();
-      plane_material->setAmbientColor(0.12, 0.12, 0.1);
-      plane_material->setDiffuseColor(0.95, 0.95, 1.0);
-      plane_material->setSpecularColor(0.60, 0.60, 0.55);
+      plane_material->setAmbientColor(0.10, 0.10, 0.11);
+      plane_material->setDiffuseColor(0.75, 0.75, 0.80);
+      plane_material->setSpecularColor(0.25, 0.25, 0.30);
+      plane_material->setEmissiveColor(0.00, 0.00, 0.00);
       plane_material->setName("plane");
       Plane3D* plane = new Plane3D();
       plane->setShader(plane_shader);
       plane->setMaterial(plane_material);
-      scene.addProp(plane);
-      scene.getProp(4)->setPosition(Vector3(0.0, -1.0, 0.0));
-      scene.getProp(4)->setDirection(Vector3(0.0, 1.0, 0.0));
+      scene.addProp("plane", plane);
+      scene.getPropByName("plane")->setPosition(Vector3(0.0, -1.0, 0.0));
+      scene.getPropByName("plane")->setDirection(Vector3(0.0, 1.0, 0.0));
 
       Obj3D* cube = scene.getObj3D("obj/cube.obj");
-      scene.addProp(cube);
+      scene.addProp("cube", cube);
       Texture* test = scene.getTexture("textures/test256.png");
-      scene.getProp(5)->setTexture(test);
-      scene.getProp(5)->setPosition(Vector3(0.0, -1.0, 0.0));
+      scene.getPropByName("cube")->setTexture(test);
+      scene.getPropByName("cube")->setPosition(Vector3(0.0, -0.25, 0.0));
 
       scene.setShader(scene_shader); // Set default shader
+
+      Light3D* overhead = new Light3D(Vector3(0.7, 0.7, 0.6));
+      overhead->setPosition(Vector3( -0.10, 1.00, 0.5));
+      scene.addLight("overhead", overhead);
 
 
 #ifndef DEBUG_NO_VIRTUAL_MACHINES
       // Bind VM textures to props (NOT to the underlying, shared mesh objects)
       for (int i=0; i<(int)vms.size(); i++) {
         std::cout << "main() applying VM texture " << i << std::endl;
-        scene.getProp(i)->setTexture(vms[i]->display.textureId());
+        scene.getPropByName(std::string("vm").append(std::to_string(i)))->setTexture(vms[i]->display.textureId());
       }
 #endif
 

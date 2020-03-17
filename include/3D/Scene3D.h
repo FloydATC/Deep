@@ -5,6 +5,7 @@
 #include <string>
 
 #include "3D/Camera3D.h"
+#include "3D/Light3D.h"
 #include "3D/Obj3D.h"
 #include "3D/Obj3DLoader.h"
 #include "3D/Prop3D.h"
@@ -41,9 +42,14 @@ class Scene3D
 
     Texture* getTexture(const std::string filename);
 
-    Prop3D* addProp(Mesh3D* mesh);
-    Prop3D* getProp(int index);
+    Prop3D* addProp(std::string name, Mesh3D* mesh);
+    Prop3D* getPropByName(std::string name);
     int getPropCount();
+
+    void addLight(std::string name, Light3D* light);
+    Light3D* getLightByName(std::string name);
+    int getLightCount();
+
     Camera3D* getCamera();
 
   protected:
@@ -54,7 +60,8 @@ class Scene3D
     std::unordered_map<std::string, ShaderProgram*> shaderProgram;
     std::unordered_map<std::string, Obj3D*> obj3d;
     std::unordered_map<std::string, Texture*> texture;
-    std::vector<Prop3D*> prop3d;
+    std::unordered_map<std::string, Prop3D*> prop3d;
+    std::unordered_map<std::string, Light3D*> light3d;
     std::vector<Material*> materials;
     Camera3D* cam;
 };

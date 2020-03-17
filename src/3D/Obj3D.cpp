@@ -85,3 +85,22 @@ void Obj3D::setDecalPosition(Vector2 position)
   for (auto& part : this->parts) part->setDecalPosition(position);
 }
 
+
+bool Obj3D::castsShadow()
+{
+  for (auto& part : this->parts) if (part->castsShadow()) return true;
+  return false;
+}
+
+
+void Obj3D::generateShadowVolume(Light3D* light)
+{
+  for (auto& part : this->parts) if (part->castsShadow()) part->generateShadowVolume(light);
+}
+
+
+void Obj3D::destroyShadowVolume()
+{
+  for (auto& part : this->parts) if (part->castsShadow()) part->destroyShadowVolume();
+}
+

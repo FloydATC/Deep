@@ -24,10 +24,10 @@ class Entity3D
     Matrix4 getPositionMatrix();
 
     // Rotation
-    void setDirection(float pitch, float yaw, float roll);
+    virtual void setDirection(float pitch, float yaw, float roll);
     void setDirection(Vector3 direction);
     void setTargetDirection(Vector3 target);
-    Vector3 getDirection();
+    virtual Vector3 getDirection();
     void setPitch(float degrees);
     void addPitch(float degrees);
     float getPitch();
@@ -39,7 +39,7 @@ class Entity3D
     float getRoll();
 
     // Position
-    void setPosition(Vector3 position);
+    virtual void setPosition(Vector3 position);
     Vector3 getPosition();
 
 
