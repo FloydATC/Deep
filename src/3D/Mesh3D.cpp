@@ -297,6 +297,18 @@ bool Mesh3D::castsShadow()
 }
 
 
+void Mesh3D::enableShadow()
+{
+  this->cast_shadow = true;
+}
+
+
+void Mesh3D::disableShadow()
+{
+  this->cast_shadow = false;
+}
+
+
 void Mesh3D::findAdjacentFaces()
 {
   // When generating shadow volumes we will need polygon adjacency information

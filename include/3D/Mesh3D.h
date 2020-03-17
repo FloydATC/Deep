@@ -48,8 +48,11 @@ class Mesh3D
     bool bounds_enabled;
 
     bool isEnabled();
+    void enableShadow();
+    void disableShadow();
     virtual bool castsShadow();
-    virtual void generateShadowVolume(Light3D* light) {}
+    virtual void generateShadowVolume(Light3D* light, Matrix4 model) {}
+    virtual void renderShadowVolume(Matrix4 proj, Matrix4 view, Matrix4 model, GLenum face, ShaderProgram* shader) {}
     virtual void destroyShadowVolume() {}
 
     void show();

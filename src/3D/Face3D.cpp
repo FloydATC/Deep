@@ -7,6 +7,7 @@ Face3D::Face3D(Vector3 v1, Vector3 v2, Vector3 v3)
   vertices.push_back(v2);
   vertices.push_back(v3);
   calc_normal();
+  calc_center();
   adjacent = { -1, -1, -1 };
 }
 
@@ -31,7 +32,16 @@ Vector3 Face3D::calc_normal()
 }
 
 
+Vector3 Face3D::calc_center()
+{
+  // Compute average position of the three vertices
+  this->center = (vertices[0] + vertices[1] + vertices[2]) / 3.0;
+  return this->center;
+}
+
+
 Edge3D Face3D::edge(unsigned int index)
 {
   return Edge3D(this->vertices[index], this->vertices[(index+1)%3]);
 }
+

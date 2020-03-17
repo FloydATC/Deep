@@ -43,7 +43,8 @@ class Obj3D : public Mesh3D
     void setDecalPosition(Vector2 position);
 
     bool castsShadow();
-    void generateShadowVolume(Light3D* light);
+    void generateShadowVolume(Light3D* light, Matrix4 model);
+    void renderShadowVolume(Matrix4 proj, Matrix4 view, Matrix4 model, GLenum face, ShaderProgram* shader);
     void destroyShadowVolume();
 
   protected:

@@ -17,12 +17,14 @@ class Face3D
     std::vector<Vector3> vertices;
     std::vector<int> adjacent;
     Vector3 normal;
+    Vector3 center;
     float dot;
 
   protected:
 
   private:
     Vector3 calc_normal();
+    Vector3 calc_center();
 };
 
 #endif // FACE3D_H

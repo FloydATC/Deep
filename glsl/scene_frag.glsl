@@ -16,7 +16,7 @@ uniform vec4 color_e;
 uniform int is_debug;
 uniform int use_texture;
 
-vec3 light_position = vec3( -0.10, 1.00, 0.5);
+vec3 light_position = vec3( -1.20, 1.20, 1.20);
 
 out vec4 col;
 
@@ -37,7 +37,7 @@ void main() {
     col = vec4(1.0, 0.0, 0.0, 1.0);
   } else {
     if (use_texture > 0) {
-      col = color_a + (color_d * texture2D( texture_diffuse, vt ) * diffuse_factor) + (color_s * specular_factor) + color_e;
+      col = (color_a * texture2D( texture_diffuse, vt )) + (color_d * texture2D( texture_diffuse, vt ) * diffuse_factor) + (color_s * specular_factor) + color_e;
     } else {
       col = color_d;
     }

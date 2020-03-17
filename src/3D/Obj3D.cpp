@@ -93,11 +93,16 @@ bool Obj3D::castsShadow()
 }
 
 
-void Obj3D::generateShadowVolume(Light3D* light)
+void Obj3D::generateShadowVolume(Light3D* light, Matrix4 model)
 {
-  for (auto& part : this->parts) if (part->castsShadow()) part->generateShadowVolume(light);
+  for (auto& part : this->parts) if (part->castsShadow()) part->generateShadowVolume(light, model);
 }
 
+
+void Obj3D::renderShadowVolume(Matrix4 proj, Matrix4 view, Matrix4 model, GLenum face, ShaderProgram* shader)
+{
+  for (auto& part : this->parts) if (part->castsShadow()) part->renderShadowVolume(proj, view, model, face, shader);
+}
 
 void Obj3D::destroyShadowVolume()
 {

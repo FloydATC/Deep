@@ -8,6 +8,7 @@ Scene3D::Scene3D()
 {
   //ctor
   this->cam = new Camera3D();
+  this->shadow_shader = nullptr;
 #ifdef DEBUG_TRACE_SCENE
   std::cout << "Scene3D() created" << std::endl;
 #endif
@@ -81,25 +82,25 @@ void Scene3D::render()
     if (light->isEnabled() == false) continue;
 
 
+    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_BLEND);
+
     for (const auto& prop_pair : prop3d) {
       Prop3D* prop = prop_pair.second;
       if (prop->castsShadow() == false) continue;
 
       prop->generateShadowVolumes(light);
 
-      prop->renderShadowVolumes(GL_FRONT);
+      prop->renderShadowVolumes(this->cam, GL_FRONT, this->shadow_shader);
 
-    }
-
-
-    for (const auto& prop_pair : prop3d) {
-      Prop3D* prop = prop_pair.second;
-      if (prop->castsShadow() == false) continue;
-
-      prop->renderShadowVolumes(GL_BACK);
+      prop->renderShadowVolumes(this->cam, GL_BACK, this->shadow_shader);
 
       prop->destroyShadowVolumes();
     }
+
+    glDisable(GL_BLEND);
+    glDepthFunc(GL_LESS);
+
   }
 
 
@@ -220,11 +221,21 @@ Camera3D* Scene3D::getCamera()
 }
 
 
-void Scene3D::setShader(ShaderProgram* shader)
+void Scene3D::setStandardShader(ShaderProgram* shader)
 {
 #ifdef DEBUG_TRACE_SCENE
-  std::cout << "Scene3D" << this << "::setShader() shader=" << shader << std::endl;
+  std::cout << "Scene3D" << this << "::setStandardShader() shader=" << shader << std::endl;
 #endif
   for (const auto& prop : this->prop3d) prop.second->setShader(shader);
 }
+
+
+void Scene3D::setShadowShader(ShaderProgram* shader)
+{
+#ifdef DEBUG_TRACE_SCENE
+  std::cout << "Scene3D" << this << "::setShadowShader() shader=" << shader << std::endl;
+#endif
+  this->shadow_shader = shader;
+}
+
 

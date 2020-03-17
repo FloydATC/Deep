@@ -93,11 +93,16 @@ void SubObject3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* ma
 }
 
 
-void SubObject3D::generateShadowVolume(Light3D* light)
+void SubObject3D::generateShadowVolume(Light3D* light, Matrix4 model)
 {
-  this->shadow = new ShadowVolume3D(light, this);
+  this->shadow = new ShadowVolume3D(light, this, model);
 }
 
+
+void SubObject3D::renderShadowVolume(Matrix4 proj, Matrix4 view, Matrix4 model, GLenum face, ShaderProgram* shader)
+{
+  this->shadow->render(proj, view, model, face, shader);
+}
 
 void SubObject3D::destroyShadowVolume()
 {

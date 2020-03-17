@@ -34,7 +34,8 @@ class Scene3D
     int getWidth();
     int getHeight();
     ShaderProgram* getShader(const std::string vs_filename, const std::string fs_filename);
-    void setShader(ShaderProgram* shader);
+    void setStandardShader(ShaderProgram* shader);
+    void setShadowShader(ShaderProgram* shader);
 
     Obj3D* getObj3D(const std::string filename);
 
@@ -56,6 +57,7 @@ class Scene3D
 
   private:
     Obj3DLoader obj_loader = Obj3DLoader();
+    ShaderProgram* shadow_shader;
 
     std::unordered_map<std::string, ShaderProgram*> shaderProgram;
     std::unordered_map<std::string, Obj3D*> obj3d;

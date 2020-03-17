@@ -123,8 +123,8 @@ void Entity3D::setPitch(float degrees)
 {
   this->pitch = degrees;
   // Clamp to sane values
-  if (this->pitch > 90.0) this->pitch = 90;
-  if (this->pitch < -90.0) this->pitch = -90;
+  //if (this->pitch > 90.0) this->pitch = 90;
+  //if (this->pitch < -90.0) this->pitch = -90;
 #ifdef DEBUG_TRACE_ENTITY
   std::cout << "Entity3D" << this << "::setPitch() degrees=" << degrees << " pitch=" << pitch << std::endl;
 #endif

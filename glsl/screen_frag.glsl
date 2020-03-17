@@ -20,7 +20,7 @@ uniform sampler2D texture_diffuse;
 uniform int is_debug;
 uniform int use_texture;
 
-vec3 light_position = vec3( -0.20, 1.00, 1.50);
+vec3 light_position = vec3( -1.20, 1.20, 1.20);
 
 out vec4 col;
 

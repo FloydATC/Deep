@@ -32,6 +32,7 @@
 #include "hexdump.h" // For debugging only
 #include "Texture.h"
 #include "3D/Light3D.h"
+#include "DateTime.h"
 
 
 //std::thread gamethread;
@@ -57,6 +58,8 @@
 void process_keydown(Message* msg, std::vector<Machine*> vms, GameState* gamestate)
 {
   //std::cout << "process_keydown()" << std::endl;
+  if ((int)vms.size() < gamestate->current_vm+1) return;
+
   if (msg->key.scancode == 71 && (msg->key.mod & KMOD_CTRL)) {
     std::cout << "process_keydown() detected Ctrl+Break" << std::endl;
     vms[gamestate->current_vm]->push(new Message(Message::Type::Break));
@@ -104,7 +107,7 @@ void process_keydown(Message* msg, std::vector<Machine*> vms, GameState* gamesta
     //if (focused!=nullptr) { focused->push(new Message(Message::Type::Paste)); }
   }
   // Route event to the active Virtual Machine
-  if ((int)vms.size() >= gamestate->current_vm+1) vms[gamestate->current_vm]->push(msg);
+  vms[gamestate->current_vm]->push(msg);
 }
 
 
@@ -183,7 +186,7 @@ void process_mousewheel(Message* msg, Scene3D* scene)
 
 void process_mousebutton(Message* msg, std::vector<Machine*> vms, GameState* gamestate)
 {
-  vms[gamestate->current_vm]->push(msg);
+  if ((int)vms.size() >= gamestate->current_vm+1) vms[gamestate->current_vm]->push(msg);
 }
 
 void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, GameState* gamestate)
@@ -315,8 +318,8 @@ void OpenGL_debug_callback( GLenum source, GLenum type, GLuint id, GLenum severi
 }
 
 
-#define DEBUG_NO_VIRTUAL_MACHINES
-#define DEBUG_NO_SCREENS
+//#define DEBUG_NO_VIRTUAL_MACHINES
+//#define DEBUG_NO_SCREENS
 int main(int argc, char* argv[])
 {
   (void)(argc);
@@ -406,6 +409,7 @@ int main(int argc, char* argv[])
 #endif
 
       ShaderProgram* scene_shader = scene.getShader("glsl/scene_vert.glsl", "glsl/scene_frag.glsl");
+      ShaderProgram* shadow_shader = scene.getShader("glsl/shadow_vert.glsl", "glsl/shadow_frag.glsl");
 
 #ifndef DEBUG_NO_VIRTUAL_MACHINES
       ShaderProgram* ortho_shader = scene.getShader("glsl/ortho_vert.glsl", "glsl/ortho_frag.glsl");
@@ -430,6 +434,7 @@ int main(int argc, char* argv[])
       //screen->getPart(0)->setColor(1.0, 1.0, 1.0, 1.0); // Display
       screen->getPart(0)->setShader(screen_shader);
       screen->getPart(0)->setDecalTexture(mouse);
+      screen->getPart(0)->disableShadow();
       //screen->getPart(1)->setColor(0.2, 0.2, 0.3, 1.0); // Enclosure
 
       scene.addProp("vm0", screen);
@@ -474,10 +479,11 @@ int main(int argc, char* argv[])
       scene.getPropByName("cube")->setTexture(test);
       scene.getPropByName("cube")->setPosition(Vector3(0.0, -0.25, 0.0));
 
-      scene.setShader(scene_shader); // Set default shader
+      scene.setStandardShader(scene_shader); // Set default shader
+      scene.setShadowShader(shadow_shader); // Set shader to use for volume shadow rendering
 
       Light3D* overhead = new Light3D(Vector3(0.7, 0.7, 0.6));
-      overhead->setPosition(Vector3( -0.10, 1.00, 0.5));
+      overhead->setPosition(Vector3( -1.20, 1.20, 1.20));
       scene.addLight("overhead", overhead);
 
 
@@ -506,6 +512,10 @@ int main(int argc, char* argv[])
         for (auto& vm: vms) {
           vm->run();
         }
+
+        scene.getPropByName("cube")->setPitch(fmod(unixtime_now(), 360.0) * 17.3);
+        scene.getPropByName("cube")->setRoll(fmod(unixtime_now(), 360.0) * 27.3);
+        scene.getPropByName("cube")->setYaw(fmod(unixtime_now(), 360.0) * 7.51);
 
         scene.render();
 
