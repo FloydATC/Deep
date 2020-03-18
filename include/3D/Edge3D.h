@@ -7,10 +7,11 @@ class Edge3D
 {
   public:
     Edge3D(Vector3 v1, Vector3 v2);
+    Edge3D(Vector4 v1, Vector4 v2);
     ~Edge3D();
 
-    Vector3 v1;
-    Vector3 v2;
+    Vector4 v1;
+    Vector4 v2;
 
     bool operator==(const Edge3D& rhs)
     {

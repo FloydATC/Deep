@@ -82,8 +82,12 @@ void Scene3D::render()
     if (light->isEnabled() == false) continue;
 
 
+    //glDisable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
+
     glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquation(GL_FUNC_ADD);
 
     for (const auto& prop_pair : prop3d) {
       Prop3D* prop = prop_pair.second;
@@ -91,9 +95,12 @@ void Scene3D::render()
 
       prop->generateShadowVolumes(light);
 
-      prop->renderShadowVolumes(this->cam, GL_FRONT, this->shadow_shader);
+      glCullFace(GL_BACK);
+      prop->renderShadowVolumes(this->cam, this->shadow_shader);
 
-      prop->renderShadowVolumes(this->cam, GL_BACK, this->shadow_shader);
+      glCullFace(GL_FRONT);
+      prop->renderShadowVolumes(this->cam, this->shadow_shader);
+      glCullFace(GL_BACK);
 
       prop->destroyShadowVolumes();
     }
@@ -102,6 +109,38 @@ void Scene3D::render()
     glDepthFunc(GL_LESS);
 
   }
+
+  /*
+void perspectiveProjectionMatrix(double left,
+                                 double right,
+                                 double bottom,
+                                 double top,
+                                 double nearval,
+                                 double farval)
+{
+  double x, y, a, b, c, d;
+  x = (2.0 * nearval) / (right - left);
+  y = (2.0 * nearval) / (top - bottom);
+  a = (right + left) / (right - left);
+  b = (top + bottom) / (top - bottom);
+
+  if ((float)farval >= (float)inf) {
+    // Infinite view frustum
+    c = -1.0;
+    d = -2.0 * nearval;
+  } else {
+    c = -(farval + nearval) / (farval - nearval);
+    d = -(2.0 * farval * nearval) / (farval - nearval);
+  }
+  double m[] = {
+    x, 0, 0, 0,
+    0, y, 0, 0,
+    a, b, c, -1,
+    0, 0, d, 0
+  };
+  glLoadMatrixd(m);
+}
+*/
 
 
 

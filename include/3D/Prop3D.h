@@ -61,7 +61,7 @@ class Prop3D : public Entity3D
     bool castsShadow();
 
     void generateShadowVolumes(Light3D* light);
-    void renderShadowVolumes(Camera3D* camera, GLenum face, ShaderProgram* shader);
+    void renderShadowVolumes(Camera3D* camera, ShaderProgram* shader);
     void destroyShadowVolumes();
 
   protected:

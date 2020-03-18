@@ -7,5 +7,5 @@ out vec4 col;
 
 
 void main() {
-  col = vec4(1.0, 0.2, 0.2, 1.0);
+  col = vec4(0.5, 0.2, 0.2, 0.3);
 }

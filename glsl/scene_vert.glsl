@@ -18,7 +18,7 @@ void main() {
 
   vt = attr_vt;
   vn = mat3(model) * attr_vn; // For lighting
-  v =  mat3(model) * attr_v; // For lighting
+  v =  vec4(model * vec4(attr_v, 1.0)).xyz; // For lighting
 
   mat4 iv = inverse(view);
   eye = vec3(iv[3][0], iv[3][1],iv[3][2]);

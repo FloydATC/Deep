@@ -14,15 +14,16 @@ class ShadowVolume3D : public Mesh3D
     ~ShadowVolume3D();
 
     void render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader) {}
-    void render(Matrix4 proj, Matrix4 view, Matrix4 model, GLenum face, ShaderProgram* shader);
+    void render(Matrix4 proj, Matrix4 view, Matrix4 model, ShaderProgram* shader);
 
   protected:
 
   private:
-    void calc_dot_products_positional();
-    void calc_dot_products_directional();
+    void compute_positional();
+    void compute_directional();
+    void set_v(float* v, int num_vertices);
+    void initialize(ShaderProgram* shader);
 
-    void find_silouette_edges();
 
     std::vector<GLfloat> v;
 

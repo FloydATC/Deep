@@ -275,13 +275,12 @@ void Prop3D::generateShadowVolumes(Light3D* light)
 }
 
 
-void Prop3D::renderShadowVolumes(Camera3D* camera, GLenum face, ShaderProgram* shader)
+void Prop3D::renderShadowVolumes(Camera3D* camera, ShaderProgram* shader)
 {
   this->mesh->renderShadowVolume(
     camera->getPerspectiveMatrix(),
     camera->getViewMatrix(),
     this->getMatrix(),
-    face,
     shader
   );
 }

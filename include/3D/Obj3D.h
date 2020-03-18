@@ -44,7 +44,7 @@ class Obj3D : public Mesh3D
 
     bool castsShadow();
     void generateShadowVolume(Light3D* light, Matrix4 model);
-    void renderShadowVolume(Matrix4 proj, Matrix4 view, Matrix4 model, GLenum face, ShaderProgram* shader);
+    void renderShadowVolume(Matrix4 proj, Matrix4 view, Matrix4 model, ShaderProgram* shader);
     void destroyShadowVolume();
 
   protected:

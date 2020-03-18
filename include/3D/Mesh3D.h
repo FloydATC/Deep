@@ -52,7 +52,7 @@ class Mesh3D
     void disableShadow();
     virtual bool castsShadow();
     virtual void generateShadowVolume(Light3D* light, Matrix4 model) {}
-    virtual void renderShadowVolume(Matrix4 proj, Matrix4 view, Matrix4 model, GLenum face, ShaderProgram* shader) {}
+    virtual void renderShadowVolume(Matrix4 proj, Matrix4 view, Matrix4 model, ShaderProgram* shader) {}
     virtual void destroyShadowVolume() {}
 
     void show();
@@ -77,10 +77,10 @@ class Mesh3D
     Mesh3D*         bounds;
     ShaderProgram*  shader;
 
-    void initialize(ShaderProgram* shader);
+    virtual void initialize(ShaderProgram* shader);
 
     friend class Obj3DLoader;
-    void set_v(float* v, int num_vertices);
+    virtual void set_v(float* v, int num_vertices);
     void set_vt(float* v, int num_vertices);
     void set_vn(float* v, int num_vertices);
 

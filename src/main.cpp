@@ -477,7 +477,7 @@ int main(int argc, char* argv[])
       scene.addProp("cube", cube);
       Texture* test = scene.getTexture("textures/test256.png");
       scene.getPropByName("cube")->setTexture(test);
-      scene.getPropByName("cube")->setPosition(Vector3(0.0, -0.25, 0.0));
+      scene.getPropByName("cube")->setPosition(Vector3(-1.25, 0.15, 0.2));
 
       scene.setStandardShader(scene_shader); // Set default shader
       scene.setShadowShader(shadow_shader); // Set shader to use for volume shadow rendering

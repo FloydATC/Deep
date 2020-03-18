@@ -1,6 +1,8 @@
 #ifndef CAMERA3D_H
 #define CAMERA3D_H
 
+#include <cmath>
+
 #include "Matrices.h"
 #include "3D/Entity3D.h"
 
@@ -38,7 +40,7 @@ class Camera3D : public Entity3D
     float fov;
     float aspect;
     float clip_near = 0.1;
-    float clip_far = 100.0;
+    float clip_far = (float)INFINITY;
     int width;
     int height;
 
