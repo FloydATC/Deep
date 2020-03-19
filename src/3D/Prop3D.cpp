@@ -40,10 +40,10 @@ Prop3D::~Prop3D()
 }
 
 
-void Prop3D::render(Camera3D* camera) {
+void Prop3D::renderAmbient(Camera3D* camera) {
   if (this->need_recalc) this->recalculate_matrix();
 #ifdef DEBUG_TRACE_PROP
-  std::cout << "Prop3D" << this << "::render() mesh=" << this->mesh << std::endl;
+  std::cout << "Prop3D" << this << "::renderAmbient() mesh=" << this->mesh << std::endl;
 #endif
 
   this->mesh->bounds_enabled = this->bounds_enabled;
@@ -52,7 +52,7 @@ void Prop3D::render(Camera3D* camera) {
   if (this->decal_texture_set) this->mesh->setDecalTexture(this->decal_texture);
   if (this->decal_position_set) this->mesh->setDecalPosition(this->decal_position);
 
-  this->mesh->render(
+  this->mesh->renderAmbient(
     camera->getPerspectiveMatrix(),
     camera->getViewMatrix(),
     this->getMatrix(),
@@ -62,6 +62,30 @@ void Prop3D::render(Camera3D* camera) {
 
   recalculate_xy_plane(camera);
 }
+
+
+void Prop3D::renderLight(Camera3D* camera, Light3D* light) {
+#ifdef DEBUG_TRACE_PROP
+  std::cout << "Prop3D" << this << "::renderLight() mesh=" << this->mesh << std::endl;
+#endif
+
+  this->mesh->bounds_enabled = false;
+  // Set instance-specific properties on shared mesh object
+  if (this->texture_set) this->mesh->setTexture(this->texture);
+  if (this->decal_texture_set) this->mesh->setDecalTexture(this->decal_texture);
+  if (this->decal_position_set) this->mesh->setDecalPosition(this->decal_position);
+
+  this->mesh->renderLight(
+    camera->getPerspectiveMatrix(),
+    camera->getViewMatrix(),
+    this->getMatrix(),
+    (this->material == nullptr ? &this->default_material : this->material), // Mesh can override this
+    this->shader, // Mesh can override this
+    light
+  );
+
+}
+
 
 
 Matrix4 Prop3D::getScaleMatrix()

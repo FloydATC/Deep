@@ -39,5 +39,5 @@ void main() {
     checkerboard(vt.x, vt.y, 1/8.0) * 0.3 +
     checkerboard(vt.x, vt.y, 1/64.0) * 0.2 +
     0.1;
-  col = color_a + (color_d * vec4(vec3(c/2 + 0.3), 1) * diffuse_factor) + (color_s * specular_factor) + color_e;
+  col = (color_a * c) + (color_d * vec4(vec3(c/2 + 0.3), 1) * diffuse_factor) + (color_s * specular_factor) + color_e;
 }

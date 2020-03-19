@@ -5,6 +5,7 @@
 
 #include "GFX.h"
 #include "Matrices.h" // Vector3
+#include "3D/Light3D.h"
 #include "3D/Mesh3D.h"
 #include "ShaderProgram.h"
 
@@ -17,7 +18,8 @@ class Box3D : public Mesh3D
     void extend(Vector3 vertex);
     void set_shader_v(GLint attr);
     void finalize();
-    void render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader);
+    void renderAmbient(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader);
+    void renderLight(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader, Light3D* light) {};
 
   protected:
 

@@ -50,7 +50,7 @@ void main() {
     float b = max(separation(2, vt, +0.0000), shadow(2, vt, -0.0008));
     float g = max(separation(1, vt, -0.001), shadow(1, vt, -0.0008));
 
-    col = color_a + (color_d * diffuse_factor) + (color_s * specular_factor) + vec4( r, g, b, 1.0 );
+    col = color_a + (color_d * diffuse_factor) + (color_s * specular_factor) + vec4( r, g, b, 1.0 ) + color_e;
     vec4 cursor = texture2D( texture_decal, vec2( ((vt.x - position_decal.x*1.2 - 0.5)*60.0), (vt.y - position_decal.y*1.42 - 0.47)*30.0));
     if (cursor.a > 0.5) col = cursor;
   }

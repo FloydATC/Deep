@@ -5,8 +5,9 @@ in vec3 vn;
 in vec3 eye;
 
 uniform sampler2D texture_diffuse;
-uniform sampler2D texture_specular;
-uniform sampler2D texture_bump;
+//uniform sampler2D texture_specular;
+//uniform sampler2D texture_emissive;
+//uniform sampler2D texture_bump;
 
 uniform vec4 color_a;
 uniform vec4 color_d;
@@ -36,10 +37,24 @@ void main() {
   if (is_debug > 0) {
     col = vec4(1.0, 0.0, 0.0, 1.0);
   } else {
-    if (use_texture > 0) {
-      col = (color_a * texture2D( texture_diffuse, vt )) + (color_d * texture2D( texture_diffuse, vt ) * diffuse_factor) + (color_s * specular_factor) + color_e;
+    if (color_a.a > 0.0) {
+      // Ambient pass
+      if (use_texture > 0) {
+        col =       (color_a * texture2D( texture_diffuse, vt ));
+        col = col + color_e;
+      } else {
+        col = color_a + color_e;
+      }
     } else {
-      col = color_d;
+      // Light pass
+      if (use_texture > 0) {
+        col =       (color_d * diffuse_factor * texture2D( texture_diffuse, vt ));
+        col = col + (color_s * specular_factor);
+      } else {
+        col =       (color_d * diffuse_factor);
+        col = col + (color_s * specular_factor);
+      }
     }
+    col.w = 1.0;
   }
 }

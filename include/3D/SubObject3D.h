@@ -12,7 +12,9 @@ class SubObject3D : public Mesh3D
     SubObject3D();
     ~SubObject3D();
 
-    void render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader);
+    void renderAmbient(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader);
+    void renderLight(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader, Light3D* light);
+
     void generateShadowVolume(Light3D* light, Matrix4 model);
     void renderShadowVolume(Matrix4 proj, Matrix4 view, Matrix4 model, ShaderProgram* shader);
     void destroyShadowVolume();

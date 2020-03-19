@@ -22,19 +22,36 @@ Obj3D::~Obj3D()
 }
 
 
-void Obj3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader)
+void Obj3D::renderAmbient(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader)
 {
 #ifdef DEBUG_TRACE_OBJ
-  std::cout << "Obj3D::render() obj=" << this << " material=" << material << " shader=" << shader << std::endl;
+  std::cout << "Obj3D::renderAmbient() obj=" << this << " material=" << material << " shader=" << shader << std::endl;
 #endif
   for (auto& part : this->parts) {
 #ifdef DEBUG_TRACE_OBJ
-    std::cout << "Obj3D::render() part " << part << std::endl;
+    std::cout << "Obj3D::renderAmbient() part " << part << std::endl;
 #endif
 
     if (part->isEnabled()) {
       part->bounds_enabled = this->bounds_enabled; // Propagate setting to subobject
-      part->render(proj, view, model, my_material(material), my_shader(shader));
+      part->renderAmbient(proj, view, model, my_material(material), my_shader(shader));
+    }
+  }
+}
+
+void Obj3D::renderLight(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader, Light3D* light)
+{
+#ifdef DEBUG_TRACE_OBJ
+  std::cout << "Obj3D::renderLight() obj=" << this << " material=" << material << " shader=" << shader << std::endl;
+#endif
+  for (auto& part : this->parts) {
+#ifdef DEBUG_TRACE_OBJ
+    std::cout << "Obj3D::renderLight() part " << part << std::endl;
+#endif
+
+    if (part->isEnabled()) {
+      part->bounds_enabled = this->bounds_enabled; // Propagate setting to subobject
+      part->renderLight(proj, view, model, my_material(material), my_shader(shader), light);
     }
   }
 }

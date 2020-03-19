@@ -13,8 +13,10 @@ class ShadowVolume3D : public Mesh3D
     ShadowVolume3D(Light3D* light, Mesh3D* mesh, Matrix4 model);
     ~ShadowVolume3D();
 
-    void render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader) {}
-    void render(Matrix4 proj, Matrix4 view, Matrix4 model, ShaderProgram* shader);
+    void renderAmbient(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader) {}
+    void renderLight(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader, Light3D* light) {}
+
+    void renderShadow(Matrix4 proj, Matrix4 view, Matrix4 model, ShaderProgram* shader);
 
   protected:
 

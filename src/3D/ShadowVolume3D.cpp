@@ -35,9 +35,11 @@ ShadowVolume3D::~ShadowVolume3D()
 }
 
 
-void ShadowVolume3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, ShaderProgram* shader)
+void ShadowVolume3D::renderShadow(Matrix4 proj, Matrix4 view, Matrix4 model, ShaderProgram* shader)
 {
-
+#ifdef DEBUG_TRACE_SHADOWS
+  std::cout << "ShadowVolume3D::render() " << this << " projection:" << std::endl << proj << std::endl;
+#endif
   glUseProgram(shader->id());
   shader->setUniformMatrix4("projection", proj);
   shader->setUniformMatrix4("view", view);
@@ -74,7 +76,6 @@ void ShadowVolume3D::compute_positional()
   // Find shared edges between lit and unlit faces
   for (auto& face : this->mesh->faces) {
     if (face.dot > 0) continue; // Only consider lit faces
-
     // Light cap
     std::vector<Vector4> light_cap;
     for (Vector3 v3 : face.vertices) {
@@ -91,7 +92,7 @@ void ShadowVolume3D::compute_positional()
     std::vector<Vector4> dark_cap;
     dark_cap.resize(3);
     for (int i=face.vertices.size()-1; i>=0; i--) {
-      Vector4 v4 = Vector4( face.vertices[i] + light_dir[i] , 0.0 );
+      Vector4 v4 = Vector4( face.vertices[i] + light_dir[i], 0.0 ); // w = 0.0 = to infinity
       dark_cap[i] = v4;
       this->v.insert( this->v.end(), v4.data, v4.data+4 );
     }

@@ -31,7 +31,9 @@ class Obj3D : public Mesh3D
     Obj3D();
     ~Obj3D();
 
-    void render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader);
+    void renderAmbient(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader);
+    void renderLight(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader, Light3D* light);
+
     void setShader(ShaderProgram* shader);
 
     void addPart(Mesh3D* mesh);

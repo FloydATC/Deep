@@ -23,7 +23,7 @@ Box3D::~Box3D()
 }
 
 
-void Box3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader)
+void Box3D::renderAmbient(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader)
 {
   // Resolve material + shader
   Material* use_material = my_material(material);

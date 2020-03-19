@@ -20,7 +20,8 @@ class Mesh3D
     // No public ctor
     virtual ~Mesh3D();
 
-    virtual void render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader) = 0;
+    virtual void renderAmbient(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader) = 0;
+    virtual void renderLight(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader, Light3D* light) = 0;
 
     void setName(std::string name);
     std::string getName();

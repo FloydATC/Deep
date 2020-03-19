@@ -195,7 +195,7 @@ void Mesh3D::setTexture(GLuint texture)
   std::cout << "Mesh3D::setTexture() mesh=" << this << " name=" << this->name << " texture=" << texture << " enabled" << std::endl;
 #endif
   this->texture = texture;
-  this->texture_set = true;
+  this->texture_set = (texture != 0);
 }
 
 void Mesh3D::setBounds(Mesh3D* box)

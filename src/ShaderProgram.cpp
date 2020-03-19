@@ -126,10 +126,14 @@ void ShaderProgram::setDefaults()
 
 void ShaderProgram::setColors(Material* material)
 {
-  if (hasUniform("color_a")) setUniformVector4("color_a", material->getAmbientColor());
-  if (hasUniform("color_d")) setUniformVector4("color_d", material->getDiffuseColor());
-  if (hasUniform("color_s")) setUniformVector4("color_s", material->getSpecularColor());
-  if (hasUniform("color_e")) setUniformVector4("color_e", material->getEmissiveColor());
+  //if (hasUniform("color_a"))
+  setUniformVector4("color_a", material->getAmbientColor());
+  //if (hasUniform("color_d"))
+  setUniformVector4("color_d", material->getDiffuseColor());
+  //if (hasUniform("color_s"))
+  setUniformVector4("color_s", material->getSpecularColor());
+  //if (hasUniform("color_e"))
+  setUniformVector4("color_e", material->getEmissiveColor());
 }
 
 

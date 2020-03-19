@@ -28,7 +28,8 @@ class Prop3D : public Entity3D
     Prop3D();
     ~Prop3D();
 
-    void render(Camera3D* camera);
+    void renderAmbient(Camera3D* camera);
+    void renderLight(Camera3D* camera, Light3D* light);
 
     void setMesh(Mesh3D* mesh);
     Mesh3D* getMesh();

@@ -25,7 +25,7 @@ Ray3D::~Ray3D()
 
 
 
-void Ray3D::render(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader)
+void Ray3D::renderAmbient(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader)
 {
 #ifdef DEBUG_TRACE_RAY
   std::cout << "Ray3D" << this << "::render()" << std::endl;

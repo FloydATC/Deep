@@ -63,31 +63,52 @@ void Scene3D::render()
 #ifdef DEBUG_TRACE_SCENE
   std::cout << "Scene3D" << this << "::render() begin" << std::endl;
 #endif
+
+  //int stencil_bits = 0;
+	//glGetIntegerv(GL_STENCIL_BITS, &stencil_bits);
+	//glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, GL_STENCIL, GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE, &stencil_bits);
+	//SDL_GL_GetAttribute(SDL_GL_STENCIL_SIZE, &stencil_bits);
+	//std::cout << "stencil bits=" << stencil_bits << std::endl;
+
   glViewport(0, 0, this->cam->getWidth(), this->cam->getHeight());
 
   glClearColor(0.04f, 0.04f, 0.05f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+  glDepthMask(GL_TRUE);
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-  glEnable(GL_CULL_FACE);
+  glEnable(GL_DEPTH_CLAMP);
   glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LEQUAL);
+  glDisable(GL_STENCIL_TEST);
 
   // Ambient color pass: Render 3D models
   for (const auto& prop : prop3d) {
-    prop.second->render(this->cam);
+    prop.second->renderAmbient(this->cam);
   }
 
+  glDepthFunc(GL_LEQUAL);
+
   // Calculate and draw shadow volumes for each light and each mesh
+
   for (const auto& light_pair : light3d) {
     Light3D* light = light_pair.second;
     if (light->isEnabled() == false) continue;
 
+    glDepthMask(GL_FALSE);
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
-    //glDisable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_STENCIL_TEST);
+    glStencilFunc(GL_ALWAYS, 0x0, 0xFF);
+    glStencilMask(0xFF);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBlendEquation(GL_FUNC_ADD);
+    glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
+    glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
+
+    glClearStencil(0);
+    glClear(GL_STENCIL_BUFFER_BIT);
+
+
 
     for (const auto& prop_pair : prop3d) {
       Prop3D* prop = prop_pair.second;
@@ -95,7 +116,10 @@ void Scene3D::render()
 
       prop->generateShadowVolumes(light);
 
+      glDepthFunc(GL_LESS);
+      glEnable(GL_CULL_FACE);
       glCullFace(GL_BACK);
+
       prop->renderShadowVolumes(this->cam, this->shadow_shader);
 
       glCullFace(GL_FRONT);
@@ -105,8 +129,22 @@ void Scene3D::render()
       prop->destroyShadowVolumes();
     }
 
-    glDisable(GL_BLEND);
-    glDepthFunc(GL_LESS);
+
+    glStencilFunc(GL_EQUAL, 0, 0xFF);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    glStencilMask(0xFF);
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    //glDepthMask(GL_TRUE);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+
+    // Diffuse + Specular color pass: Render 3D models
+    for (const auto& prop : prop3d) {
+      prop.second->renderLight(this->cam, light);
+    }
 
   }
 

@@ -344,6 +344,8 @@ int main(int argc, char* argv[])
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Init Failed", msg.c_str(), nullptr);
     return 0;
   } else {
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
     // Create Window here
     window = SDL_CreateWindow("Deep",
@@ -367,7 +369,6 @@ int main(int argc, char* argv[])
       //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
       SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
       SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-      SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
       // Create OpenGL context here
       std::cout<<"GameThread() creating OpenGL context"<<std::endl;
@@ -461,7 +462,7 @@ int main(int argc, char* argv[])
 
       ShaderProgram* plane_shader = scene.getShader("glsl/plane_vert.glsl", "glsl/plane_frag.glsl");
       Material* plane_material = scene.getMaterial();
-      plane_material->setAmbientColor(0.10, 0.10, 0.11);
+      plane_material->setAmbientColor(0.20, 0.20, 0.22);
       plane_material->setDiffuseColor(0.75, 0.75, 0.80);
       plane_material->setSpecularColor(0.25, 0.25, 0.30);
       plane_material->setEmissiveColor(0.00, 0.00, 0.00);
@@ -497,8 +498,11 @@ int main(int argc, char* argv[])
 
 
       std::cout << "main() ----------- Entering main loop" << std::endl;
+
+      double delta = 0.0;
       while (gamestate.shutdown == false)
       {
+        Time start = time_now();
         //SDL_WaitEvent(&event); // Blocking call
         while (SDL_PollEvent(&event)) {
           event_handler.handle_event(event);
@@ -513,9 +517,9 @@ int main(int argc, char* argv[])
           vm->run();
         }
 
-        scene.getPropByName("cube")->setPitch(fmod(unixtime_now(), 360.0) * 17.3);
-        scene.getPropByName("cube")->setRoll(fmod(unixtime_now(), 360.0) * 27.3);
-        scene.getPropByName("cube")->setYaw(fmod(unixtime_now(), 360.0) * 7.51);
+        scene.getPropByName("cube")->addPitch((37.3*delta)/1000.0);
+        scene.getPropByName("cube")->addRoll((27.3*delta)/1000.0);
+        scene.getPropByName("cube")->addYaw((17.51*delta)/1000.0);
 
         scene.render();
 
@@ -539,6 +543,7 @@ int main(int argc, char* argv[])
         //ui->post_render();
 
         SDL_GL_SwapWindow(window);
+        delta = time_elapsed_ms(time_now(), start);
       }
       std::cout << "main() ----------- Exiting main loop" << std::endl;
 
