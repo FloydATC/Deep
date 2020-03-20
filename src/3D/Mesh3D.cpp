@@ -318,10 +318,10 @@ void Mesh3D::findAdjacentFaces()
 #ifdef DEBUG_TRACE_MESH
   std::cout << "Mesh3D::findAdjacentFaces() begin" << std::endl;
 #endif
-  for (unsigned int f1=0; f1<this->faces.size(); f1++) {
+  for (unsigned int f1=0; f1<this->faces.size()-1; f1++) {
     for (int e1=0; e1<3; e1++) {
       if (this->faces[f1].adjacent[e1] != -1) continue;
-      for (unsigned int f2=f1; f2<this->faces.size(); f2++) {
+      for (unsigned int f2=f1+1; f2<this->faces.size(); f2++) {
         for (int e2=0; e2<3; e2++) {
           if (this->faces[f2].adjacent[e2] != -1) continue;
           if (this->faces[f1].edge(e1) == this->faces[f2].edge(e2)) {
