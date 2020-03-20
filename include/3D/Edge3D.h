@@ -3,6 +3,8 @@
 
 #include "Vectors.h"
 
+#define EPSILON 0.00001
+
 class Edge3D
 {
   public:
@@ -15,7 +17,8 @@ class Edge3D
 
     bool operator==(const Edge3D& rhs)
     {
-      return (this->v1 == rhs.v2 && this->v2 == rhs.v1) || (this->v1 == rhs.v1 && this->v2 == rhs.v2);
+      return (this->v1.equal(rhs.v2, EPSILON) && this->v2.equal(rhs.v1, EPSILON))
+          || (this->v1.equal(rhs.v1, EPSILON) && this->v2.equal(rhs.v2, EPSILON));
     }
 
   protected:
