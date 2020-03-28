@@ -8,7 +8,7 @@ Camera3D::Camera3D()
 {
   //ctor
   this->fov = 60;
-  this->aspect = 640.0 / 480.0; // 1.333
+  this->aspect = 640.0f / 480.0f; // 1.333
 #ifdef DEBUG_TRACE_CAMERA
   std::cout << "Camera3D" << this << " created" << std::endl;
 #endif
@@ -85,8 +85,8 @@ void Camera3D::setAspect(float aspect_ratio)
 {
   this->aspect = aspect_ratio;
   // Clamp to sane values
-  if (this->aspect > 10.0) this->aspect = 10.0;
-  if (this->aspect < 0.01) this->aspect = 0.01;
+  if (this->aspect > 10.0) this->aspect = 10.0f;
+  if (this->aspect < 0.01) this->aspect = 0.01f;
 #ifdef DEBUG_TRACE_CAMERA
   std::cout << "Camera3D" << this << "::setAspect() ratio=" << aspect_ratio << std::endl;
 #endif

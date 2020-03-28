@@ -2,6 +2,8 @@
 #include "hexdump.h"
 
 #include <iomanip>
+#include <cctype>
+#include <algorithm>
 
 std::ostream& hex_dump(std::ostream& os, const void *buffer,
                        std::size_t bufsize, bool showPrintableChars)

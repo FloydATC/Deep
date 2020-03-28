@@ -8,6 +8,8 @@ Box3D::Box3D()
   this->vertices.resize(8*3); // 8 corners, 3 dimensions (x,y,z)
   glGenBuffers(1, &this->ibo);
   this->cast_shadow = false;
+  this->minimum = Vector3(0.0, 0.0, 0.0);
+  this->maximum = Vector3(0.0, 0.0, 0.0);
 #ifdef DEBUG_TRACE_OPENGL
   glObjectLabel(GL_BUFFER, this->ibo, -1, "Box3D IBO");
 #endif

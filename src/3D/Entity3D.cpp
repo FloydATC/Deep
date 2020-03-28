@@ -4,8 +4,8 @@
 
 //#define DEBUG_TRACE_ENTITY
 
-#define PI 3.1415
-#define RAD2DEG 180.0 / PI
+#define PI 3.1415f
+#define RAD2DEG 180.0f / PI
 
 Entity3D::Entity3D()
 {
@@ -62,14 +62,14 @@ Matrix4 Entity3D::getPositionMatrix()
 
 // Wrap number so it stays within lower-upper boundary (e.g. -360..360 degrees)
 // Note: boundaries must be INTEGER values
-float wrap( float target, int lower, int upper){
-  int dif = upper - lower;
+float wrap( float target, float lower, float upper){
+  float dif = upper - lower;
 
   if(target > lower)
-    return lower + fmod((target - lower), dif);
+    return lower + (float)fmod((target - lower), dif);
 
   target = lower + (lower - target);
-  float tmp = lower + fmod((target - lower), dif);
+  float tmp = lower + (float)fmod((target - lower), dif);
   return upper - tmp;
 }
 
@@ -125,7 +125,7 @@ void Entity3D::setPitch(float degrees)
   // Clamp to sane values
   //if (this->pitch > 90.0) this->pitch = 90;
   //if (this->pitch < -90.0) this->pitch = -90;
-  this->pitch = wrap(this->pitch, -180.0, 180.0);
+  this->pitch = wrap(this->pitch, -180.0f, 180.0f);
 #ifdef DEBUG_TRACE_ENTITY
   std::cout << "Entity3D" << this << "::setPitch() degrees=" << degrees << " pitch=" << pitch << std::endl;
 #endif
@@ -138,7 +138,7 @@ void Entity3D::addPitch(float degrees)
   // Clamp to sane values
   //if (this->pitch > 90.0) this->pitch = 90;
   //if (this->pitch < -90.0) this->pitch = -90;
-  this->pitch = wrap(this->pitch, -180.0, 180.0);
+  this->pitch = wrap(this->pitch, -180.0f, 180.0f);
 #ifdef DEBUG_TRACE_ENTITY
   std::cout << "Entity3D" << this << "::addPitch() degrees=" << degrees << " pitch=" << pitch << std::endl;
 #endif
@@ -154,7 +154,7 @@ void Entity3D::setYaw(float degrees)
 {
   this->yaw = degrees;
   // Clamp to sane values
-  this->yaw = wrap(this->yaw, -180.0, 180.0);
+  this->yaw = wrap(this->yaw, -180.0f, 180.0f);
 #ifdef DEBUG_TRACE_ENTITY
   std::cout << "Entity3D" << this << "::setYaw() degrees=" << degrees << " yaw=" << yaw << std::endl;
 #endif
@@ -165,7 +165,7 @@ void Entity3D::addYaw(float degrees)
 {
   this->yaw += degrees;
   // Clamp to sane values
-  this->yaw = wrap(this->yaw, -180.0, 180.0);
+  this->yaw = wrap(this->yaw, -180.0f, 180.0f);
 #ifdef DEBUG_TRACE_ENTITY
   std::cout << "Entity3D" << this << "::addYaw() degrees=" << degrees << " yaw=" << yaw << std::endl;
 #endif
@@ -181,7 +181,7 @@ void Entity3D::setRoll(float degrees)
 {
   this->roll = degrees;
   // Clamp to sane values
-  this->roll = wrap(this->roll, -180.0, 180.0);
+  this->roll = wrap(this->roll, -180.0f, 180.0f);
 #ifdef DEBUG_TRACE_ENTITY
   std::cout << "Entity3D" << this << "::setRoll() degrees=" << degrees << " roll=" << roll << std::endl;
 #endif
@@ -192,7 +192,7 @@ void Entity3D::addRoll(float degrees)
 {
   this->roll += degrees;
   // Clamp to sane values
-  this->roll = wrap(this->roll, -180.0, 180.0);
+  this->roll = wrap(this->roll, -180.0f, 180.0f);
 #ifdef DEBUG_TRACE_ENTITY
   std::cout << "Entity3D" << this << "::addRoll() degrees=" << degrees << " roll=" << roll << std::endl;
 #endif

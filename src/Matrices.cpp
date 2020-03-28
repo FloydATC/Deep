@@ -832,9 +832,9 @@ Matrix4 Matrix4::Frustum(float l, float r, float b, float t, float n, float f)
     mat[5]  = 2 * n / (t - b);
     mat[8]  = (r + l) / (r - l);
     mat[9]  = (t + b) / (t - b);
-    mat[10] = ( f >= (float)INFINITY ? EPSILON-1.0 : -(f + n) / (f - n) );
+    mat[10] = ( f >= (float)INFINITY ? EPSILON-1.0f : -(f + n) / (f - n) );
     mat[11] = -1;
-    mat[14] = ( f >= (float)INFINITY ? (EPSILON-2.0) * n : -(2 * f * n) / (f - n) );
+    mat[14] = ( f >= (float)INFINITY ? (EPSILON-2.0f) * n : -(2 * f * n) / (f - n) );
     mat[15] = 0;
     return mat;
     // https://developer.nvidia.com/gpugems/gpugems/part-ii-lighting-and-shadows/chapter-9-efficient-shadow-volume-rendering

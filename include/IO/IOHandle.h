@@ -5,7 +5,9 @@
 #include <string>
 #include <vector>
 
+#ifndef ENOSTR
 #define ENOSTR 60 // Device not a stream
+#endif
 
 class IOHandle
 {
@@ -33,7 +35,7 @@ class IOHandle
     virtual void close() {}
 
   protected:
-    int bufsize = 4096;
+    size_t bufsize = 4096;
     std::vector<char> r_buffer;
     std::vector<char> w_buffer;
     char readln_newline = '\n';

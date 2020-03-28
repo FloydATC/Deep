@@ -30,7 +30,7 @@ class Overlay2D
     Matrix4 mat;
     ShaderProgram* shader = nullptr;
 
-    GLfloat color[4] = { 0.2, 0.2, 1.0, 0.5 };
+    GLfloat color[4] = { 0.2f, 0.2f, 1.0f, 0.5f };
 
     GLint attr_vertex;
     GLint attr_uv;

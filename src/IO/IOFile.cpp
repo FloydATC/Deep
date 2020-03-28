@@ -94,10 +94,11 @@ void IOFile::set_fileflags(std::string mode)
 IOFile* IOFile::open(std::string filename, std::string mode) {
   //std::cout << "IOFile::open() filename='" << filename << "' mode='" << mode << "'" << std::endl;
   IOFile* file = new IOFile();
+  bool res;
 
   file->filename = filename;
-  file->r_buffer.empty();
-  file->w_buffer.empty();
+  res = file->r_buffer.empty();
+  res = file->w_buffer.empty();
   file->set_fileflags(mode);
 
   file->handle.open(filename, file->fileflags);
@@ -135,7 +136,7 @@ void IOFile::fill_buffer()
     this->closed = true;
     this->bytes_read = 0;
   } else {
-    this->bytes_read = this->handle.gcount();
+    this->bytes_read = (size_t)this->handle.gcount();
   }
   if (bytes_read < this->bufsize) r_buffer.resize(current_size + bytes_read);
 
@@ -282,11 +283,11 @@ std::string IOFile::slurp(std::string filename)
   {
     fsize = fh.tellg();
     //buf = new char [fsize+1];
-    buf = std::string(fsize, '\0');
+    buf = std::string((size_t)fsize, '\0');
     fh.seekg (0, std::ios::beg);
     fh.read (&buf[0], fsize);
     fh.close();
-    buf[fsize] = 0;
+    buf[(size_t)fsize] = 0;
 
     //std::cout << "File::load_file() read " << fsize << " bytes from " << filename << std::endl;
   } else {

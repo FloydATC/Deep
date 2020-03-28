@@ -64,7 +64,7 @@ void Overlay2D::setDimensions(int width, int height)
   //std::cout << "Overlay2D::setDimensions()" << std::endl;
   this->width = width;
   this->height = height;
-  this->mat = Matrix4().Ortho(0, width, height, 0, -1, 1);
+  this->mat = Matrix4().Ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
 }
 
 
@@ -73,7 +73,7 @@ void Overlay2D::draw_polygon(Vector2 v1, Vector2 v2, Vector2 v3)
   //std::cout << "Overlay2D::draw_polygon()" << std::endl;
   Polygon2D* poly = new Polygon2D();
   pre_draw(poly);
-  poly->draw(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y);
+  poly->draw((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y, (int)v3.x, (int)v3.y);
   post_draw();
   delete poly;
 }

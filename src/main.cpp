@@ -115,11 +115,11 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
 {
   // Mouse controls camera direction
   //std::cout << "processMsg() MouseMotion message x=" << msg->motion.x << " y=" << msg->motion.y << std::endl;
-  int x = msg->motion.x;
-  int y = msg->motion.y;
+  int x = (int)msg->motion.x;
+  int y = (int)msg->motion.y;
   int w = scene->getCamera()->getWidth();
   int h = scene->getCamera()->getHeight();
-  float sensitivity = 0.2;
+  float sensitivity = 0.2f;
   scene->getCamera()->setPitch(-(float) (y - (h/2)) * sensitivity);
   scene->getCamera()->setYaw(-(float) (x - (w/2)) * sensitivity);
 
@@ -156,13 +156,13 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
     // Maybe we should do this inside Machine.cpp, I'm not 100% sure.
     //std::cout << "  raw mouse position " << v.x << "," << v.y << std::endl;
     Vector2 mv; // v mapped to 320x200 display of VM
-    mv.x = (v.x + 0.38) * 320 / 0.76;
-    mv.y = ((v.y * -1) + 0.3) * 200 / 0.6;
+    mv.x = (v.x + 0.38f) * 320 / 0.76f;
+    mv.y = ((v.y * -1) + 0.3f) * 200 / 0.6f;
     if (mv.x >= 0 && mv.x < 320 && mv.y >= 0 && mv.y < 200) {
       p->setDecalPosition(Vector2(v.x, v.y));
       Message* relative = new Message(Message::Type::MouseMotion);
-      relative->motion.x = int(mv.x);
-      relative->motion.y = int(mv.y);
+      relative->motion.x = floor(mv.x);
+      relative->motion.y = floor(mv.y);
       //std::cout << "  mouse position " << relative->motion.x << "," << relative->motion.y << std::endl;
       vms[i]->push(relative);
       mouse_virtual = true;
@@ -226,12 +226,12 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
       break;
     case Message::Type::KeyDown:
       //std::cout << "processMsg() KeyDown message" << std::endl;
-      if (msg->key.sym == SDLK_KP_4) scene->getCamera()->strafeLeft(0.1);
-      if (msg->key.sym == SDLK_KP_6) scene->getCamera()->strafeRight(0.1);
-      if (msg->key.sym == SDLK_KP_8) scene->getCamera()->strafeUp(0.1);
-      if (msg->key.sym == SDLK_KP_2) scene->getCamera()->strafeDown(0.1);
-      if (msg->key.sym == SDLK_KP_PLUS) scene->getCamera()->strafeForward(0.1);
-      if (msg->key.sym == SDLK_KP_MINUS) scene->getCamera()->strafeBackward(0.1);
+      if (msg->key.sym == SDLK_KP_4) scene->getCamera()->strafeLeft(0.1f);
+      if (msg->key.sym == SDLK_KP_6) scene->getCamera()->strafeRight(0.1f);
+      if (msg->key.sym == SDLK_KP_8) scene->getCamera()->strafeUp(0.1f);
+      if (msg->key.sym == SDLK_KP_2) scene->getCamera()->strafeDown(0.1f);
+      if (msg->key.sym == SDLK_KP_PLUS) scene->getCamera()->strafeForward(0.1f);
+      if (msg->key.sym == SDLK_KP_MINUS) scene->getCamera()->strafeBackward(0.1f);
       process_keydown(msg, vms, gamestate);
       break;
     case Message::Type::KeyUp:
@@ -383,7 +383,7 @@ int main(int argc, char* argv[])
       } else {
         glewInit();
 
-        glDebugMessageCallback(OpenGL_debug_callback, NULL);
+        glDebugMessageCallback((GLDEBUGPROC)OpenGL_debug_callback, nullptr);
         glEnable(GL_DEBUG_OUTPUT);
 
         GLuint id = 131185; // Static draw buffer will use video memory. Yes? Where else would I want it?
@@ -443,10 +443,10 @@ int main(int argc, char* argv[])
       scene.addProp("vm2", screen);
       scene.addProp("vm3", screen);
 
-      scene.getPropByName("vm0")->setPosition(Vector3(-0.60,  0.50, -0.5));
-      scene.getPropByName("vm1")->setPosition(Vector3( 0.60,  0.50, -0.5));
-      scene.getPropByName("vm2")->setPosition(Vector3(-0.60, -0.50, -0.5));
-      scene.getPropByName("vm3")->setPosition(Vector3( 0.60, -0.50, -0.5));
+      scene.getPropByName("vm0")->setPosition(Vector3(-0.60f,  0.50f, -0.5f));
+      scene.getPropByName("vm1")->setPosition(Vector3( 0.60f,  0.50f, -0.5f));
+      scene.getPropByName("vm2")->setPosition(Vector3(-0.60f, -0.50f, -0.5f));
+      scene.getPropByName("vm3")->setPosition(Vector3( 0.60f, -0.50f, -0.5f));
 
       scene.getPropByName("vm0")->setDirection( 15, 15,  0);
       scene.getPropByName("vm1")->setDirection( 15,-15,  0);
@@ -462,10 +462,10 @@ int main(int argc, char* argv[])
 
       ShaderProgram* plane_shader = scene.getShader("glsl/plane_vert.glsl", "glsl/plane_frag.glsl");
       Material* plane_material = scene.getMaterial();
-      plane_material->setAmbientColor(0.20, 0.20, 0.22);
-      plane_material->setDiffuseColor(0.75, 0.75, 0.80);
-      plane_material->setSpecularColor(0.25, 0.25, 0.30);
-      plane_material->setEmissiveColor(0.00, 0.00, 0.00);
+      plane_material->setAmbientColor(0.20f, 0.20f, 0.22f);
+      plane_material->setDiffuseColor(0.75f, 0.75f, 0.80f);
+      plane_material->setSpecularColor(0.25f, 0.25f, 0.30f);
+      plane_material->setEmissiveColor(0.00f, 0.00f, 0.00f);
       plane_material->setName("plane");
       Plane3D* plane = new Plane3D();
       plane->setShader(plane_shader);
@@ -478,13 +478,13 @@ int main(int argc, char* argv[])
       scene.addProp("cube", cube);
       Texture* test = scene.getTexture("textures/test256.png");
       scene.getPropByName("cube")->setTexture(test);
-      scene.getPropByName("cube")->setPosition(Vector3(-1.25, 0.15, 0.2));
+      scene.getPropByName("cube")->setPosition(Vector3(-1.25f, 0.15f, 0.2f));
 
       scene.setStandardShader(scene_shader); // Set default shader
       scene.setShadowShader(shadow_shader); // Set shader to use for volume shadow rendering
 
-      Light3D* overhead = new Light3D(Vector3(0.7, 0.7, 0.6));
-      overhead->setPosition(Vector3( -1.20, 1.20, 1.20));
+      Light3D* overhead = new Light3D(Vector3(0.7f, 0.7f, 0.6f));
+      overhead->setPosition(Vector3( -1.20f, 1.20f, 1.20f));
       scene.addLight("overhead", overhead);
 
 
@@ -517,9 +517,9 @@ int main(int argc, char* argv[])
           vm->run();
         }
 
-        scene.getPropByName("cube")->addPitch((37.3*delta)/1000.0);
-        scene.getPropByName("cube")->addRoll((27.3*delta)/1000.0);
-        scene.getPropByName("cube")->addYaw((17.51*delta)/1000.0);
+        scene.getPropByName("cube")->addPitch((float)(37.3*delta/1000.0));
+        scene.getPropByName("cube")->addRoll((float)(27.3*delta/1000.0));
+        scene.getPropByName("cube")->addYaw((float)(17.51*delta/1000.0));
 
         scene.render();
 

@@ -5,7 +5,7 @@
 
 void dumpVertexArrayState()
 {
-  size_t bufsize = 64;
+  constexpr size_t bufsize = 64;
 
   std::cout << "GFX::dumpVertexArrayState()" << std::endl;
 

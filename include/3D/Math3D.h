@@ -47,8 +47,8 @@ Vector3 projected_vector(Vector3 world_point, Vector2 display, Matrix4 projectio
   Vector4 v4 = projection * view * model * Vector4(world_point.x, world_point.y, world_point.z, 1.0);
 
   // Return 2D display coordinates + depth component
-  int w2 = display.x / 2;
-  int h2 = display.y / 2;
+  float w2 = display.x / 2;
+  float h2 = display.y / 2;
   return Vector3(w2+(v4.x*w2/v4.w), h2+(v4.y*-h2/v4.w), v4.z/v4.w); // flip Y so 0,0 is upper left corner
 }
 

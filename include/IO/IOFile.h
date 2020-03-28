@@ -30,9 +30,9 @@ class IOFile : public IOHandle
     int gid() { return statbuf.st_gid; };
     int mode() { return statbuf.st_mode; };
     int size() { return statbuf.st_size; };
-    int atime() { return statbuf.st_atime; };
-    int mtime() { return statbuf.st_mtime; };
-    int ctime() { return statbuf.st_ctime; };
+    int atime() { return (int)statbuf.st_atime; };
+    int mtime() { return (int)statbuf.st_mtime; };
+    int ctime() { return (int)statbuf.st_ctime; };
 
     std::string filename;
 
@@ -47,7 +47,7 @@ class IOFile : public IOHandle
     std::fstream handle;
     std::string filemode; // fopen style "rwa+" visible to user
     std::ios_base::openmode fileflags; // internal std::fstream madness
-    ssize_t bytes_read;
+    size_t bytes_read;
 
     void fill_buffer();
     std::string drain_buffer(const size_t bytes);

@@ -19,7 +19,7 @@ class Camera3D : public Entity3D
 
     Vector3 getDirection();
     void setDimensions(int width, int height);
-    inline Vector2 getDimensions() { return Vector2(this->width, this->height); }
+    inline Vector2 getDimensions() { return Vector2((float)this->width, (float)this->height); }
     void setAspect(float width_by_height);
     float getAspect();
     int getWidth();
@@ -39,7 +39,7 @@ class Camera3D : public Entity3D
 
     float fov;
     float aspect;
-    float clip_near = 0.1;
+    float clip_near = 0.1f;
     float clip_far = (float)INFINITY;
     int width;
     int height;

@@ -6,7 +6,9 @@
 //#include <cstddef>
 //#include <stdlib.h>
 
+#ifndef _MSC_VER
 typedef __PTRDIFF_TYPE__ ptrdiff_t;
+#endif
 //typedef signed long long ptrdiff_t;
 
 //#include <stddef.h>

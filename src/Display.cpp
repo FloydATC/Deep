@@ -143,16 +143,16 @@ void Display::draw_circle(int x, int y, int r)
 {
   //std::cout << "Display::draw_circle() x=" << x << " y=" << y << " r=" << r << std::endl;
   // Draw a circle.
-  int parts = 32;
-  float two_pi = 2.0 * 3.1415;
+  constexpr int parts = 32;
+  float two_pi = 2.0f * 3.1415f;
   float theta;
   GLint points[parts*2] = { 0 };
   // These vertices describe the circle
   for (int i=0; i<parts; i++) {
     theta = (float(i)) / (float(parts)) * two_pi;
     //std::cout << "theta=" << theta << " ";
-    points[i*2+0] = tx(x + (((float)r) * sin(theta)));
-    points[i*2+1] = ty(y + (((float)r) * cos(theta)));
+    points[i*2+0] = tx(x + (int)(((float)r) * sin(theta)));
+    points[i*2+1] = ty(y + (int)(((float)r) * cos(theta)));
     //std::cout << "x=" << points[i*2+0] << " ";
     //std::cout << "y=" << points[i*2+1] << std::endl;
   }
@@ -165,20 +165,21 @@ void Display::draw_disc(int x, int y, int r)
 {
   //std::cout << "Display::draw_circle() x=" << x << " y=" << y << " r=" << r << std::endl;
   // Draw a circle.
-  int parts = 32;
-  float two_pi = 2.0 * 3.1415;
+  constexpr int parts = 32;
+  constexpr int num_points = (2 + parts) * 2;
+  float two_pi = 2.0f * 3.1415f;
   float theta;
-  GLfloat points[(2+parts)*2] = { 0.0f };
+  GLfloat points[num_points] = { 0.0f };
   // The first vertex is the center
-  points[0] = ((float)x);
-  points[1] = height - ((float)y) - 1;
+  points[0] = (float)x;
+  points[1] = height - (float)y - 1;
   // The remaining vertices describe the circle
   for (int i=0; i<parts+1; i++) {
     theta = (float(i)) / (float(parts)) * two_pi;
     //std::cout << "i=" << i << " ";
     //std::cout << "theta=" << theta << " ";
-    points[2+i*2+0] = tx(x + (((float)r) * sin(theta)));
-    points[2+i*2+1] = ty(y + (((float)r) * cos(theta)));
+    points[2+i*2+0] = (GLfloat)tx(x + (int)(((float)r) * sin(theta)));
+    points[2+i*2+1] = (GLfloat)ty(y + (int)(((float)r) * cos(theta)));
     //std::cout << "x=" << points[2+i*2+0] << " ";
     //std::cout << "y=" << points[2+i*2+1] << std::endl;
   }
@@ -266,16 +267,16 @@ void Display::draw_surface(int row, int col, float r, float g, float b, GLuint s
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glBlendEquation(GL_FUNC_ADD);
 
-  float x1 = tx(col*8);
-  float y1 = ty((row+1)*8)+1;
-  float x2 = x1+8.0;
-  float y2 = y1+8.0;
+  float x1 = (float)tx(col*8);
+  float y1 = (float)ty((row+1)*8)+1;
+  float x2 = x1+8.0f;
+  float y2 = y1+8.0f;
 
   // Glyph textures for 8x8px monospace bitmap font is (sometimes?) greater than 8x8px
   // Weirdness caused by the font or by SDL_ttf? Does it matter?
   // Handle it by mapping just a portion of the texture to our 8x8 pixels
-  float u = 8.0 / font.width;
-  float v = 8.0 / font.height;
+  float u = 8.0f / font.width;
+  float v = 8.0f / font.height;
 
   GLfloat rect[] =
   {
@@ -421,7 +422,7 @@ void Display::prepare_texture(GLsizei width, GLsizei height)
   glObjectLabel(GL_TEXTURE, this->texture, -1, "Display texture");
 #endif
   glBindTexture(GL_TEXTURE_2D, this->texture);
-  GLfloat bordercolor[4] = { 0.30, 0.25, 0.35, 1.0 };
+  GLfloat bordercolor[4] = { 0.30f, 0.25f, 0.35f, 1.0f };
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0); // 0 = clear
   //glGenerateMipmap(GL_TEXTURE_2D);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

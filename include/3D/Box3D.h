@@ -30,8 +30,8 @@ class Box3D : public Mesh3D
       4,5, 6,7, 4,6, 5,7,
       0,4, 1,5, 2,6, 3,7
     };
-    Vector3 minimum = Vector3(0,0,0);
-    Vector3 maximum = Vector3(0,0,0);
+    Vector3 minimum;
+    Vector3 maximum;
     bool first = true;
     bool finalized = false;
     std::string name;
