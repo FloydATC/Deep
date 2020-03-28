@@ -78,7 +78,7 @@ Mesh3D* Obj3D::getPart(int index)
 
 int Obj3D::numParts()
 {
-  return this->parts.size();
+  return (int)this->parts.size();
 }
 
 

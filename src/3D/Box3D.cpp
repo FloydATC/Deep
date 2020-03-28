@@ -58,7 +58,7 @@ void Box3D::renderAmbient(Matrix4 proj, Matrix4 view, Matrix4 model, Material* m
   //std::cout << "Box3D::render() glDrawArrays(GL_POINTS, 0, 12)" << std::endl;
   glDrawArrays(GL_POINTS, 0, 8);
   //std::cout << "Box3D::render() glDrawElements(GL_LINES, " << index.size() << ", GL_UNSIGNED_INT, 0)" << std::endl;
-  glDrawElements(GL_LINES, index.size(), GL_UNSIGNED_INT, 0); // Indexed draw
+  glDrawElements(GL_LINES, (int)index.size(), GL_UNSIGNED_INT, 0); // Indexed draw
   unbind_vao();
 }
 

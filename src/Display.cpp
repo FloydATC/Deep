@@ -206,7 +206,7 @@ void Display::draw_point(int x, int y)
 void Display::print(const char* string)
 {
   char* str = (char*) string;
-  int len = strlen(str);
+  int len = (int)strlen(str);
   if (len > 4000) {
     // Sanity check:
     // If we get a ridiculously large string, it makes little sense to print

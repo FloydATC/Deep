@@ -52,7 +52,7 @@ const char** CmdLine::args_array()
 
 int CmdLine::args_length()
 {
-  return this->args.size();
+  return (int)this->args.size();
 }
 
 

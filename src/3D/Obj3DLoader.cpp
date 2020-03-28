@@ -275,7 +275,7 @@ void Obj3DLoader::get_o()
   begin_mesh(this->filename, name);
 
   // Mark the beginning of sub-object ("part")
-  this->subobject_start.push_back(this->linear_points.size());
+  this->subobject_start.push_back((int)this->linear_points.size());
   this->subobject_length.push_back(0);
 
 }

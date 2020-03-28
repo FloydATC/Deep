@@ -3,9 +3,11 @@
 
 namespace FunC {
   extern "C" {
-    #include <vm.h>
+#include <vm.h>
   }
 }
+
+#pragma comment(lib, "FunCx64.lib")
 
 #include <queue>
 

@@ -151,7 +151,7 @@ float FileScanner::get_float()
 #endif
   size_t length;
   float n = std::stof(source.substr(pos), &length);
-  pos += length;
+  pos += (int)length;
   skip_whitespace();
   return n;
 }
@@ -164,7 +164,7 @@ int FileScanner::get_integer()
   size_t length;
   //std::cout << "FileScanner::get_integer() lineno=" << lineno << " str=" << source.substr(pos,5) << std::endl;
   int n = std::stoi(source.substr(pos), &length, 10);
-  pos += length;
+  pos += (int)length;
   skip_whitespace();
   return n;
 }

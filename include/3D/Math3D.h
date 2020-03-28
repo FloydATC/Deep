@@ -21,7 +21,7 @@ bool point_inside_convex_polygon(Vector2 point, std::vector<Vector3> polygon)
   Vector3 p0;
   Vector3 p1;
   Vector3 p2 = Vector3(point.x, point.y, 0.0);
-  int sides = polygon.size();
+  int sides = (int)polygon.size();
 
   int last = sides-1;
   for (int i=0; i<sides; i++) {

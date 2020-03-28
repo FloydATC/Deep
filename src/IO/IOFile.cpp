@@ -12,13 +12,17 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+//#define DEBUG_TRACE_IOFILE
+
 IOFile::IOFile()
 {
   //ctor
   filename = "";
   //handle = nullptr;
   bytes_read = -1;
-  //std::cout << "IOFile " << this << " created" << std::endl;
+#ifdef DEBUG_TRACE_IOFILE
+  std::cout << "IOFile " << this << " created" << std::endl;
+#endif
 }
 
 IOFile::~IOFile()
@@ -194,7 +198,7 @@ std::string IOFile::read(const int bytes)
 {
   int read_bytes = bytes;
   //std::cout << "IOFile::read() bytes=" << bytes << std::endl;
-  if (read_bytes <= 0) read_bytes = this->bufsize;
+  if (read_bytes <= 0) read_bytes = (int)this->bufsize;
   if ((int) r_buffer.size() < this->bufsize) fill_buffer();
   return drain_buffer(read_bytes);
 }
@@ -235,7 +239,7 @@ int IOFile::write(const std::string data)
   std::copy(data.begin(), data.end(), std::back_inserter(w_buffer));
   // Combine small writes into 'bufsize' sized writes
   while ((int) this->w_buffer.size() >= this->bufsize) flush_buffer(this->bufsize);
-  int bytes_written = data.length();
+  int bytes_written = (int)data.length();
   //std::cout << "IOFile::write() returning " << bytes_written << std::endl;
   return bytes_written;
 }
@@ -276,6 +280,9 @@ void IOFile::close() {
 // Convenience method for grabbing the contents of a small file
 std::string IOFile::slurp(std::string filename)
 {
+#ifdef DEBUG_TRACE_IOFILE
+  std::cout << "IOFile::slurp() filename=" << filename << std::endl;
+#endif
   std::ifstream::pos_type fsize;
   std::ifstream fh (filename, std::ios::in|std::ios::binary|std::ios::ate);
   std::string buf = "";
@@ -289,9 +296,11 @@ std::string IOFile::slurp(std::string filename)
     fh.close();
     buf[(size_t)fsize] = 0;
 
-    //std::cout << "File::load_file() read " << fsize << " bytes from " << filename << std::endl;
+#ifdef DEBUG_TRACE_IOFILE
+    std::cout << "IOFile::slurp() read " << fsize << " bytes from " << filename << std::endl;
+#endif
   } else {
-    std::cerr << "File::load_file() error reading " << filename << std::endl;
+    std::cerr << "IOFile::slurp() error reading " << filename << std::endl;
   }
 
   return buf;

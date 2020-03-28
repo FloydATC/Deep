@@ -265,7 +265,7 @@ Prop3D* Scene3D::getPropByName(std::string name)
 
 int Scene3D::getPropCount()
 {
-  return prop3d.size();
+  return (int)prop3d.size();
 }
 
 
@@ -288,7 +288,7 @@ Light3D* Scene3D::getLightByName(std::string name)
 
 int Scene3D::getLightCount()
 {
-  return light3d.size();
+  return (int)light3d.size();
 }
 
 

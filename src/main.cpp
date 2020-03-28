@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include <fstream>
 #include <iomanip> // For cout::setprecision
 #include <codecvt>
@@ -13,10 +14,13 @@
 #include <mutex>
 #include <atomic>
 
+
 #include "GFX.h"
+#define SDL_MAIN_HANDLED // Stop SDL from messing with main()
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+
 
 #include <ws2tcpip.h>
 
@@ -74,7 +78,7 @@ void process_keydown(Message* msg, std::vector<Machine*> vms, GameState* gamesta
     if (str != nullptr) {
       // Generate TextInput events for clipboard contents
       //std::vector<int> codepoints = UTF8hack::codepoints(str, strlen(str));
-      for (auto & codepoint : UTF8hack::codepoints(str, strlen(str))) {
+      for (auto & codepoint : UTF8hack::codepoints(str, (int)strlen(str))) {
         //std::cout << "codepoint=" << codepoint << std::endl;
         switch (codepoint) {
           case 10: {
@@ -250,6 +254,7 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
 
 std::string init_sdl()
 {
+  SDL_SetMainReady(); // https://wiki.libsdl.org/SDL_SetMainReady
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0) return SDL_GetError();
   if (IMG_Init(IMG_INIT_PNG) < 0) return "IMG_Init() failed";
   if (TTF_Init() < 0) return "TTF_Init() failed";
@@ -318,8 +323,8 @@ void OpenGL_debug_callback( GLenum source, GLenum type, GLuint id, GLenum severi
 }
 
 
-//#define DEBUG_NO_VIRTUAL_MACHINES
-//#define DEBUG_NO_SCREENS
+#define DEBUG_NO_VIRTUAL_MACHINES
+#define DEBUG_NO_SCREENS
 int main(int argc, char* argv[])
 {
   (void)(argc);
@@ -393,6 +398,7 @@ int main(int argc, char* argv[])
       TTF_Font* font = TTF_OpenFont("fonts/unscii-8-thin.ttf", 16);
       if(!font) {
         std::cerr << "TTF_OpenFont: " << TTF_GetError() << std::endl;
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "TTF_OpenFint:", TTF_GetError(), nullptr);
         return 0;
       }
 

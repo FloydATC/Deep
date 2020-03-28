@@ -128,7 +128,7 @@ FunC::Value Machine::make_builtin_instance(ValueMap values)
   // Create instance of an empty class named "*" in VM
   // The class has no methods and serves no purpose (yet)
   // We just want the instance's ability to serve as a namespace.
-  return FunC::to_instanceValue(vm, keys_cstr.data(), vals.data(), keys.size());
+  return FunC::to_instanceValue(vm, keys_cstr.data(), vals.data(), (int)keys.size());
 
 }
 

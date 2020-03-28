@@ -177,7 +177,7 @@ int IOSocket::write(const std::string data)
   fill_w_buffer(data); // Enqueue data
   flush_w_buffer(); // Try to send pending data
 
-  int bytes_written = data.length();
+  int bytes_written = (int)data.length();
   //std::cout << "IOSocket" << this << "::write() returning " << bytes_written << std::endl;
   return bytes_written;
 }
@@ -211,7 +211,7 @@ int IOSocket::send(const std::string data)
   pw_buffer.push_back(datagram);
   flush_pw_buffer();
 
-  return data.size();
+  return (int)data.size();
 }
 
 
@@ -472,7 +472,7 @@ bool IOSocket::ws_listen()
 
 size_t IOSocket::ws_send(std::vector<char> buffer)
 {
-  int status = ::send(this->handle, buffer.data(), buffer.size(), 0);
+  int status = ::send(this->handle, buffer.data(), (int)buffer.size(), 0);
 
   if (status == SOCKET_ERROR) {
     ws_check_status("send", status);
@@ -487,7 +487,7 @@ size_t IOSocket::ws_send(std::vector<char> buffer)
 std::vector<char> IOSocket::ws_recv()
 {
   std::vector<char> buffer(this->bufsize, 0);
-  int status = ::recv(this->handle, buffer.data(), buffer.size(), 0);
+  int status = ::recv(this->handle, buffer.data(), (int)buffer.size(), 0);
 
   if (status == SOCKET_ERROR) {
     ws_check_status("recv", status);

@@ -14,7 +14,7 @@ Shape2D::~Shape2D()
 }
 
 
-void Shape2D::draw_untextured_vbo(GLsizeiptr arrsize, const void* arr, GLenum type, GLsizei typesize, GLenum mode, GLsizei vertices)
+void Shape2D::draw_untextured_vbo(int arrsize, const void* arr, GLenum type, GLsizei typesize, GLenum mode, GLsizei vertices)
 {
   glBufferData(GL_ARRAY_BUFFER, arrsize, arr, GL_STREAM_DRAW); // Buffer will be used only once
   shader->enableAttribute("attr_v");

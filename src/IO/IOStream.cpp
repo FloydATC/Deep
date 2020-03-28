@@ -36,7 +36,7 @@ std::string IOStream::read(int bytes)
 {
   int read_bytes = bytes;
   //std::cout << "IOStream::read() bytes=" << bytes << std::endl;
-  if (read_bytes <= 0) read_bytes = this->bufsize;
+  if (read_bytes <= 0) read_bytes = (int)this->bufsize;
   return drain_buffer(read_bytes);
 }
 
@@ -55,7 +55,7 @@ std::string IOStream::readln() {
 
 int IOStream::write(const std::string data) {
   std::copy(data.begin(), data.end(), std::back_inserter(w_buffer));
-  return data.length();
+  return (int)data.length();
 }
 
 

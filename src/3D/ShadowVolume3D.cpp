@@ -19,7 +19,7 @@ ShadowVolume3D::ShadowVolume3D(Light3D* light, Mesh3D* mesh, Matrix4 model)
   if (light->isDirectional()) compute_directional();
 
   // Pass resulting vertex list to OpenGL
-  set_v(this->v.data(), this->v.size() / 4);
+  set_v(this->v.data(), (int)this->v.size() / 4);
 
 #ifdef DEBUG_TRACE_SHADOWS
   std::cout << "ShadowVolume3D " << this << " created" << std::endl;
@@ -91,7 +91,7 @@ void ShadowVolume3D::compute_positional()
     // Dark cap (reverse vertex order)
     std::vector<Vector4> dark_cap;
     dark_cap.resize(3);
-    for (int i=face.vertices.size()-1; i>=0; i--) {
+    for (int i=(int)face.vertices.size()-1; i>=0; i--) {
       Vector4 v4 = Vector4( face.vertices[i] + light_dir[i], 0.0 ); // w = 0.0 = to infinity
       dark_cap[i] = v4;
       this->v.insert( this->v.end(), v4.data, v4.data+4 );

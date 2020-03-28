@@ -13,7 +13,7 @@ class Shape2D
 
     void setShader(ShaderProgram* shader);
     void setDimensions(int width, int height);
-    void draw_untextured_vbo(GLsizeiptr arrsize, const void* arr, GLenum type, GLsizei typesize, GLenum mode, GLsizei vertices);
+    void draw_untextured_vbo(int arrsize, const void* arr, GLenum type, GLsizei typesize, GLenum mode, GLsizei vertices);
     int tx(int x);
     int ty(int y);
 
