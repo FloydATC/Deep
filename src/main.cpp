@@ -140,7 +140,7 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
 
   // Detect Obj3D mouse intersection
   // WARNING! This temporary code assumes a 1:1 relationship between Obj3Ds and VMs
-  Vector2 mouse = Vector2(msg->motion.x, msg->motion.y);
+  Vector2 mouse = Vector2((float)msg->motion.x, (float)msg->motion.y);
   bool mouse_virtual = false;
 
   for (int i=0; i<4; i++) {
@@ -161,8 +161,8 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
     if (mv.x >= 0 && mv.x < 320 && mv.y >= 0 && mv.y < 200) {
       p->setDecalPosition(Vector2(v.x, v.y));
       Message* relative = new Message(Message::Type::MouseMotion);
-      relative->motion.x = floor(mv.x);
-      relative->motion.y = floor(mv.y);
+      relative->motion.x = (int)mv.x;
+      relative->motion.y = (int)mv.y;
       //std::cout << "  mouse position " << relative->motion.x << "," << relative->motion.y << std::endl;
       vms[i]->push(relative);
       mouse_virtual = true;

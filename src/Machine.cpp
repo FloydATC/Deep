@@ -457,16 +457,16 @@ void Machine::handle_msg_quit(Message* msg)
 
 void Machine::handle_msg_mousemotion(Message* msg)
 {
-  this->mouse->motion(Vector2(msg->motion.x, msg->motion.y));
+  this->mouse->motion(Vector2((float)msg->motion.x, (float)msg->motion.y));
   delete msg;
 }
 
 void Machine::handle_msg_mousebutton(Message* msg)
 {
   if (msg->button.pressed) {
-    this->mouse->button_down(msg->button.number, Vector2(msg->button.x, msg->button.y));
+    this->mouse->button_down(msg->button.number, Vector2((float)msg->button.x, (float)msg->button.y));
   } else {
-    this->mouse->button_up(msg->button.number, Vector2(msg->button.x, msg->button.y));
+    this->mouse->button_up(msg->button.number, Vector2((float)msg->button.x, (float)msg->button.y));
   }
   delete msg;
 }
@@ -496,7 +496,7 @@ uint16_t Machine::add_iohandle(IOHandle* ptr)
   }
   // No re-usable handles so append one
   iohandles.push_back(ptr);
-  return iohandles.size()-1;
+  return (uint16_t)(iohandles.size()-1);
 }
 
 
@@ -689,6 +689,7 @@ bool Machine::func_getkey(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Valu
       case Message::Type::KeyDown: {
         //std::cout << "VM.read() KeyDown sym=" << msg->key.sym << std::endl;
         switch (msg->key.sym) {
+          case 0: // Quiesce warning about no cases. They will be added later.
           default:
             std::string name = SDL_GetKeyName(msg->key.sym);
             if (name != "Left Alt" && name != "Right Alt") {
@@ -770,10 +771,10 @@ bool Machine::func_scr_up(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Valu
     return true;
   }
   if (argc == 4) {
-    int r1 = FunC::to_double(argv[0]);
-    int c1 = FunC::to_double(argv[1]);
-    int r2 = FunC::to_double(argv[2]);
-    int c2 = FunC::to_double(argv[3]);
+    int r1 = (int)FunC::to_double(argv[0]);
+    int c1 = (int)FunC::to_double(argv[1]);
+    int r2 = (int)FunC::to_double(argv[2]);
+    int c2 = (int)FunC::to_double(argv[3]);
     running->display.scroll_up(r1, c1, r2, c2);
     *result = FunC::to_numberValue(1);
     return true;
@@ -792,10 +793,10 @@ bool Machine::func_scr_down(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Va
     return true;
   }
   if (argc == 4) {
-    int r1 = FunC::to_double(argv[0]);
-    int c1 = FunC::to_double(argv[1]);
-    int r2 = FunC::to_double(argv[2]);
-    int c2 = FunC::to_double(argv[3]);
+    int r1 = (int)FunC::to_double(argv[0]);
+    int c1 = (int)FunC::to_double(argv[1]);
+    int r2 = (int)FunC::to_double(argv[2]);
+    int c2 = (int)FunC::to_double(argv[3]);
     running->display.scroll_down(r1, c1, r2, c2);
     *result = FunC::to_numberValue(1);
     return true;
@@ -814,10 +815,10 @@ bool Machine::func_scr_left(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Va
     return true;
   }
   if (argc == 4) {
-    int r1 = FunC::to_double(argv[0]);
-    int c1 = FunC::to_double(argv[1]);
-    int r2 = FunC::to_double(argv[2]);
-    int c2 = FunC::to_double(argv[3]);
+    int r1 = (int)FunC::to_double(argv[0]);
+    int c1 = (int)FunC::to_double(argv[1]);
+    int r2 = (int)FunC::to_double(argv[2]);
+    int c2 = (int)FunC::to_double(argv[3]);
     running->display.scroll_left(r1, c1, r2, c2);
     *result = FunC::to_numberValue(1);
     return true;
@@ -836,10 +837,10 @@ bool Machine::func_scr_right(FunC::VM* vm, int argc, FunC::Value argv[], FunC::V
     return true;
   }
   if (argc == 4) {
-    int r1 = FunC::to_double(argv[0]);
-    int c1 = FunC::to_double(argv[1]);
-    int r2 = FunC::to_double(argv[2]);
-    int c2 = FunC::to_double(argv[3]);
+    int r1 = (int)FunC::to_double(argv[0]);
+    int c1 = (int)FunC::to_double(argv[1]);
+    int r2 = (int)FunC::to_double(argv[2]);
+    int c2 = (int)FunC::to_double(argv[3]);
     running->display.scroll_right(r1, c1, r2, c2);
     *result = FunC::to_numberValue(1);
     return true;
