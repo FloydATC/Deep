@@ -1,10 +1,15 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/.vs/Deep/v16
+﻿/.vs/Deep/v16
 /Deep.vcxproj
 /Deep.vcxproj.filters
 /Deep.vcxproj.user
 /Debug
 /x64/Debug
+bin/
+samples/
+obj/
+doxygen/
+Deep.cbp
+Deep.code-workspace
+Deep.depend
+Deep.layout
+funos/

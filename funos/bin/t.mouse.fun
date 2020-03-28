@@ -29,9 +29,20 @@ while (getkey() != "[Escape]") {
         break;
       }
     }
+  } else {
+    sleep(1);
   }
-  sleep(1);
 }
 screen.clear();
+print("Hello world!");
+
+
+
+
+
+
+
+
+
 
 
