@@ -237,7 +237,7 @@ int IOFile::write(const std::string data)
   //this->w_buffer.append(data);
   std::copy(data.begin(), data.end(), std::back_inserter(w_buffer));
   // Combine small writes into 'bufsize' sized writes
-  while ((int) this->w_buffer.size() >= this->bufsize) flush_buffer(this->bufsize);
+  while (this->w_buffer.size() >= this->bufsize) flush_buffer(this->bufsize);
   int bytes_written = (int)data.length();
   //std::cout << "IOFile::write() returning " << bytes_written << std::endl;
   return bytes_written;
