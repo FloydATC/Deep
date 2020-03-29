@@ -168,7 +168,7 @@ void process_mousemotion(Message* msg, std::vector<Machine*> vms, Scene3D* scene
       relative->motion.x = (int)mv.x;
       relative->motion.y = (int)mv.y;
       //std::cout << "  mouse position " << relative->motion.x << "," << relative->motion.y << std::endl;
-      vms[i]->push(relative);
+      if ((int)vms.size() >= i+1) vms[i]->push(relative);
       mouse_virtual = true;
     }
 
@@ -323,8 +323,8 @@ void OpenGL_debug_callback( GLenum source, GLenum type, GLuint id, GLenum severi
 }
 
 
-#define DEBUG_NO_VIRTUAL_MACHINES
-#define DEBUG_NO_SCREENS
+//#define DEBUG_NO_VIRTUAL_MACHINES
+//#define DEBUG_NO_SCREENS
 int main(int argc, char* argv[])
 {
   (void)(argc);
