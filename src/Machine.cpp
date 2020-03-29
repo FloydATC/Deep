@@ -48,7 +48,7 @@ Machine::Machine(ShaderProgram* shader, Fontcache fontcache)
   // Run pre-designated FunC script
   CmdLine parser = CmdLine();
   parser.parse("funos/bin/init.fun");
-  execute_file(parser.args_array()[0], &parser);
+  execute_file(parser.args_vector()[0], &parser);
 }
 
 Machine::~Machine()
@@ -646,7 +646,7 @@ bool Machine::func_reset(FunC::VM* vm, int argc, FunC::Value argv[], FunC::Value
   running->display.reset();
   CmdLine parser = CmdLine();
   parser.parse("funos/bin/init.fun");
-  running->execute_file(parser.args_array()[0], &parser);
+  running->execute_file(parser.args_vector()[0], &parser);
   *result = FunC::to_numberValue(1);
   return true;
 }

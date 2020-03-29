@@ -42,11 +42,11 @@ std::vector<std::string> CmdLine::args_vector()
 
 const char** CmdLine::args_array()
 {
-  std::vector<const char*> char_array;
-  for (int i=0; i<(int)this->args.size(); i++) {
-    char_array.push_back(this->args[i].c_str());
+  this->argv.clear();
+  for (auto& string : this->args) {
+    this->argv.push_back(string.c_str());
   }
-  return char_array.data();
+  return this->argv.data();
 }
 
 

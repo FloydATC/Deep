@@ -24,6 +24,7 @@ class CmdLine
   private:
     std::string line;
     std::vector<std::string> args;
+    std::vector<const char*> argv;
     int current;
     int start;
     bool is_escaped;
