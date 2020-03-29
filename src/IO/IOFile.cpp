@@ -98,11 +98,10 @@ void IOFile::set_fileflags(std::string mode)
 IOFile* IOFile::open(std::string filename, std::string mode) {
   //std::cout << "IOFile::open() filename='" << filename << "' mode='" << mode << "'" << std::endl;
   IOFile* file = new IOFile();
-  bool res;
 
   file->filename = filename;
-  res = file->r_buffer.empty();
-  res = file->w_buffer.empty();
+  (void)file->r_buffer.empty(); // What am I supposed to do if clear() fails..?
+  (void)file->w_buffer.empty();
   file->set_fileflags(mode);
 
   file->handle.open(filename, file->fileflags);
