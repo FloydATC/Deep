@@ -190,7 +190,7 @@ size_t IOFile::flush_buffer(size_t bytes)
 std::string IOFile::getc()
 {
   //std::cout << "IOFile::getc()" << std::endl;
-  if ((int) r_buffer.size() < this->bufsize) fill_buffer();
+  if (r_buffer.size() < this->bufsize) fill_buffer();
   return drain_buffer(1);
 }
 
@@ -199,7 +199,7 @@ std::string IOFile::read(const int bytes)
   int read_bytes = bytes;
   //std::cout << "IOFile::read() bytes=" << bytes << std::endl;
   if (read_bytes <= 0) read_bytes = (int)this->bufsize;
-  if ((int) r_buffer.size() < this->bufsize) fill_buffer();
+  if (r_buffer.size() < this->bufsize) fill_buffer();
   return drain_buffer(read_bytes);
 }
 
