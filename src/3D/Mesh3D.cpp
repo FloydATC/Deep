@@ -284,10 +284,21 @@ void Mesh3D::setDecalPosition(Vector2 position)
 }
 
 
-void Mesh3D::addFace(Face3D face)
+uint32_t Mesh3D::addVertex(Vertex3D vertex)
 {
   // For shadow volumes
+  uint32_t vertex_id = (uint32_t)vertices.size();
+  vertices.push_back(vertex);
+  return vertex_id;
+}
+
+
+uint32_t Mesh3D::addFace(Face3D face)
+{
+  // For shadow volumes
+  uint32_t face_id = (uint32_t)faces.size();
   faces.push_back(face);
+  return face_id;
 }
 
 
@@ -313,20 +324,21 @@ void Mesh3D::findAdjacentFaces()
 {
   // When generating shadow volumes we will need polygon adjacency information
   // so we can trace the contours of the mesh from arbitrary directions.
-  // To this end, each Face3D holds the index of its neighbouring Face3D on each edge.
+  // To this end, each Face3D must hold an index of its neighbouring Face3D on each edge.
   // Note: This means all meshes must be fully enclosed and have no overlapping faces.
 #ifdef DEBUG_TRACE_MESH
   std::cout << "Mesh3D::findAdjacentFaces() begin" << std::endl;
 #endif
-  for (unsigned int f1=0; f1<this->faces.size(); f1++) {
-    for (int e1=0; e1<3; e1++) {
-      if (this->faces[f1].adjacent[e1] != -1) continue;
-      for (unsigned int f2=f1; f2<this->faces.size(); f2++) {
-        for (int e2=0; e2<3; e2++) {
-          if (this->faces[f2].adjacent[e2] != -1) continue;
-          if (this->faces[f1].edge(e1) == this->faces[f2].edge(e2)) {
-            this->faces[f1].adjacent[e1] = f2;
-            this->faces[f2].adjacent[e2] = f1;
+  for (uint32_t face_no = 0; face_no < this->faces.size(); face_no++) {
+    for (uint8_t edge_no = 0; edge_no < 3; edge_no++) {
+      uint8_t point1 = edge_no;
+      uint8_t point2 = (edge_no + 1) % 3;
+      for (uint32_t connected_face1 : this->faces[face_no].vertices[point1]->faces) {
+        if (face_no == connected_face1) continue; // Ignore self
+        for (uint32_t connected_face2 : this->faces[face_no].vertices[point2]->faces) {
+          if (connected_face1 == connected_face2) {
+            // We have found a face sharing both points of current edge
+            this->faces[face_no].setAdjacentFace(edge_no, connected_face1);
           }
         }
       }

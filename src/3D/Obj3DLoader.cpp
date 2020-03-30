@@ -8,6 +8,7 @@
 #include "3D/Face3D.h"
 
 //#define DEBUG_TRACE_OBJLOADER
+//#define DEBUG_TRACE_OBJLOADER_VERBOSE
 
 Obj3DLoader::Obj3DLoader()
 {
@@ -35,12 +36,17 @@ void Obj3DLoader::reset()
   this->subobject_material.clear();
   this->subobject_start.clear();
   this->subobject_length.clear();
+  this->unique_v.clear();
+  this->subobject_no = -1;
   this->box = nullptr;
 }
 
 
 void Obj3DLoader::begin_mesh(std::string filename, std::string name)
 {
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader" << this << "::begin_mesh() loading " << name << " from " << filename << std::endl;
+#endif
   // Create mesh object
   SubObject3D* mesh = new SubObject3D();
   mesh->setFilename(filename);
@@ -79,7 +85,9 @@ Obj3D* Obj3DLoader::load(std::string filename)
   this->object = new Obj3D();
 
 
-  //std::cout << "Obj3DLoader::load() begin parse loop" << std::endl;
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader::load() begin parse loop" << std::endl;
+#endif
   while (!scanner->is_eof()) {
     scanner->skip_whitespace(true);
     if (scanner->is_alpha()) { get_keyword(); continue; }
@@ -93,7 +101,9 @@ Obj3D* Obj3DLoader::load(std::string filename)
   }
 
   delete this->scanner;
-  //std::cout << "Obj3DLoader::load() produce object" << std::endl;
+#ifdef DEBUG_TRACE_OBJLOADER
+  std::cout << "Obj3DLoader::load() parsing complete, produce object" << std::endl;
+#endif
 
   object->setName(filename);
   float* v_array = make_v_array();
@@ -156,7 +166,7 @@ float* Obj3DLoader::make_vn_array()
 void Obj3DLoader::get_keyword()
 {
   std::string keyword = scanner->get_keyword();
-#ifdef DEBUG_TRACE_OBJLOADER
+#ifdef DEBUG_TRACE_OBJLOADER_VERBOSE
   std::cout << "Obj3DLoader" << this << "::get_keyword() got keyword=" << keyword << std::endl;
 #endif
   if (keyword == "mtllib") { get_mtllib(); return; } // material definition *IGNORED*
@@ -208,11 +218,11 @@ void Obj3DLoader::get_usemtl()
 
 void Obj3DLoader::get_f()
 {
-#ifdef DEBUG_TRACE_OBJLOADER
+#ifdef DEBUG_TRACE_OBJLOADER_VERBOSE
   std::cout << "Obj3DLoader" << this << "::get_f() " << scanner->where() << std::endl;
 #endif
   // f 2563/2575/2561 2565/2576/2561 2566/2577/2561 2564/2578/2561
-  std::vector<Point> face;
+  std::vector<Vertex3D> face;
   while (scanner->is_numeric()) {
     // Get mandatory v index
     int v_no = scanner->get_integer();
@@ -233,10 +243,12 @@ void Obj3DLoader::get_f()
       }
     }
     //std::cout << "Obj3DLoader::get_f() point v=" << v_no << " vt=" << vt_no << " vn=" << vn_no << std::endl;
-    Point p;
-    p.v = indexed_v[v_no-1];
+    Vertex3D p = Vertex3D(indexed_v[v_no - 1]);
+    //p.v = indexed_v[v_no-1];
+    int first_vertex = this->unique_v[this->subobject_no];
     p.vt = (vt_no==-1 ? Vector2(0.0f, 0.0f) : indexed_vt[vt_no-1]);
     p.vn = (vt_no==-1 ? Vector3(0.0f, 0.0f, 0.0f) : indexed_vn[vn_no-1]);
+    p.index = v_no - 1 - first_vertex; // Need this when looking for neighbor polygons
     face.push_back(p);
     scanner->skip_whitespace();
   }
@@ -265,19 +277,20 @@ void Obj3DLoader::get_o()
 #ifdef DEBUG_TRACE_OBJLOADER
   std::cout << "Obj3DLoader" << this << "::get_o() " << scanner->where() << std::endl;
 #endif
+  this->subobject_no++;
   // Get subobject name
   std::string name = scanner->get_keyword();
   while (!scanner->is_eof() && !scanner->is_eol()) { scanner->advance(); }
   scanner->consume_eol();
   // Prefix name with subobject number
-  name = std::to_string(this->subobject_mesh.size()).append(":").append(name);
+  name = std::to_string(this->subobject_no).append(":").append(name);
 
   begin_mesh(this->filename, name);
 
   // Mark the beginning of sub-object ("part")
   this->subobject_start.push_back((int)this->linear_points.size());
   this->subobject_length.push_back(0);
-
+  this->unique_v.push_back((int)this->indexed_v.size());
 }
 
 void Obj3DLoader::get_s()
@@ -292,20 +305,22 @@ void Obj3DLoader::get_s()
 
 void Obj3DLoader::get_v()
 {
-#ifdef DEBUG_TRACE_OBJLOADER
+#ifdef DEBUG_TRACE_OBJLOADER_VERBOSE
   std::cout << "Obj3DLoader" << this << "::get_v() " << scanner->where() << std::endl;
 #endif
   float x = scanner->get_float();
   float y = scanner->get_float();
   float z = scanner->get_float();
-  indexed_v.push_back(Vector3(x, y, z));
-  this->box->extend(Vector3(x, y, z));
+  Vector3 v = Vector3(x, y, z);
+  this->current_mesh->addVertex(Vertex3D(v));
+  indexed_v.push_back(v);
+  this->box->extend(v);
   scanner->consume_eol();
 }
 
 void Obj3DLoader::get_vt()
 {
-#ifdef DEBUG_TRACE_OBJLOADER
+#ifdef DEBUG_TRACE_OBJLOADER_VERBOSE
   std::cout << "Obj3DLoader" << this << "::get_vt() " << scanner->where() << std::endl;
 #endif
   float u = scanner->get_float();
@@ -316,7 +331,7 @@ void Obj3DLoader::get_vt()
 
 void Obj3DLoader::get_vn()
 {
-#ifdef DEBUG_TRACE_OBJLOADER
+#ifdef DEBUG_TRACE_OBJLOADER_VERBOSE
   std::cout << "Obj3DLoader" << this << "::get_vn() " << scanner->where() << std::endl;
 #endif
   float x = scanner->get_float();
@@ -328,7 +343,7 @@ void Obj3DLoader::get_vn()
 
 void Obj3DLoader::get_vp()
 {
-#ifdef DEBUG_TRACE_OBJLOADER
+#ifdef DEBUG_TRACE_OBJLOADER_VERBOSE
   std::cout << "Obj3DLoader" << this << "::get_vp() " << scanner->where() << std::endl;
 #endif
   // Vertex parameter - Ignore for now
@@ -337,36 +352,44 @@ void Obj3DLoader::get_vp()
 }
 
 
-std::vector<Point> Obj3DLoader::compute_vn(std::vector<Point> face)
+std::vector<Vertex3D> Obj3DLoader::compute_vn(std::vector<Vertex3D> points)
 {
-  Vector3 normal = Face3D(face[0].v, face[1].v, face[2].v).normal;
-  face[0].vn = normal;
-  face[1].vn = normal;
-  face[2].vn = normal;
-  return face;
+  Vector3 normal = Face3D(&points[0], &points[1], &points[2]).normal;
+  points[0].vn = normal;
+  points[1].vn = normal;
+  points[2].vn = normal;
+  return points;
 }
 
-void Obj3DLoader::add_triangle(std::vector<Point> face)
+void Obj3DLoader::add_triangle(std::vector<Vertex3D> points)
 {
-  if (face[0].vn.x == 0.0 && face[0].vn.x == 0.0 && face[0].vn.x == 0.0) {
-    face = compute_vn(face);
+#ifdef DEBUG_TRACE_OBJLOADER_VERBOSE
+  std::cout << "Obj3DLoader::add_triangle() subobject_no=" << this->subobject_no << std::endl;
+#endif
+  if (points[0].vn.x == 0.0 && points[0].vn.x == 0.0 && points[0].vn.x == 0.0) {
+    points = compute_vn(points);
   }
 
-  // For rendering, take each vertex
-  for (auto & p : face) {
-    linear_points.push_back(p);
+  // For shadow volumes, take pointers to each vertex of the face
+  // because later we will need to look up the connected faces
+  Vertex3D* v1p = &this->current_mesh->vertices[points[0].index];
+  Vertex3D* v2p = &this->current_mesh->vertices[points[1].index];
+  Vertex3D* v3p = &this->current_mesh->vertices[points[2].index];
+  Face3D face = Face3D(v1p, v2p, v3p);
+  uint32_t face_id = this->current_mesh->addFace(face);
+
+  for (auto& p : points) {
+    linear_points.push_back(p); // For rendering, take each vertex
+    this->current_mesh->vertices[p.index].connectFace(face_id); // For shadow volume, note connected face
   }
 
-  // For shadow volumes, take vertices of face
-  this->current_mesh->addFace(Face3D(face[0].v, face[1].v, face[2].v));
-
-  subobject_length[subobject_length.size()-1] += 3; // Increment vertex count
+  this->subobject_length[this->subobject_no] += 3; // Increment vertex count
 }
 
-void Obj3DLoader::add_quad(std::vector<Point> face)
+void Obj3DLoader::add_quad(std::vector<Vertex3D> face)
 {
   // We can't render quads so split it into two triangles
-  add_triangle(std::vector<Point>({face[0], face[1], face[2]}));
-  add_triangle(std::vector<Point>({face[2], face[3], face[0]}));
+  add_triangle(std::vector<Vertex3D>({face[0], face[1], face[2]}));
+  add_triangle(std::vector<Vertex3D>({face[2], face[3], face[0]}));
 }
 

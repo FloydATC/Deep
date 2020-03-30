@@ -11,6 +11,7 @@
 #include "Vectors.h"
 #include "3D/Face3D.h"
 #include "3D/Light3D.h"
+#include "3D/Vertex3D.h"
 
 class ShadowVolume3D; // Forward declaration
 
@@ -43,7 +44,8 @@ class Mesh3D
     void setBounds(Mesh3D* box);
     Mesh3D* getBounds();
 
-    void addFace(Face3D face);
+    uint32_t addVertex(Vertex3D vertex);
+    uint32_t addFace(Face3D face);
     void findAdjacentFaces();
 
     bool bounds_enabled;
@@ -67,7 +69,9 @@ class Mesh3D
 
     static int mesh_serial_no;
 
+    std::vector<Vertex3D> vertices; // for shadow volumes
     std::vector<Face3D> faces; // for shadow volumes
+    
 
 
 

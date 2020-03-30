@@ -78,21 +78,21 @@ void ShadowVolume3D::compute_positional()
     if (face.dot > 0) continue; // Only consider lit faces
     // Light cap
     std::vector<Vector4> light_cap;
-    for (Vector3 v3 : face.vertices) {
-      Vector4 v4 = Vector4( v3, 1.0 );
+    for (Vertex3D* vertex : face.vertices) {
+      Vector4 v4 = Vector4( vertex->v, 1.0 );
       light_cap.push_back(v4);
       this->v.insert( this->v.end(), v4.data, v4.data+4 );
     }
 
     // Project light through each vertex
     std::vector<Vector3> light_dir;
-    for (Vector3 v3 : face.vertices) light_dir.push_back( v3 - relative_light_pos );
+    for (Vertex3D* vertex : face.vertices) light_dir.push_back( vertex->v - relative_light_pos );
 
     // Dark cap (reverse vertex order)
     std::vector<Vector4> dark_cap;
     dark_cap.resize(3);
     for (int i=(int)face.vertices.size()-1; i>=0; i--) {
-      Vector4 v4 = Vector4( face.vertices[i] + light_dir[i], 0.0 ); // w = 0.0 = to infinity
+      Vector4 v4 = Vector4( face.vertices[i]->v + light_dir[i], 0.0 ); // w = 0.0 = to infinity
       dark_cap[i] = v4;
       this->v.insert( this->v.end(), v4.data, v4.data+4 );
     }
@@ -102,14 +102,16 @@ void ShadowVolume3D::compute_positional()
       if (face.adjacent[e] == -1) continue; // No adjacent polygon; mesh is not well-formed
       if (this->mesh->faces[ face.adjacent[e] ].dot > 0) {
         // polygon 'face' is lit, adjacent polygon is not
+        uint8_t p1 = e;
+        uint8_t p2 = (e + 1) % 3;
 
-        this->v.insert( this->v.end(), light_cap[(e+1)%3].data, light_cap[(e+1)%3].data+4 );
-        this->v.insert( this->v.end(), light_cap[e].data, light_cap[e].data+4 );
-        this->v.insert( this->v.end(), dark_cap[e].data, dark_cap[e].data+4 );
+        this->v.insert( this->v.end(), light_cap[p2].data, light_cap[p2].data+4 );
+        this->v.insert( this->v.end(), light_cap[p1].data, light_cap[p1].data+4 );
+        this->v.insert( this->v.end(), dark_cap[p1].data, dark_cap[p1].data+4 );
 
-        this->v.insert( this->v.end(), light_cap[(e+1)%3].data, light_cap[(e+1)%3].data+4 );
-        this->v.insert( this->v.end(), dark_cap[e].data, dark_cap[e].data+4 );
-        this->v.insert( this->v.end(), dark_cap[(e+1)%3].data, dark_cap[(e+1)%3].data+4 );
+        this->v.insert( this->v.end(), light_cap[p2].data, light_cap[p2].data+4 );
+        this->v.insert( this->v.end(), dark_cap[p1].data, dark_cap[p1].data+4 );
+        this->v.insert( this->v.end(), dark_cap[p2].data, dark_cap[p2].data+4 );
 
       }
     }

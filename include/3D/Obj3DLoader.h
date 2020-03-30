@@ -7,16 +7,12 @@
 #include "Matrices.h"
 #include "3D/Obj3D.h"
 #include "3D/SubObject3D.h"
+#include "3D/Vertex3D.h"
 #include "FileScanner.h"
 #include "MtlLoader.h"
 #include "Material.h"
 #include "IO/IOFile.h"
 
-typedef struct {
-  Vector3 v;
-  Vector2 vt;
-  Vector3 vn;
-} Point;
 
 
 class Obj3DLoader
@@ -39,9 +35,11 @@ class Obj3DLoader
     std::vector<Vector2> indexed_vt;
     std::vector<Vector3> indexed_vn;
 
-    std::vector<Point> linear_points;
+    std::vector<Vertex3D> linear_points;
+    std::vector<int> unique_v;
     std::vector<int> subobject_start;
     std::vector<int> subobject_length;
+    int subobject_no;
 
     std::vector<SubObject3D*> subobject_mesh;
     std::vector<Material*> subobject_material;
@@ -55,9 +53,9 @@ class Obj3DLoader
     void begin_mesh(std::string filename, std::string name);
     SubObject3D* current_mesh;
 
-    std::vector<Point> compute_vn(std::vector<Point> face);
-    void add_triangle(std::vector<Point> face);
-    void add_quad(std::vector<Point> face);
+    std::vector<Vertex3D> compute_vn(std::vector<Vertex3D> points);
+    void add_triangle(std::vector<Vertex3D> face);
+    void add_quad(std::vector<Vertex3D> face);
 
     std::vector<std::string> split_tokens(std::string str);
     std::vector<float> tokens_to_floats(std::vector<std::string>);
