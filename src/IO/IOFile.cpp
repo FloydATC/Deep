@@ -189,7 +189,7 @@ size_t IOFile::flush_buffer(size_t bytes)
 std::string IOFile::getc()
 {
   //std::cout << "IOFile::getc()" << std::endl;
-  if ((int) r_buffer.size() < this->bufsize) fill_buffer();
+  if (r_buffer.size() < this->bufsize) fill_buffer();
   return drain_buffer(1);
 }
 
@@ -198,7 +198,7 @@ std::string IOFile::read(const int bytes)
   int read_bytes = bytes;
   //std::cout << "IOFile::read() bytes=" << bytes << std::endl;
   if (read_bytes <= 0) read_bytes = (int)this->bufsize;
-  if ((int) r_buffer.size() < this->bufsize) fill_buffer();
+  if (r_buffer.size() < this->bufsize) fill_buffer();
   return drain_buffer(read_bytes);
 }
 
@@ -237,7 +237,7 @@ int IOFile::write(const std::string data)
   //this->w_buffer.append(data);
   std::copy(data.begin(), data.end(), std::back_inserter(w_buffer));
   // Combine small writes into 'bufsize' sized writes
-  while ((int) this->w_buffer.size() >= this->bufsize) flush_buffer(this->bufsize);
+  while (this->w_buffer.size() >= this->bufsize) flush_buffer(this->bufsize);
   int bytes_written = (int)data.length();
   //std::cout << "IOFile::write() returning " << bytes_written << std::endl;
   return bytes_written;
