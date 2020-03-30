@@ -42,6 +42,8 @@ void SubObject3D::renderAmbient(Matrix4 proj, Matrix4 view, Matrix4 model, Mater
     use_shader->setUniformMatrix4("view", view);
     use_shader->setUniformMatrix4("model", model);
     use_shader->setColors(use_material);
+    use_shader->setUniformVector4("color_d", Vector4(0, 0, 0, 0));
+    use_shader->setUniformVector4("color_s", Vector4(0, 0, 0, 0));
 
     bind_vao();
     if (!this->initialized) this->initialize(use_shader);

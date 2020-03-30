@@ -28,7 +28,7 @@ Ray3D::~Ray3D()
 void Ray3D::renderAmbient(Matrix4 proj, Matrix4 view, Matrix4 model, Material* material, ShaderProgram* shader)
 {
 #ifdef DEBUG_TRACE_RAY
-  std::cout << "Ray3D" << this << "::render()" << std::endl;
+  std::cout << "Ray3D" << this << "::renderAmbient()" << std::endl;
 #endif
   // Resolve material + shader
   Material* use_material = my_material(material);
@@ -42,9 +42,6 @@ void Ray3D::renderAmbient(Matrix4 proj, Matrix4 view, Matrix4 model, Material* m
   use_shader->setUniformMatrix4("projection", proj);
   use_shader->setUniformMatrix4("view", view);
   use_shader->setUniformMatrix4("model", model);
-  //use_shader->setProjectionMatrix(proj);
-  //use_shader->setViewMatrix(view);
-  //use_shader->setModelMatrix(model);
   use_shader->setColors(use_material);
 
   bind_vao();

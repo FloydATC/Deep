@@ -3,6 +3,7 @@
 #include <iostream>
 
 //#define DEBUG_TRACE_SHADOWS
+//#define DEBUG_VISUALIZE
 
 ShadowVolume3D::ShadowVolume3D(Light3D* light, Mesh3D* mesh, Matrix4 model)
 {
@@ -47,10 +48,12 @@ void ShadowVolume3D::renderShadow(Matrix4 proj, Matrix4 view, Matrix4 model, Sha
 
   bind_vao();
   initialize(shader);
+#ifdef DEBUG_VISUALIZE
+  glDrawArrays(GL_LINES, 0, this->count_v);
+#else
   glDrawArrays(GL_TRIANGLES, 0, this->count_v);
+#endif
 
-  //glDrawArrays(GL_LINES, 0, 6);
-  //glDrawArrays(GL_TRIANGLES, 6, 3);
 
   unbind_vao();
 
@@ -86,13 +89,35 @@ void ShadowVolume3D::compute_positional()
 
     // Project light through each vertex
     std::vector<Vector3> light_dir;
-    for (Vertex3D* vertex : face.vertices) light_dir.push_back( vertex->v - relative_light_pos );
+    for (Vertex3D* vertex : face.vertices) light_dir.push_back( Vector3(vertex->v - relative_light_pos) * 1000.0f );
+
+
+    // Ideally, we should use "infinite" vectors (w=0.0) for the dark cap
+    // Unfortunately, these get rendered with a severely distorted direction
+    // so instead we make the vectors 1000.0 long and live with the odd artifact...
+
+    // DEBUG lines from light source to each vertex, then from vertex to infinity
+    /*
+    int i = 0;
+    for (Vertex3D* vertex : face.vertices) {
+      Vector4 v4;
+      v4 = Vector4(relative_light_pos, 1.0);
+      this->v.insert(this->v.end(), v4.data, v4.data + 4);
+      v4 = Vector4(vertex->v, 1.0);
+      this->v.insert(this->v.end(), v4.data, v4.data + 4);
+      v4 = Vector4(vertex->v, 1.0);
+      this->v.insert(this->v.end(), v4.data, v4.data + 4);
+      v4 = Vector4(vertex->v + light_dir[i], 0.0);
+      this->v.insert(this->v.end(), v4.data, v4.data + 4);
+      i++;
+    }
+    */
 
     // Dark cap (reverse vertex order)
     std::vector<Vector4> dark_cap;
     dark_cap.resize(3);
     for (int i=(int)face.vertices.size()-1; i>=0; i--) {
-      Vector4 v4 = Vector4( face.vertices[i]->v + light_dir[i], 0.0 ); // w = 0.0 = to infinity
+      Vector4 v4 = Vector4( face.vertices[i]->v + light_dir[i], 1.0 ); // w = 0.0 = to infinity
       dark_cap[i] = v4;
       this->v.insert( this->v.end(), v4.data, v4.data+4 );
     }
@@ -104,7 +129,7 @@ void ShadowVolume3D::compute_positional()
         // polygon 'face' is lit, adjacent polygon is not
         uint8_t p1 = e;
         uint8_t p2 = (e + 1) % 3;
-
+        
         this->v.insert( this->v.end(), light_cap[p2].data, light_cap[p2].data+4 );
         this->v.insert( this->v.end(), light_cap[p1].data, light_cap[p1].data+4 );
         this->v.insert( this->v.end(), dark_cap[p1].data, dark_cap[p1].data+4 );
@@ -112,7 +137,7 @@ void ShadowVolume3D::compute_positional()
         this->v.insert( this->v.end(), light_cap[p2].data, light_cap[p2].data+4 );
         this->v.insert( this->v.end(), dark_cap[p1].data, dark_cap[p1].data+4 );
         this->v.insert( this->v.end(), dark_cap[p2].data, dark_cap[p2].data+4 );
-
+        
       }
     }
   }

@@ -33,6 +33,7 @@
 #include "ShaderProgram.h"
 #include "UTF8hack.h"
 #include "3D/Plane3D.h"
+#include "3D/Ray3D.h"
 #include "hexdump.h" // For debugging only
 #include "Texture.h"
 #include "3D/Light3D.h"
@@ -323,6 +324,7 @@ void OpenGL_debug_callback( GLenum source, GLenum type, GLuint id, GLenum severi
 }
 
 
+#define AUTOROTATE_CUBE
 //#define DEBUG_NO_VIRTUAL_MACHINES
 //#define DEBUG_NO_SCREENS
 int main(int argc, char* argv[])
@@ -468,9 +470,9 @@ int main(int argc, char* argv[])
 
       ShaderProgram* plane_shader = scene.getShader("glsl/plane_vert.glsl", "glsl/plane_frag.glsl");
       Material* plane_material = scene.getMaterial();
-      plane_material->setAmbientColor(0.20f, 0.20f, 0.22f);
+      plane_material->setAmbientColor(0.40f, 0.40f, 0.44f);
       plane_material->setDiffuseColor(0.75f, 0.75f, 0.80f);
-      plane_material->setSpecularColor(0.25f, 0.25f, 0.30f);
+      plane_material->setSpecularColor(0.55f, 0.55f, 0.60f);
       plane_material->setEmissiveColor(0.00f, 0.00f, 0.00f);
       plane_material->setName("plane");
       Plane3D* plane = new Plane3D();
@@ -484,7 +486,15 @@ int main(int argc, char* argv[])
       scene.addProp("cube", cube);
       Texture* test = scene.getTexture("textures/test256.png");
       scene.getPropByName("cube")->setTexture(test);
-      scene.getPropByName("cube")->setPosition(Vector3(-1.25f, 0.15f, 0.2f));
+      scene.getPropByName("cube")->setPosition(Vector3(-1.25f, 0.15f, 0.4f));
+
+      Material* ray_material = scene.getMaterial();
+      ray_material->setAmbientColor(0.75f, 0.75f, 0.00f);
+      Ray3D* ray = new Ray3D();
+      ray->setMaterial(ray_material);
+      scene.addProp("ray", ray);
+      scene.getPropByName("ray")->setPosition(Vector3(-1.20f, 1.20f, 1.20f));
+      scene.getPropByName("ray")->setDirection(Vector3(0.0f, -1.0f, 0.0f));
 
       scene.setStandardShader(scene_shader); // Set default shader
       scene.setShadowShader(shadow_shader); // Set shader to use for volume shadow rendering
@@ -492,7 +502,6 @@ int main(int argc, char* argv[])
       Light3D* overhead = new Light3D(Vector3(0.7f, 0.7f, 0.6f));
       overhead->setPosition(Vector3( -1.20f, 1.20f, 1.20f));
       scene.addLight("overhead", overhead);
-
 
 #ifndef DEBUG_NO_VIRTUAL_MACHINES
       // Bind VM textures to props (NOT to the underlying, shared mesh objects)
@@ -523,9 +532,18 @@ int main(int argc, char* argv[])
           vm->run();
         }
 
+        const Uint8* state = SDL_GetKeyboardState(NULL);
+        if (state[SDL_SCANCODE_F1]) scene.getPropByName("cube")->addPitch((float)delta * 0.01f);
+        if (state[SDL_SCANCODE_F2]) scene.getPropByName("cube")->addPitch((float)delta * -0.01f);
+        if (state[SDL_SCANCODE_F3]) scene.getPropByName("cube")->addRoll((float)delta * 0.01f);
+        if (state[SDL_SCANCODE_F4]) scene.getPropByName("cube")->addRoll((float)delta * -0.01f);
+        if (state[SDL_SCANCODE_F5]) scene.getPropByName("cube")->addYaw((float)delta * 0.01f);
+        if (state[SDL_SCANCODE_F6]) scene.getPropByName("cube")->addYaw((float)delta * -0.01f);
+#ifdef AUTOROTATE_CUBE
         scene.getPropByName("cube")->addPitch((float)(37.3*delta/1000.0));
         scene.getPropByName("cube")->addRoll((float)(27.3*delta/1000.0));
         scene.getPropByName("cube")->addYaw((float)(17.51*delta/1000.0));
+#endif
 
         scene.render();
 

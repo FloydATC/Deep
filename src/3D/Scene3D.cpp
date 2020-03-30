@@ -3,6 +3,7 @@
 #include "GFX.h"
 
 //#define DEBUG_TRACE_SCENE
+//#define DEBUG_VISUALIZE
 
 Scene3D::Scene3D()
 {
@@ -95,10 +96,12 @@ void Scene3D::render()
     Light3D* light = light_pair.second;
     if (light->isEnabled() == false) continue;
 
+#ifndef DEBUG_VISUALIZE
     glDepthMask(GL_FALSE);
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-
     glEnable(GL_STENCIL_TEST);
+#endif
+
     glStencilFunc(GL_ALWAYS, 0x0, 0xFF);
     glStencilMask(0xFF);
 
@@ -116,7 +119,9 @@ void Scene3D::render()
 
       prop->generateShadowVolumes(light);
 
+#ifndef DEBUG_VISUALIZE
       glDepthFunc(GL_LESS);
+#endif
       glEnable(GL_CULL_FACE);
       glCullFace(GL_BACK);
 
