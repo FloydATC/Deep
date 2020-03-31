@@ -115,6 +115,8 @@ void SubObject3D::renderLight(Matrix4 proj, Matrix4 view, Matrix4 model, Materia
     use_shader->setUniformMatrix4("model", model);
     use_shader->setColors(use_material);
     use_shader->setUniformVector4("color_a", Vector4(0,0,0,0));
+    use_shader->setUniformVector4("light_position", Vector4(light->getPosition(), (light->isPositional() ? 1.0f : 0.0f)));
+    use_shader->setUniformVector4("light_color", Vector4(light->getColor(), 1));
 
     bind_vao();
     if (!this->initialized) this->initialize(use_shader);

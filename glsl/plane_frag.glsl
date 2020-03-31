@@ -11,7 +11,8 @@ uniform vec4 color_d;
 uniform vec4 color_s;
 uniform vec4 color_e;
 
-vec3 light_position = vec3( -1.20, 1.20, 1.20);
+uniform vec4 light_position;
+uniform vec4 light_color;
 
 out vec4 col;
 
@@ -25,7 +26,7 @@ float checkerboard(float x, float y, float scale) {
 
 void main() {
   vec3 normal = normalize(vn); // vn may have been interpolated so normalize it
-  vec3 light_direction = normalize(light_position - v);
+  vec3 light_direction = normalize(light_position.xyz - v);
   float diffuse_factor = clamp(dot(normal, light_direction), 0.0f, 1.0f);
   //diffuse_factor = 0.0;
 
@@ -39,5 +40,16 @@ void main() {
     checkerboard(vt.x, vt.y, 1/8.0) * 0.3 +
     checkerboard(vt.x, vt.y, 1/64.0) * 0.2 +
     0.1;
-  col = (color_a * c) + (color_d * vec4(vec3(c/2 + 0.4), 1) * diffuse_factor) + (color_s * specular_factor) + color_e;
+  if (color_a.a > 0) {
+    // Ambient pass
+    col = color_a * vec4(vec3(c/2 + 0.4), 1) + color_e;
+  } else {
+    // Light pass
+    vec4 diffuse = color_d * vec4(vec3(c/2 + 0.4), 1) * light_color * diffuse_factor;
+    //diffuse.a = diffuse_factor;
+    vec4 specular = color_s * vec4(vec3(c/2 + 0.4), 1) * light_color * specular_factor;
+    //specular.a = specular_factor;
+    col = diffuse + specular;
+  }
+  col.a = 1.0;
 }

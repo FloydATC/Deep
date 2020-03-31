@@ -121,6 +121,9 @@ void ShaderProgram::setDefaults()
   this->mapUniform("texture_diffuse", "texture_diffuse");
   this->mapUniform("texture_emissive", "texture_emissive");
 
+  this->mapUniform("light_position", "light_position");
+  this->mapUniform("light_color", "light_color");
+
 }
 
 

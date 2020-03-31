@@ -20,7 +20,8 @@ uniform sampler2D texture_diffuse;
 uniform int is_debug;
 uniform int use_texture;
 
-vec3 light_position = vec3( -1.20, 1.20, 1.20);
+uniform vec4 light_position;
+uniform vec4 light_color;
 
 out vec4 col;
 
@@ -37,7 +38,7 @@ float shadow(int component, vec2 tex, float offset) {
 
 void main() {
   vec3 normal = normalize(vn); // vn may have been interpolated so normalize it
-  vec3 light_direction = normalize(light_position - v);
+  vec3 light_direction = normalize(light_position.xyz - v);
   float diffuse_factor = clamp(dot(normal, light_direction), 0.0f, 1.0f);
 
   vec3 view_direction = normalize(eye - v);
@@ -50,8 +51,18 @@ void main() {
     float b = max(separation(2, vt, +0.0000), shadow(2, vt, -0.0008));
     float g = max(separation(1, vt, -0.001), shadow(1, vt, -0.0008));
 
-    col = color_a + (color_d * diffuse_factor) + (color_s * specular_factor) + vec4( r, g, b, 1.0 ) + color_e;
+    if (color_a.a > 0) {
+      // Ambient pass
+      col = color_a + vec4( r, g, b, 1.0 ) + color_e;
+    } else {
+      vec4 diffuse = color_d * light_color * diffuse_factor;
+      //diffuse.a = diffuse_factor;
+      vec4 specular = color_s * light_color * specular_factor;
+      //specular.a = specular_factor;
+      col = diffuse + specular;
+    }
     vec4 cursor = texture2D( texture_decal, vec2( ((vt.x - position_decal.x*1.2 - 0.5)*60.0), (vt.y - position_decal.y*1.42 - 0.47)*30.0));
     if (cursor.a > 0.5) col = cursor;
+    col.a = 1.0;
   }
 }

@@ -14,10 +14,11 @@ uniform vec4 color_d;
 uniform vec4 color_s;
 uniform vec4 color_e;
 
+uniform vec4 light_position;
+uniform vec4 light_color;
+
 uniform int is_debug;
 uniform int use_texture;
-
-vec3 light_position = vec3( -1.20, 1.20, 1.20);
 
 out vec4 col;
 
@@ -25,7 +26,7 @@ out vec4 col;
 
 void main() {
   vec3 normal = normalize(vn); // vn may have been interpolated so normalize it
-  vec3 light_direction = normalize(light_position - v);
+  vec3 light_direction = normalize(light_position.xyz - v);
   float diffuse_factor = clamp(dot(normal, light_direction), 0.0f, 1.0f);
   //diffuse_factor = 0.0;
 
@@ -48,13 +49,19 @@ void main() {
     } else {
       // Light pass
       if (use_texture > 0) {
-        col =       (color_d * diffuse_factor * texture2D( texture_diffuse, vt ));
-        col = col + (color_s * specular_factor);
+        vec4 diffuse = color_d * light_color * texture2D( texture_diffuse, vt ) * diffuse_factor;
+        //diffuse.a = diffuse_factor;
+        vec4 specular = color_s * light_color * specular_factor;
+        //specular.a = specular_factor;
+        col = diffuse + specular;
       } else {
-        col =       (color_d * diffuse_factor);
-        col = col + (color_s * specular_factor);
+        vec4 diffuse = color_d * light_color * diffuse_factor;
+        //diffuse.a = diffuse_factor;
+        vec4 specular = color_s * light_color * specular_factor;
+        //specular.a = specular_factor;
+        col = diffuse + specular;
       }
     }
-    col.w = 1.0;
   }
+  col.a = 1.0;
 }

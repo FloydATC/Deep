@@ -82,6 +82,7 @@ void Scene3D::render()
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);
   glDisable(GL_STENCIL_TEST);
+  glDisable(GL_BLEND);
 
   // Ambient color pass: Render 3D models
   for (const auto& prop : prop3d) {
@@ -147,6 +148,12 @@ void Scene3D::render()
     glDepthFunc(GL_LEQUAL);
 
     // Diffuse + Specular color pass: Render 3D models
+    glEnable(GL_BLEND);
+    glBlendEquation(GL_FUNC_ADD);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ONE, GL_ONE);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glBlendFunc(GL_ONE, GL_ONE);
     for (const auto& prop : prop3d) {
       prop.second->renderLight(this->cam, light);
     }

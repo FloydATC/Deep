@@ -49,6 +49,7 @@ GLuint Display::textureId()
 
 void Display::draw_untextured_vbo(GLsizeiptr arrsize, const void* arr, GLenum type, GLsizei typesize, GLenum mode, GLsizei vertices)
 {
+  glDisable(GL_BLEND);
   this->shader->setUniformVector4("color_e", this->color);
   this->shader->setUniformBoolean("use_texture", false);
   bind_vbo();
