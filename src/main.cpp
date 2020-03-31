@@ -189,10 +189,12 @@ void process_mousewheel(Message* msg, Scene3D* scene)
   delete msg;
 }
 
+
 void process_mousebutton(Message* msg, std::vector<Machine*> vms, GameState* gamestate)
 {
   if ((int)vms.size() >= gamestate->current_vm+1) vms[gamestate->current_vm]->push(msg);
 }
+
 
 void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, GameState* gamestate)
 {
@@ -231,12 +233,6 @@ void process_message(Message* msg, std::vector<Machine*> vms, Scene3D* scene, Ga
       break;
     case Message::Type::KeyDown:
       //std::cout << "processMsg() KeyDown message" << std::endl;
-      if (msg->key.sym == SDLK_KP_4) scene->getCamera()->strafeLeft(0.1f);
-      if (msg->key.sym == SDLK_KP_6) scene->getCamera()->strafeRight(0.1f);
-      if (msg->key.sym == SDLK_KP_8) scene->getCamera()->strafeUp(0.1f);
-      if (msg->key.sym == SDLK_KP_2) scene->getCamera()->strafeDown(0.1f);
-      if (msg->key.sym == SDLK_KP_PLUS) scene->getCamera()->strafeForward(0.1f);
-      if (msg->key.sym == SDLK_KP_MINUS) scene->getCamera()->strafeBackward(0.1f);
       process_keydown(msg, vms, gamestate);
       break;
     case Message::Type::KeyUp:
@@ -558,6 +554,12 @@ int main(int argc, char* argv[])
         scene.getPropByName("cube")->addRoll((float)(27.3*delta/1000.0));
         scene.getPropByName("cube")->addYaw((float)(17.51*delta/1000.0));
 #endif
+        if (state[SDL_SCANCODE_KP_4]) scene.getCamera()->strafeLeft((float)delta * 0.001f);
+        if (state[SDL_SCANCODE_KP_6]) scene.getCamera()->strafeRight((float)delta * 0.001f);
+        if (state[SDL_SCANCODE_KP_8]) scene.getCamera()->strafeUp((float)delta * 0.001f);
+        if (state[SDL_SCANCODE_KP_2]) scene.getCamera()->strafeDown((float)delta * 0.001f);
+        if (state[SDL_SCANCODE_KP_PLUS]) scene.getCamera()->strafeForward((float)delta * 0.001f);
+        if (state[SDL_SCANCODE_KP_MINUS]) scene.getCamera()->strafeBackward((float)delta * 0.001f);
 
         scene.render();
 
